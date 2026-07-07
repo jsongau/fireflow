@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FireFlow — Mega-Nav Exploration (A / B / C)</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap');
+:root{
+--bg:#0f0b0d;--panel:#171013;--panel2:#20161a;--raised:#2a1c21;
+--red:#e8331c;--red-700:#c0210f;--ember:#ff6a2b;--gold:#f5b301;--jade:#12b886;--cobalt:#2f6bff;
+--text:#f7efe6;--muted:#b6a29b;--line:#ffffff16;
+--font-display:"Anton","Archivo Black",Impact,system-ui,sans-serif;
+--font-ui:"Inter",system-ui,-apple-system,sans-serif;
+--r-sm:8px;--r-md:12px;--r-lg:18px;
+--sh2:0 18px 50px #00000075;--maxw:1180px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:400;letter-spacing:.01em;line-height:1.05;margin:0 0 10px;text-transform:uppercase}
+p{margin:0 0 10px}
+a{color:var(--ember);text-decoration:none}
+img{max-width:100%;display:block}
+button{font-family:var(--font-ui);cursor:pointer}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:4px}
+.skip{position:absolute;left:-999px;top:0;background:var(--gold);color:#231400;padding:10px 16px;font-weight:700;border-radius:0 0 8px 0;z-index:200}
+.skip:focus{left:0}
+.obang{display:flex;gap:0;height:4px;width:100%}
+.obang i{flex:1}
+.obang i:nth-child(1){background:var(--cobalt)}
+.obang i:nth-child(2){background:var(--jade)}
+.obang i:nth-child(3){background:var(--gold)}
+.obang i:nth-child(4){background:var(--ember)}
+.obang i:nth-child(5){background:var(--red)}
+
+/* ---------- legend ---------- */
+.legend{position:sticky;top:0;z-index:120;background:linear-gradient(180deg,#140e10,#0f0b0d);border-bottom:1px solid var(--line);box-shadow:0 8px 24px #00000055}
+.legend .inner{max-width:var(--maxw);margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.legend .lead{font-family:var(--font-display);font-size:1.05rem;color:var(--text);letter-spacing:.02em}
+.legend .lead b{color:var(--red)}
+.legend ol{list-style:none;display:flex;gap:16px;margin:0;padding:0;flex-wrap:wrap}
+.legend li{font-size:.82rem;color:var(--muted)}
+.legend li b{color:var(--gold);font-weight:700}
+.legend .keys{margin-left:auto;font-size:.78rem;color:var(--muted);max-width:44ch}
+.legend .keys kbd{font-family:var(--font-ui);font-size:.72rem;font-weight:700;background:var(--raised);border:1px solid var(--line);border-radius:5px;padding:.1em .45em;color:var(--text)}
+
+/* ---------- option block ---------- */
+.opt{padding:0 0 10px;border-bottom:1px solid var(--line)}
+.opt-head{max-width:var(--maxw);margin:0 auto;padding:34px 20px 14px}
+.opt-head .tag{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-display);font-size:.9rem;letter-spacing:.14em;color:var(--bg);background:var(--gold);padding:.28em .7em;border-radius:6px}
+.opt-head h2{font-size:clamp(1.6rem,3.4vw,2.3rem);margin:12px 0 6px}
+.opt-head p{color:var(--muted);max-width:70ch}
+
+/* ---------- nav bar (shared) ---------- */
+.mnav{position:relative;z-index:60;background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.mnav .bar{max-width:var(--maxw);margin:0 auto;display:flex;align-items:center;gap:10px;padding:8px 20px}
+.brand{font-family:var(--font-display);font-size:1.35rem;color:var(--text);line-height:.9;margin-right:6px;letter-spacing:.02em}
+.brand span{display:block;font-family:var(--font-ui);font-size:.6rem;font-weight:700;letter-spacing:.22em;color:var(--ember);text-transform:uppercase;margin-top:3px}
+.mgroups{display:flex;gap:2px;flex:1}
+.mgroup{background:none;border:1px solid transparent;color:var(--text);font-weight:600;font-size:.92rem;padding:.62em .85em;border-radius:8px;min-height:44px;display:inline-flex;align-items:center;gap:8px;position:relative}
+.mgroup:hover{background:var(--raised)}
+.mgroup[aria-expanded="true"]{background:var(--raised);border-color:var(--line)}
+.mgroup[aria-expanded="true"]::after{content:"";position:absolute;left:12px;right:12px;bottom:-9px;height:3px;background:var(--red);border-radius:3px}
+.mgroup .han{font-size:.66rem;color:var(--muted);font-weight:700}
+.hamb{display:none;background:var(--raised);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:.9rem;border-radius:8px;padding:0 .9em;min-height:44px;align-items:center;gap:8px}
+.corner{font-size:.72rem;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;font-weight:700}
+
+/* ---------- panels (shared) ---------- */
+.mpanel{position:absolute;top:100%;left:0;right:0;z-index:80;display:none;background:var(--panel2);border-bottom:1px solid var(--line);box-shadow:var(--sh2)}
+.mpanel::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--red),var(--ember))}
+.mpanel.open{display:block;animation:panelIn .18s cubic-bezier(.2,.7,.2,1)}
+@keyframes panelIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.mpanel .inner{max-width:var(--maxw);margin:0 auto;padding:24px 20px}
+.kicker{font-size:.68rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--ember);margin:0 0 8px}
+.planned{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--bg);background:var(--muted);border-radius:4px;padding:.1em .4em;margin-left:6px;vertical-align:middle}
+
+/* panel links (shared list styling) */
+.plink{display:flex;flex-direction:column;gap:2px;color:var(--text);font-weight:600;font-size:.95rem;padding:.55em .5em;border-radius:8px;min-height:44px;justify-content:center}
+.plink small{font-weight:500;font-size:.78rem;color:var(--muted)}
+.plink:hover,.plink:focus-visible{background:var(--raised);color:var(--text)}
+.plink:hover small,.plink:focus-visible small{color:var(--text)}
+ul.reset{list-style:none;margin:0;padding:0}
+
+/* Option A grid */
+.gridA{display:grid;grid-template-columns:1.15fr 2.4fr;gap:28px}
+.feat{background:var(--raised);border:1px solid var(--line);border-radius:var(--r-md);padding:16px;display:flex;flex-direction:column;gap:8px}
+.feat .fimg{width:100%;height:150px;object-fit:contain;background:radial-gradient(closest-side,#ffffff12,transparent 72%);border-radius:8px}
+.feat h3{font-size:1.35rem;margin:2px 0 0}
+.feat .blurb{color:var(--muted);font-size:.88rem;margin:0}
+.feat .cta{margin-top:auto;background:var(--red);color:var(--text);font-weight:700;text-align:center;padding:.7em 1em;border-radius:8px;min-height:44px;display:flex;align-items:center;justify-content:center;border:1px solid var(--red-700)}
+.feat .cta:hover{background:var(--ember);color:#1a0a00}
+.colsA{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 22px;align-content:start}
+
+/* Option B split */
+.gridB{display:grid;grid-template-columns:1fr 1.25fr;gap:24px;min-height:230px}
+.catlist{display:flex;flex-direction:column;gap:2px;border-right:1px solid var(--line);padding-right:16px}
+.prev{background:var(--raised);border:1px solid var(--line);border-radius:var(--r-md);padding:18px;display:grid;grid-template-columns:150px 1fr;gap:18px;align-items:center}
+.prev .previmg{width:150px;height:150px;object-fit:contain;background:radial-gradient(closest-side,#ffffff12,transparent 72%);border-radius:10px}
+.prev .prevname{font-size:1.35rem;margin:0 0 6px}
+.prev .prevtext{color:var(--muted);font-size:.9rem;margin:0}
+
+/* Option C flavor wall */
+.wall{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.thumb{background:var(--raised);border:1px solid var(--line);border-radius:var(--r-md);padding:12px;display:flex;flex-direction:column;gap:6px;min-height:44px}
+.thumb img{width:100%;height:120px;object-fit:contain;background:radial-gradient(closest-side,#ffffff12,transparent 72%);border-radius:8px}
+.thumb .tn{font-weight:700;font-size:.9rem;color:var(--text)}
+.thumb small{color:var(--muted);font-size:.76rem}
+.thumb:hover,.thumb:focus-visible{border-color:var(--ember);transform:translateY(-2px)}
+.colsC{display:grid;grid-template-columns:repeat(4,1fr);gap:6px 22px}
+
+/* ---------- dummy page body ---------- */
+.dummy{max-width:var(--maxw);margin:0 auto;padding:26px 20px 44px;position:relative;z-index:1}
+.dhero{background:linear-gradient(120deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:var(--r-lg);padding:34px;display:grid;grid-template-columns:1.3fr .7fr;gap:24px;align-items:center;overflow:hidden;position:relative}
+.dhero::after{content:"불닭";position:absolute;right:-10px;bottom:-40px;font-family:var(--font-display);font-size:9rem;color:#ffffff08;pointer-events:none}
+.dhero h3{font-size:clamp(1.6rem,3.6vw,2.4rem);margin:0 0 10px}
+.dhero p{color:var(--muted);max-width:52ch}
+.dhero .hi{width:100%;height:170px;object-fit:contain;filter:drop-shadow(0 18px 26px #00000066)}
+.dgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px}
+.dcard{background:var(--panel2);border:1px solid var(--line);border-radius:var(--r-md);padding:16px}
+.dcard .k{font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ember);font-weight:700;margin:0 0 6px}
+.dcard h4{font-size:1.05rem;margin:0 0 6px}
+.dcard p{color:var(--muted);font-size:.86rem;margin:0}
+
+/* ---------- mobile drawer ---------- */
+.drawer{position:fixed;inset:0;z-index:200;background:var(--bg);display:none;flex-direction:column}
+.drawer[data-open="true"]{display:flex}
+.drawerbar{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line)}
+.drawerbar .brand{margin:0}
+.dclose{margin-left:auto;background:var(--raised);border:1px solid var(--line);color:var(--text);font-weight:700;border-radius:8px;padding:0 1em;min-height:44px}
+.dbody{overflow:auto;padding:8px 16px 40px}
+.dbody details{border-bottom:1px solid var(--line)}
+.dbody summary{font-family:var(--font-display);font-size:1.2rem;letter-spacing:.02em;text-transform:uppercase;padding:16px 6px;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;min-height:44px}
+.dbody summary::-webkit-details-marker{display:none}
+.dbody summary::after{content:"+";color:var(--ember);font-family:var(--font-ui);font-weight:700;font-size:1.3rem}
+.dbody details[open] summary::after{content:"–"}
+.dbody .plink{font-size:1rem}
+
+@media(max-width:900px){
+ .gridA,.gridB,.dhero{grid-template-columns:1fr}
+ .colsA,.wall,.colsC,.dgrid{grid-template-columns:repeat(2,1fr)}
+ .prev{grid-template-columns:1fr;text-align:center}
+ .prev .previmg{margin:0 auto}
+ .catlist{border-right:none;border-bottom:1px solid var(--line);padding-right:0;padding-bottom:12px}
+}
+@media(max-width:820px){
+ .mgroups{display:none}
+ .hamb{display:inline-flex}
+ .legend .keys{display:none}
+}
+@media(max-width:560px){
+ .colsA,.wall,.colsC,.dgrid{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){
+ html{scroll-behavior:auto}
+ .mpanel.open{animation:none}
+ .thumb:hover,.thumb:focus-visible{transform:none}
+ *{transition:none!important}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#optA">Skip to the first navigation option</a>
+<div class="obang" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+
+<header class="legend">
+ <div class="inner">
+  <span class="lead">FireFlow mega-nav — <b>three ways in</b></span>
+  <ol>
+   <li><b>A</b> Grid + featured product</li>
+   <li><b>B</b> Split list + live preview</li>
+   <li><b>C</b> Flavor wall</li>
+  </ol>
+  <span class="keys">Operate with the keyboard: <kbd>Tab</kbd> to a group, <kbd>Enter</kbd> or <kbd>Down</kbd> to open, arrow through, <kbd>Esc</kbd> to close.</span>
+ </div>
+</header>
+
+<main id="main"></main>
+
+<!-- shared mobile drawer -->
+<div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="FireFlow navigation" data-open="false">
+ <div class="obang" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+ <div class="drawerbar">
+  <span class="brand">FireFlow<span>Product Intelligence</span></span>
+  <button class="dclose" id="dclose">Close menu</button>
+ </div>
+ <div class="dbody" id="dbody"></div>
+</div>
+
+<script>
+/* ---------- data (FireFlow IA — five fixed groups) ---------- */
+var IMG='../public/products/';
+var GROUPS=[
+ {name:'Explore', han:'탐색', links:[
+   ['Product rankings','#rankings',0,'How every SKU ranks on demand, sentiment, and resolution load.'],
+   ['All products','#all-products',0,'The full portfolio across Buldak, Samyang, Tangle, and MEP.'],
+   ['Compare','#compare',0,'Put two SKUs side by side on heat, format, and case history.'],
+   ['Flavor & heat','#flavor-heat',0,'A calibrated scale from mild to the SKUs that draw the most questions.'],
+   ['Product dossier','#dossier',0,'One SKU on one page: specs, allergens, sentiment, open cases.']
+ ]},
+ {name:'Consumer Care', han:'소비자', links:[
+   ['Product help','#product-help',0,'Prep steps and common fixes for the questions consumers ask most.'],
+   ['Ingredients & allergens','#ingredients',0,'Full ingredient and allergen detail, sourced per SKU.'],
+   ['Report an issue','#report-issue',0,'A structured path for a consumer to flag a product problem.'],
+   ['Case status','#case-status',0,'Follow an open consumer case from intake to resolution.']
+ ]},
+ {name:'Vendor Support', han:'거래처', links:[
+   ['Product information','#vendor-info',0,'Spec sheets and case configurations for vendor teams.'],
+   ['Order support','#order-support',0,'Order and fulfillment questions, routed to the right lane.'],
+   ['Deductions & disputes','#disputes',0,'Deduction history and the evidence behind each dispute.'],
+   ['Marketing assets','#assets',1,'Approved imagery and copy for retail and vendor partners.']
+ ]},
+ {name:'CX Intelligence', han:'분석', links:[
+   ['Resolution simulator','#simulator',0,'Model how a case would resolve before committing to a path.'],
+   ['Command center','#command',1,'A live read on case volume across consumer and vendor lanes.'],
+   ['Product signals','#signals',1,'Early sentiment and issue signals, per SKU.'],
+   ['Methodology','#methodology',0,'How the scores, heat scale, and case handling were built.']
+ ]},
+ {name:'About', han:'소개', links:[
+   ['Case study','#case-study',1,'The full narrative behind FireFlow.'],
+   ['Sources','#sources',0,'Every data source, cited in the open.'],
+   ['Limitations','#limitations',0,'What this build does not claim to do.'],
+   ['About Nathan','#about-nathan',1,'The person behind the portfolio.']
+ ]}
+];
+
+/* featured product per group (Option A) */
+var FEAT={
+ 'Explore':['buldak-multi-carbonara.png','Buldak Carbonara','The portfolio’s most-recognized flavor. Trace it from ranking to dossier in one pass.',['Open dossier','#dossier']],
+ 'Consumer Care':['buldak-multi-2x-spicy.png','Buldak 2x Spicy','The heat behind most consumer questions. Allergen and prep answers sit one step away.',['Product help','#product-help']],
+ 'Vendor Support':['buldak-sauce-original.png','Buldak Original Sauce','A frequent line on vendor orders. Specs, cases, and dispute history in one view.',['Product information','#vendor-info']],
+ 'CX Intelligence':['buldak-potato-original.png','Buldak Potato','A newer format worth watching. The simulator shows how a resolution would play out.',['Resolution simulator','#simulator']],
+ 'About':['buldak-multi-carbonara.png','The FireFlow method','How the rankings, heat scale, and case handling were built, and where the data ends.',['Case study','#case-study']]
+};
+
+/* preview image per link (Option B) */
+var PREVIMG={
+ 'Product rankings':'buldak-multi-carbonara.png','All products':'buldak-multi-original.png','Compare':'buldak-multi-2x-spicy.png','Flavor & heat':'buldak-multi-habanero-lime.png','Product dossier':'buldak-multi-cheese.png',
+ 'Product help':'buldak-multi-2x-spicy.png','Ingredients & allergens':'buldak-sauce-original.png','Report an issue':'buldak-potato-original.png','Case status':'buldak-multi-rose.png',
+ 'Product information':'buldak-sauce-original.png','Order support':'buldak-multi-original.png','Deductions & disputes':'buldak-potato-original.png','Marketing assets':'buldak-multi-carbonara.png',
+ 'Resolution simulator':'buldak-multi-2x-spicy.png','Command center':'buldak-multi-carbonara.png','Product signals':'buldak-multi-habanero-lime.png','Methodology':'buldak-multi-cheese.png',
+ 'Case study':'buldak-multi-carbonara.png','Sources':'buldak-multi-original.png','Limitations':'buldak-potato-original.png','About Nathan':'buldak-sauce-original.png'
+};
+
+/* flavor wall thumbnails (Option C — Explore only) */
+var WALL=[
+ ['buldak-multi-carbonara.png','Buldak Carbonara','Creamy, medium heat'],
+ ['buldak-multi-original.png','Buldak Original','The signature'],
+ ['buldak-multi-2x-spicy.png','Buldak 2x Spicy','Extra hot'],
+ ['buldak-multi-cheese.png','Buldak Cheese','Rich, mild'],
+ ['buldak-multi-rose.png','Buldak Rosé','Rounded heat'],
+ ['buldak-multi-habanero-lime.png','Buldak Habanero Lime','Bright, sharp'],
+ ['buldak-sauce-original.png','Buldak Original Sauce','Pantry staple'],
+ ['buldak-potato-original.png','Buldak Potato','New format']
+];
+
+/* dummy body per option */
+var DUMMY={
+ A:['buldak-multi-carbonara.png','Read the portfolio the way the floor reads it','FireFlow puts consumer questions and vendor cases on one map. Open a group above; the panel drops over this page the way it would in the live app.'],
+ B:['buldak-multi-2x-spicy.png','One question, two lanes, one record','Consumer care and vendor support share a spine. Hover or focus a category in the split menu and the preview keeps pace.'],
+ C:['buldak-multi-cheese.png','Every flavor, one wall','Explore opens as a strip of the SKUs people actually ask about. The rest of the menu stays in tidy columns.']
+};
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function ffFallback(img){img.onerror=null;var n=img.getAttribute('alt')||'Product image';img.src='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220"><rect width="100%" height="100%" fill="#20161a"/><text x="50%" y="50%" fill="#b6a29b" font-family="sans-serif" font-size="13" text-anchor="middle">'+n+'</text></svg>')}
+window.ffFallback=ffFallback;
+
+function plannedTag(p){return p?'<span class="planned">Planned</span>':''}
+function imgTag(file,cls,alt){return '<img class="'+cls+'" loading="lazy" src="'+IMG+file+'" alt="'+esc(alt)+'" onerror="ffFallback(this)">'}
+
+/* ---- panel builders ---- */
+function panelA(g,i,v){
+ var f=FEAT[g.name];
+ var links=g.links.map(function(l){return '<a class="plink" href="'+l[1]+'">'+esc(l[0])+plannedTag(l[2])+'<small>'+esc(l[3])+'</small></a>'}).join('');
+ return '<div class="mpanel" id="'+v+'-'+i+'" role="region" aria-label="'+esc(g.name)+' menu">\
+<div class="inner gridA">\
+<div class="feat"><p class="kicker">Featured</p>'+imgTag(f[0],'fimg',f[1])+'<h3>'+esc(f[1])+'</h3><p class="blurb">'+esc(f[2])+'</p><a class="cta" href="'+f[3][1]+'">'+esc(f[3][0])+'</a></div>\
+<ul class="reset colsA">'+links.replace(/<a /g,'<li><a ').replace(/<\/a>/g,'</a></li>')+'</ul>\
+</div></div>';
+}
+function panelB(g,i,v){
+ var cats=g.links.map(function(l,ix){
+  return '<a class="plink cat" href="'+l[1]+'" data-img="'+PREVIMG[l[0]]+'" data-name="'+esc(l[0])+'" data-text="'+esc(l[3])+'"'+(ix===0?' data-first="1"':'')+'>'+esc(l[0])+plannedTag(l[2])+'</a>';
+ }).join('');
+ return '<div class="mpanel" id="'+v+'-'+i+'" role="region" aria-label="'+esc(g.name)+' menu">\
+<div class="inner gridB">\
+<div class="catlist">'+cats+'</div>\
+<div class="prev" aria-live="polite">'+imgTag(PREVIMG[g.links[0][0]],'previmg',g.links[0][0])+'<div><p class="kicker">Preview</p><h3 class="prevname">'+esc(g.links[0][0])+'</h3><p class="prevtext">'+esc(g.links[0][3])+'</p></div></div>\
+</div></div>';
+}
+function panelC(g,i,v){
+ var inner;
+ if(g.name==='Explore'){
+  var tiles=WALL.map(function(w){return '<a class="thumb" href="#dossier">'+imgTag(w[0],'',w[1])+'<span class="tn">'+esc(w[1])+'</span><small>'+esc(w[2])+'</small></a>'}).join('');
+  inner='<p class="kicker">The flavor wall</p><div class="wall">'+tiles+'</div>';
+ } else {
+  var links=g.links.map(function(l){return '<li><a class="plink" href="'+l[1]+'">'+esc(l[0])+plannedTag(l[2])+'<small>'+esc(l[3])+'</small></a></li>'}).join('');
+  inner='<ul class="reset colsC">'+links+'</ul>';
+ }
+ return '<div class="mpanel" id="'+v+'-'+i+'" role="region" aria-label="'+esc(g.name)+' menu"><div class="inner">'+inner+'</div></div>';
+}
+
+/* ---- nav + section builder ---- */
+function buildOption(v,title,desc,builder){
+ var triggers=GROUPS.map(function(g,i){
+  return '<button class="mgroup" role="button" aria-expanded="false" aria-haspopup="true" aria-controls="'+v+'-'+i+'" data-nav="'+i+'">'+esc(g.name)+'<span class="han" aria-hidden="true">'+g.han+'</span></button>';
+ }).join('');
+ var panels=GROUPS.map(function(g,i){return builder(g,i,v)}).join('');
+ var d=DUMMY[v];
+ var cards=GROUPS.slice(0,3).map(function(g){return '<div class="dcard"><p class="k">'+esc(g.name)+'</p><h4>'+esc(g.links[0][0])+'</h4><p>'+esc(g.links[0][3])+'</p></div>'}).join('');
+ return '<section class="opt" id="opt'+v+'">\
+<div class="opt-head"><span class="tag">Option '+v+'</span><h2>'+esc(title)+'</h2><p>'+esc(desc)+'</p></div>\
+<nav class="mnav" data-variant="'+v+'" aria-label="Option '+v+' primary navigation">\
+<div class="bar"><span class="brand">FireFlow<span>Product Intelligence</span></span>\
+<div class="mgroups">'+triggers+'</div>\
+<button class="hamb" aria-controls="drawer" aria-expanded="false" data-hamb>Menu</button>\
+<span class="corner" aria-hidden="true">Samyang America</span></div>'+panels+'</nav>\
+<div class="dummy"><div class="dhero"><div><p class="kicker">Live page</p><h3>'+esc(d[1])+'</h3><p>'+esc(d[2])+'</p></div>'+imgTag(d[0],'hi',d[1])+'</div><div class="dgrid">'+cards+'</div></div>\
+</section>';
+}
+
+document.getElementById('main').innerHTML=
+ buildOption('A','Grid with a featured product','A wide multi-column panel. Each group leads with one featured SKU — image, a short read, and a single call to action — beside its full link set.',panelA)+
+ buildOption('B','Split list with a live preview','Categories sit on the left; a preview pane on the right updates the moment you hover or focus a category, so a product image and one line of context arrive before the click.',panelB)+
+ buildOption('C','The flavor wall','Explore opens as a strip of real product thumbnails. The other four groups stay as calm, scannable link columns.',panelC);
+
+/* ---------- keyboard + interaction controller ---------- */
+function panelOf(btn){return document.getElementById(btn.getAttribute('aria-controls'))}
+function triggerOf(panel){return document.querySelector('[aria-controls="'+panel.id+'"]')}
+function items(panel){return Array.prototype.slice.call(panel.querySelectorAll('a,button')).filter(function(el){return el.offsetParent!==null})}
+
+function closeAll(except){
+ Array.prototype.forEach.call(document.querySelectorAll('.mgroup[aria-expanded="true"]'),function(b){
+  if(b===except)return;
+  b.setAttribute('aria-expanded','false');
+  var p=panelOf(b); if(p)p.classList.remove('open');
+ });
+}
+function openTrigger(btn){
+ closeAll(btn);
+ btn.setAttribute('aria-expanded','true');
+ var p=panelOf(btn); if(p)p.classList.add('open');
+ if(p&&p.parentNode.getAttribute('data-variant')==='B')syncPreview(p,p.querySelector('.cat[data-first]'));
+}
+function toggleTrigger(btn){
+ if(btn.getAttribute('aria-expanded')==='true'){btn.setAttribute('aria-expanded','false');var p=panelOf(btn);if(p)p.classList.remove('open');}
+ else openTrigger(btn);
+}
+
+/* Option B preview sync */
+function syncPreview(panel,cat){
+ if(!cat)return;
+ var img=panel.querySelector('.previmg');
+ img.onerror=function(){ffFallback(img)};
+ img.setAttribute('alt',cat.getAttribute('data-name'));
+ img.src=IMG+cat.getAttribute('data-img');
+ panel.querySelector('.prevname').textContent=cat.getAttribute('data-name');
+ panel.querySelector('.prevtext').textContent=cat.getAttribute('data-text');
+}
+
+Array.prototype.forEach.call(document.querySelectorAll('.mnav'),function(nav){
+ var triggers=Array.prototype.slice.call(nav.querySelectorAll('.mgroup'));
+ triggers.forEach(function(t,idx){
+  t.addEventListener('click',function(){toggleTrigger(t)});
+  t.addEventListener('keydown',function(e){
+   switch(e.key){
+    case 'ArrowDown': case 'Enter': case ' ':
+     e.preventDefault();openTrigger(t);var it=items(panelOf(t));if(it[0])it[0].focus();break;
+    case 'ArrowRight':
+     e.preventDefault();triggers[(idx+1)%triggers.length].focus();break;
+    case 'ArrowLeft':
+     e.preventDefault();triggers[(idx-1+triggers.length)%triggers.length].focus();break;
+    case 'Home': e.preventDefault();triggers[0].focus();break;
+    case 'End': e.preventDefault();triggers[triggers.length-1].focus();break;
+    case 'Escape': e.preventDefault();closeAll();break;
+   }
+  });
+ });
+ /* close this nav's panels when focus leaves the whole nav */
+ nav.addEventListener('focusout',function(){
+  setTimeout(function(){if(!nav.contains(document.activeElement))
+   Array.prototype.forEach.call(nav.querySelectorAll('.mgroup[aria-expanded="true"]'),function(b){b.setAttribute('aria-expanded','false');var p=panelOf(b);if(p)p.classList.remove('open')});
+  },0);
+ });
+});
+
+/* panel-level keys: roving arrows + Escape returns focus to trigger */
+Array.prototype.forEach.call(document.querySelectorAll('.mpanel'),function(p){
+ p.addEventListener('keydown',function(e){
+  var list=items(p),i=list.indexOf(document.activeElement);
+  if(e.key==='Escape'){e.preventDefault();var t=triggerOf(p);closeAll();if(t)t.focus();}
+  else if(e.key==='ArrowDown'||e.key==='ArrowRight'){e.preventDefault();(list[(i+1)%list.length]||list[0]).focus();}
+  else if(e.key==='ArrowUp'||e.key==='ArrowLeft'){e.preventDefault();(list[(i-1+list.length)%list.length]||list[0]).focus();}
+  else if(e.key==='Home'){e.preventDefault();list[0].focus();}
+  else if(e.key==='End'){e.preventDefault();list[list.length-1].focus();}
+ });
+});
+
+/* Option B live preview on hover + focus (no hover-only access) */
+Array.prototype.forEach.call(document.querySelectorAll('.mpanel .cat'),function(cat){
+ var p=cat.closest('.mpanel');
+ cat.addEventListener('focus',function(){syncPreview(p,cat)});
+ cat.addEventListener('mouseenter',function(){syncPreview(p,cat)});
+});
+
+/* click outside closes everything */
+document.addEventListener('click',function(e){
+ if(!e.target.closest('.mnav'))closeAll();
+});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAll()});
+
+/* ---------- mobile drawer ---------- */
+(function(){
+ var drawer=document.getElementById('drawer'),body=document.getElementById('dbody'),closeBtn=document.getElementById('dclose'),opener=null;
+ body.innerHTML=GROUPS.map(function(g){
+  var links=g.links.map(function(l){return '<a class="plink" href="'+l[1]+'">'+esc(l[0])+plannedTag(l[2])+'<small>'+esc(l[3])+'</small></a>'}).join('');
+  return '<details><summary>'+esc(g.name)+'</summary><div style="padding-bottom:12px">'+links+'</div></details>';
+ }).join('');
+ function open(btn){opener=btn;drawer.setAttribute('data-open','true');btn.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';closeBtn.focus();}
+ function close(){drawer.setAttribute('data-open','false');document.body.style.overflow='';if(opener){opener.setAttribute('aria-expanded','false');opener.focus();opener=null;}}
+ Array.prototype.forEach.call(document.querySelectorAll('[data-hamb]'),function(h){h.addEventListener('click',function(){open(h)})});
+ closeBtn.addEventListener('click',close);
+ drawer.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){e.preventDefault();close();return;}
+  if(e.key==='Tab'){ /* simple focus trap */
+   var f=items(drawer);if(!f.length)return;var first=f[0],last=f[f.length-1];
+   if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+   else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+  }
+ });
+})();
+</script>
+</body>
+</html>

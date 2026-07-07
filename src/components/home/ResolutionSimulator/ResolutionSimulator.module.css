@@ -1,0 +1,83 @@
+.section {
+  background:
+    radial-gradient(120% 90% at 100% 0%, var(--surface-2), transparent 55%),
+    var(--surface-0);
+  color: var(--text-1);
+  scroll-margin-top: 64px;
+}
+.inner { max-width: 1100px; margin: 0 auto; padding: var(--space-8) var(--space-4); }
+.eyebrow { text-transform: uppercase; letter-spacing: 0.14em; font-size: var(--step--1); color: var(--gold); margin: 0 0 var(--space-2); }
+.h2 { font-size: var(--step-4); color: var(--text-0); margin: 0 0 var(--space-2); }
+.lede { color: var(--text-1); max-width: 66ch; margin: 0 0 var(--space-5); }
+
+.pickerWrap { display: grid; gap: var(--space-3); margin-bottom: var(--space-5); }
+.pickerGroup { display: grid; gap: var(--space-2); }
+.pickerLabel { font-size: var(--step--1); text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-2); font-weight: 700; }
+.picker { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.pick {
+  font-size: var(--step--1); font-weight: 600; color: var(--text-1);
+  background: var(--surface-2); border: 1px solid var(--line-2); border-radius: 999px;
+  padding: 0.5em 0.9em; min-height: 38px; cursor: pointer;
+  transition: background var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out);
+}
+.pick:hover { background: var(--surface-3); }
+.pickOn { background: var(--surface-3); color: var(--text-0); border-color: var(--gold); }
+
+/* Console panel */
+.case {
+  background: var(--surface-1);
+  color: var(--text-1);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-l);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-2);
+}
+.caseHead { display: flex; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap; align-items: flex-start; }
+.caseTitle { font-family: var(--font-display); font-size: var(--step-3); margin: 0; color: var(--text-0); }
+.caseSub { font-size: var(--step--1); color: var(--text-2); margin: var(--space-1) 0 0; }
+.caseTags { display: inline-flex; gap: var(--space-2); align-items: center; flex-wrap: wrap; }
+
+/* Severity — icon (::before glyph) + word, never colour alone. */
+.severity { font-size: var(--step--1); font-weight: 700; padding: 0.25em 0.7em; border-radius: 999px; border: 1px solid; display: inline-flex; align-items: center; gap: 0.45em; }
+.severity::before { font-size: 0.85em; line-height: 1; }
+.severity[data-sev="standard"] { color: var(--info); border-color: var(--info); }
+.severity[data-sev="standard"]::before { content: "\25CB"; }
+.severity[data-sev="elevated"] { color: var(--warn); border-color: var(--warn); }
+.severity[data-sev="elevated"]::before { content: "\25C6"; }
+.severity[data-sev="priority"] { color: var(--ember); border-color: var(--ember); }
+.severity[data-sev="priority"]::before { content: "\25B2"; }
+.severity[data-sev="specialist"] { color: var(--text-0); background: var(--risk); border-color: var(--risk); }
+.severity[data-sev="specialist"]::before { content: "\26A0"; }
+
+.reported { margin: var(--space-4) 0; color: var(--text-1); }
+.reported strong { color: var(--text-0); }
+
+.timeline { list-style: none; display: flex; flex-wrap: wrap; padding: 0; margin: 0 0 var(--space-5); gap: 0; }
+.timeline li { flex: 1 1 auto; min-width: 96px; }
+.tBtn { display: grid; justify-items: center; gap: var(--space-2); width: 100%; background: none; border: none; cursor: pointer; padding: var(--space-2) var(--space-1); position: relative; }
+.tBtn::before { content: ""; position: absolute; top: 11px; left: 0; right: 50%; height: 2px; background: var(--line-2); }
+.tBtn::after { content: ""; position: absolute; top: 11px; left: 50%; right: 0; height: 2px; background: var(--line-2); }
+.timeline li:first-child .tBtn::before { display: none; }
+.timeline li:last-child .tBtn::after { display: none; }
+.tDot { width: 14px; height: 14px; border-radius: 50%; background: var(--surface-3); border: 2px solid var(--text-2); position: relative; z-index: 1; }
+.tLabel { font-size: var(--step--1); font-weight: 600; color: var(--text-2); text-align: center; }
+.tDone .tDot { background: var(--ok); border-color: var(--ok); }
+.tDone .tBtn::before, .tDone .tBtn::after { background: var(--ok); }
+.tCurrent .tDot { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-600); }
+.tCurrent .tLabel { color: var(--text-0); font-weight: 800; }
+
+.stageDetail { background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-m); padding: var(--space-4); margin-bottom: var(--space-5); }
+.stageDetail h4 { margin: 0 0 var(--space-2); font-family: var(--font-display); font-size: var(--step-2); color: var(--text-0); }
+.stageDetail p { margin: 0 0 var(--space-3); color: var(--text-1); }
+.stageNav { display: flex; gap: var(--space-2); }
+
+.attrs { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: var(--space-4); }
+.attr { background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-m); padding: var(--space-4); }
+.attr h5 { margin: 0 0 var(--space-2); font-size: var(--step--1); text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-2); }
+.attr ul { margin: 0; padding-left: 1.1em; color: var(--text-1); font-size: var(--step--1); display: grid; gap: 4px; }
+.attr p { margin: 0 0 var(--space-1); color: var(--text-1); font-size: var(--step--1); }
+.attr strong { color: var(--text-0); }
+
+.note { margin-top: var(--space-5); font-size: var(--step--1); color: var(--text-2); font-style: italic; }
+
+@media (prefers-reduced-motion: reduce) { .pick { transition: none; } }

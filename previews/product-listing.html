@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FireFlow — Product Listing Explorations (A / B / C)</title>
+<style>
+/* Heavy display type with robust system fallback so it stays strong offline */
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;600;700;800;900&family=Black+Han+Sans&display=swap');
+
+:root{
+  --bg:#0f0b0d; --panel:#171013; --panel2:#20161a; --raised:#2a1c21;
+  --red:#e8331c; --red-700:#c0210f; --ember:#ff6a2b; --gold:#f5b301;
+  --jade:#12b886; --cobalt:#2f6bff; --text:#f7efe6; --muted:#b6a29b;
+  --line:#ffffff16;
+  --display:"Anton","Archivo","Arial Narrow",sans-serif;
+  --han:"Black Han Sans","Anton",sans-serif;
+  --body:"Archivo",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --maxw:1180px;
+  --focus:0 0 0 3px var(--gold), 0 0 0 6px #0f0b0d;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:var(--body); line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  /* subtle gochugaru-grain noise over the whole surface */
+  background-image:
+    radial-gradient(1200px 600px at 82% -10%, #2a1216 0%, transparent 60%),
+    radial-gradient(900px 500px at -10% 20%, #1a0f12 0%, transparent 55%);
+}
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+main,header,footer{position:relative; z-index:1}
+
+a{color:inherit}
+img{display:block; max-width:100%}
+button{font-family:inherit}
+
+/* Universal visible focus */
+:focus-visible{outline:none; box-shadow:var(--focus); border-radius:6px}
+
+.wrap{max-width:var(--maxw); margin:0 auto; padding:0 clamp(16px,4vw,40px)}
+
+/* ---------- Sticky legend ---------- */
+.legend{
+  position:sticky; top:0; z-index:40;
+  background:linear-gradient(180deg,#120c0eF2,#120c0eE8);
+  backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);
+}
+.legend .wrap{display:flex; gap:16px; align-items:center; justify-content:space-between;
+  padding-top:12px; padding-bottom:12px; flex-wrap:wrap}
+.legend .brandmark{display:flex; align-items:center; gap:12px; min-width:0}
+.spark{width:34px;height:34px;flex:0 0 auto;border-radius:9px;
+  background:radial-gradient(circle at 50% 30%,var(--ember),var(--red) 55%,var(--red-700));
+  display:grid;place-items:center;font-family:var(--han);font-size:15px;color:#fff;
+  box-shadow:0 6px 20px #e8331c55}
+.legend h1{font-family:var(--display); font-weight:400; letter-spacing:.02em;
+  font-size:clamp(15px,2.4vw,20px); margin:0; text-transform:uppercase; line-height:1}
+.legend p{margin:2px 0 0; color:var(--muted); font-size:12.5px}
+.legend nav{display:flex; gap:8px; flex-wrap:wrap}
+.legend nav a{
+  font-size:12px; text-decoration:none; color:var(--text);
+  border:1px solid var(--line); background:var(--raised);
+  padding:8px 12px; border-radius:999px; white-space:nowrap;
+  min-height:36px; display:inline-flex; align-items:center;
+}
+.legend nav a b{color:var(--gold); font-weight:800; margin-right:5px}
+.legend nav a:hover{border-color:#ffffff33}
+
+/* ---------- Shared bits ---------- */
+.maeun{ /* 매운맛 chip */
+  display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:700;
+  letter-spacing:.03em; padding:5px 9px; border-radius:999px; color:#ffe9df;
+  background:linear-gradient(180deg,#e8331c33,#c0210f22);
+  border:1px solid #e8331c55; white-space:nowrap;
+}
+.maeun::before{content:"매운맛"; font-family:var(--body); font-weight:800}
+.brandtag{font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--muted); font-weight:700}
+
+/* Heat = pips + WORD, never color/hover alone */
+.heat{display:flex; align-items:center; gap:10px}
+.pips{display:inline-flex; gap:4px}
+.pip{width:9px; height:16px; border-radius:2px; background:#ffffff1f; transform:skewX(-10deg)}
+.pip.on{background:linear-gradient(180deg,var(--gold),var(--ember) 55%,var(--red))}
+.pip.max{background:linear-gradient(180deg,#fff2, var(--red) 40%, var(--red-700))}
+.heat .word{font-size:12.5px; font-weight:700; letter-spacing:.02em}
+.heat .word.w5{color:#ff7a52} .heat .word.w4{color:var(--ember)}
+.heat .word.w3{color:var(--gold)} .heat .word.w2{color:#ffd27a} .heat .word.w1{color:var(--jade)}
+
+.actions{display:flex; gap:8px; flex-wrap:wrap}
+.btn{
+  --bd:var(--line); --bgc:var(--raised);
+  min-height:44px; padding:0 16px; display:inline-flex; align-items:center; gap:8px;
+  border-radius:10px; border:1px solid var(--bd); background:var(--bgc); color:var(--text);
+  font-size:13.5px; font-weight:700; cursor:pointer; letter-spacing:.01em;
+  transition:transform .16s ease, background .16s ease, border-color .16s ease;
+}
+.btn:hover{transform:translateY(-1px); border-color:#ffffff33}
+.btn:active{transform:translateY(0)}
+.btn.primary{--bgc:linear-gradient(180deg,var(--red),var(--red-700)); --bd:#ff5a3f66; color:#fff;
+  box-shadow:0 8px 22px #e8331c33}
+.btn.primary:hover{--bgc:linear-gradient(180deg,#ff4227,var(--red-700))}
+.btn.ghost[aria-pressed="true"]{background:var(--jade); color:#062017; border-color:#12b886}
+.btn.ghost[aria-pressed="true"] .lbl::after{content:" ✓"}
+
+/* Section headers */
+.section{padding:clamp(40px,7vw,84px) 0 clamp(24px,4vw,44px)}
+.section-head{display:flex; align-items:flex-end; justify-content:space-between; gap:24px; flex-wrap:wrap; margin-bottom:clamp(20px,3vw,36px)}
+.opt-eyebrow{display:flex; align-items:center; gap:12px; margin-bottom:10px}
+.opt-badge{font-family:var(--han); font-size:13px; color:#0f0b0d; background:var(--gold);
+  width:30px; height:30px; border-radius:8px; display:grid; place-items:center}
+.opt-eyebrow span{font-size:11px; letter-spacing:.28em; text-transform:uppercase; color:var(--muted); font-weight:800}
+.section h2{font-family:var(--display); font-weight:400; text-transform:uppercase; line-height:.94;
+  font-size:clamp(30px,6vw,62px); margin:0; letter-spacing:.005em}
+.section h2 em{font-style:normal; color:var(--red); font-family:var(--han)}
+.section-head p{max-width:46ch; color:var(--muted); margin:0; font-size:14.5px}
+
+.obangsaek{display:inline-flex; gap:6px; align-items:center}
+.obangsaek i{width:9px;height:9px;border-radius:50%}
+.dot-red{background:var(--red)} .dot-gold{background:var(--gold)}
+.dot-jade{background:var(--jade)} .dot-cobalt{background:var(--cobalt)} .dot-ink{background:#e9dfd6}
+
+/* ============================================================
+   OPTION A — Editorial magazine grid
+   ============================================================ */
+.grid-A{display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(14px,1.8vw,26px)}
+.grid-A .card{grid-column:span 1}
+.grid-A .card.feature{grid-column:span 2; grid-row:span 2}
+@media(max-width:900px){ .grid-A{grid-template-columns:repeat(2,1fr)} .grid-A .card.feature{grid-column:span 2} }
+@media(max-width:560px){ .grid-A{grid-template-columns:1fr} .grid-A .card.feature{grid-column:span 1} }
+
+.cardA{
+  position:relative; background:linear-gradient(180deg,var(--panel2),var(--panel));
+  border:1px solid var(--line); border-radius:18px; overflow:hidden; height:100%;
+  transform-style:preserve-3d; transition:transform .18s ease, border-color .3s ease;
+  will-change:transform;
+}
+.cardA:hover{border-color:#ffffff2a}
+.cardA .glare{position:absolute; inset:0; pointer-events:none; z-index:3; opacity:0;
+  background:radial-gradient(300px circle at var(--mx,50%) var(--my,0%), #ffffff26, transparent 45%);
+  transition:opacity .3s ease}
+.cardA:hover .glare{opacity:1}
+.cardA .frame{position:relative; aspect-ratio:4/3; overflow:hidden;
+  background:radial-gradient(120% 90% at 50% 8%, #2a171b, #140d10);
+  display:grid; place-items:center; padding:14px}
+.card.feature .cardA .frame{aspect-ratio:1/1}
+.cardA .frame img{max-height:100%; width:auto; object-fit:contain; transform:translateZ(30px) scale(1);
+  transition:transform .35s cubic-bezier(.2,.7,.2,1); filter:drop-shadow(0 20px 30px #0009)}
+.cardA:hover .frame img{transform:translateZ(45px) scale(1.06) translateY(-4px)}
+.cardA .rank{position:absolute; top:12px; left:12px; z-index:4; font-family:var(--display);
+  font-size:13px; color:var(--muted); letter-spacing:.1em}
+.cardA .maeun{position:absolute; top:12px; right:12px; z-index:4}
+.cardA .body{padding:16px 18px 18px; position:relative; z-index:4}
+.cardA .brandtag{margin-bottom:6px}
+.cardA h3{font-family:var(--display); font-weight:400; text-transform:uppercase;
+  font-size:clamp(19px,2.6vw,30px); line-height:.98; margin:0 0 10px; letter-spacing:.01em}
+.card.feature .cardA h3{font-size:clamp(30px,4.4vw,50px)}
+.cardA .note{color:var(--muted); font-size:13px; margin:0 0 14px; max-width:40ch}
+.card:not(.feature) .cardA .note{display:none}
+.cardA .meta{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; flex-wrap:wrap}
+.cardA .formats{font-size:12px; color:var(--muted)}
+.cardA .formats b{color:var(--text)}
+
+/* ============================================================
+   OPTION B — Flame-tier ranked list
+   ============================================================ */
+.tierlist{border:1px solid var(--line); border-radius:18px; overflow:hidden; background:var(--panel)}
+.tier{border-bottom:1px solid var(--line)}
+.tier:last-child{border-bottom:0}
+.tier-head{
+  width:100%; display:grid; grid-template-columns:56px 84px 1fr auto; gap:18px; align-items:center;
+  padding:16px 20px; background:transparent; border:0; color:var(--text); cursor:pointer; text-align:left;
+  min-height:88px; transition:background .2s ease;
+}
+.tier-head:hover{background:#ffffff08}
+.tier[data-open="true"] .tier-head{background:#ffffff0a}
+.tier .idx{font-family:var(--display); font-size:clamp(26px,4vw,40px); color:#ffffff26; line-height:1; text-align:center}
+.tier[data-open="true"] .idx{color:var(--red)}
+.tier .thumb{width:84px; height:64px; border-radius:10px; background:radial-gradient(120% 100% at 50% 10%,#2a171b,#140d10);
+  display:grid; place-items:center; padding:6px; overflow:hidden}
+.tier .thumb img{max-height:100%; width:auto; object-fit:contain; filter:drop-shadow(0 8px 10px #0008)}
+.tier .who{min-width:0}
+.tier .who .brandtag{display:block; margin-bottom:3px}
+.tier .who h3{font-family:var(--display); font-weight:400; text-transform:uppercase; margin:0;
+  font-size:clamp(18px,2.4vw,26px); line-height:1; letter-spacing:.01em}
+.tier .who .sub{color:var(--muted); font-size:12px; margin-top:6px; display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+/* animated heat meter */
+.meter{width:clamp(90px,14vw,180px)}
+.meter .label{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.14em; margin-bottom:6px; display:flex; justify-content:space-between; gap:8px}
+.meter .label b{color:var(--text)}
+.meter .track{height:9px; border-radius:999px; background:#ffffff14; overflow:hidden; position:relative}
+.meter .fill{height:100%; width:0; border-radius:999px;
+  background:linear-gradient(90deg,var(--jade),var(--gold) 40%,var(--ember) 70%,var(--red));
+  transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.tier .chev{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;transition:transform .3s ease, background .2s}
+.tier[data-open="true"] .chev{transform:rotate(180deg); background:var(--raised)}
+.tier .chev svg{width:14px;height:14px}
+/* slide-reveal detail row */
+.detail{display:grid; grid-template-rows:0fr; transition:grid-template-rows .35s ease}
+.tier[data-open="true"] .detail{grid-template-rows:1fr}
+.detail .inner{overflow:hidden}
+.detail .pad{padding:4px 20px 22px 78px; display:flex; gap:26px; align-items:flex-start; flex-wrap:wrap}
+.detail .note{color:var(--muted); font-size:13.5px; max-width:52ch; margin:0}
+.detail .stats{display:flex; gap:22px; flex-wrap:wrap}
+.detail .stat b{display:block; font-family:var(--display); font-size:20px; color:var(--text); line-height:1}
+.detail .stat span{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.1em}
+.detail .actions{margin-top:2px}
+@media(max-width:720px){
+  .tier-head{grid-template-columns:40px 64px 1fr; gap:12px}
+  .tier .meter{display:none}
+  .tier .who .sub .meter-inline{display:flex}
+  .detail .pad{padding-left:20px}
+}
+
+/* ============================================================
+   OPTION C — Immersive showcase (cursor-follow glow)
+   ============================================================ */
+.showcase{background:
+   radial-gradient(1000px 500px at 50% -10%, #1a0e12, transparent 60%);
+   border-radius:22px; padding:clamp(18px,3vw,34px); border:1px solid var(--line)}
+.grid-C{display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(12px,1.4vw,18px)}
+@media(max-width:1000px){ .grid-C{grid-template-columns:repeat(2,1fr)} }
+@media(max-width:520px){ .grid-C{grid-template-columns:1fr} }
+
+.cardC{
+  position:relative; border-radius:16px; padding:1px; background:#0c080a; overflow:hidden;
+  min-height:280px; transition:transform .2s ease}
+.cardC:hover{transform:translateY(-3px)}
+/* mask-composite glowing border that follows the cursor */
+.cardC::before{
+  content:""; position:absolute; inset:0; border-radius:16px; padding:1.4px;
+  background:radial-gradient(220px circle at var(--mx,50%) var(--my,50%),
+    var(--accent,#ff6a2b), transparent 60%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor; mask-composite:exclude;
+  opacity:.0; transition:opacity .3s ease; z-index:5; pointer-events:none}
+.cardC:hover::before, .cardC:focus-within::before{opacity:1}
+.cardC .surface{position:relative; height:100%; border-radius:15px; background:linear-gradient(180deg,#181013,#100a0c);
+  padding:16px; display:flex; flex-direction:column; overflow:hidden}
+/* cursor-follow inner glow */
+.cardC .glow{position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(240px circle at var(--mx,50%) var(--my,50%), var(--accent,#ff6a2b)22, transparent 55%);
+  opacity:0; transition:opacity .3s ease}
+.cardC:hover .glow, .cardC:focus-within .glow{opacity:1}
+.cardC .topline{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; position:relative; z-index:2}
+.cardC .accentdot{width:9px;height:9px;border-radius:50%; background:var(--accent,#ff6a2b); box-shadow:0 0 12px var(--accent,#ff6a2b)}
+.cardC .frame{position:relative; z-index:2; aspect-ratio:1/1; display:grid; place-items:center; margin:2px 0 12px}
+.cardC .frame img{max-height:100%; width:auto; object-fit:contain; filter:drop-shadow(0 16px 22px #000a);
+  transition:transform .35s cubic-bezier(.2,.7,.2,1)}
+.cardC:hover .frame img, .cardC:focus-within .frame img{transform:scale(1.07) translateY(-4px)}
+.cardC h3{font-family:var(--display); font-weight:400; text-transform:uppercase; font-size:clamp(16px,2vw,21px);
+  margin:0 0 8px; line-height:1; position:relative; z-index:2; letter-spacing:.01em}
+.cardC .cmeta{position:relative; z-index:2; margin-top:auto}
+.cardC .cmeta .row{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:12px; flex-wrap:wrap}
+.cardC .formats{font-size:11.5px; color:var(--muted)}
+.cardC .actions .btn{flex:1; justify-content:center; padding:0 10px; font-size:12.5px}
+
+/* ---------- Compare tray (shared) ---------- */
+.tray{
+  position:fixed; left:50%; transform:translate(-50%,140%); bottom:18px; z-index:50;
+  width:min(920px, calc(100vw - 24px));
+  background:linear-gradient(180deg,#20161a,#160f12); border:1px solid #ffffff26;
+  border-radius:16px; box-shadow:0 24px 60px #000a; padding:12px 14px;
+  display:flex; align-items:center; gap:14px; transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.tray.show{transform:translate(-50%,0)}
+.tray .lead{font-family:var(--display); text-transform:uppercase; font-size:14px; letter-spacing:.04em; white-space:nowrap}
+.tray .lead b{color:var(--gold)}
+.tray .slots{display:flex; gap:8px; flex:1; overflow-x:auto; padding:2px}
+.tray .slot{display:inline-flex; align-items:center; gap:8px; background:var(--raised); border:1px solid var(--line);
+  border-radius:999px; padding:5px 6px 5px 10px; font-size:12.5px; white-space:nowrap; min-height:36px}
+.tray .slot img{width:24px;height:24px;object-fit:contain}
+.tray .slot button{width:24px;height:24px;min-height:24px;border-radius:50%;border:0;background:#ffffff14;color:var(--text);cursor:pointer;line-height:1}
+.tray .slot button:hover{background:var(--red)}
+.tray .empty{color:var(--muted); font-size:12.5px}
+.tray .clear{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:10px;min-height:40px;padding:0 14px;cursor:pointer;font-weight:700;font-size:12.5px;white-space:nowrap}
+.tray .clear:hover{color:var(--text);border-color:#ffffff33}
+
+/* Toast for View action (this is a static preview, no routing) */
+.toast{position:fixed; bottom:90px; left:50%; transform:translate(-50%,20px); opacity:0;
+  background:#241318; border:1px solid #ffffff22; color:var(--text); padding:11px 16px; border-radius:12px;
+  font-size:13px; z-index:60; transition:opacity .25s, transform .25s; pointer-events:none; max-width:90vw}
+.toast.show{opacity:1; transform:translate(-50%,0)}
+
+/* fallback text if a photo fails */
+.imgfallback{font-family:var(--display); text-transform:uppercase; color:var(--muted);
+  font-size:13px; letter-spacing:.06em; text-align:center; padding:14px; line-height:1.2}
+
+/* Staggered reveal */
+.reveal{opacity:0; transform:translateY(18px)}
+.reveal.in{opacity:1; transform:none; transition:opacity .6s ease, transform .6s cubic-bezier(.2,.7,.2,1)}
+
+footer{border-top:1px solid var(--line); margin-top:60px; padding:34px 0 120px; color:var(--muted); font-size:13px}
+footer .wrap{display:flex; gap:16px; justify-content:space-between; flex-wrap:wrap}
+
+/* ---------- prefers-reduced-motion: collapse motion ---------- */
+@media (prefers-reduced-motion: reduce){
+  *{scroll-behavior:auto !important}
+  .reveal{opacity:1 !important; transform:none !important; transition:none !important}
+  .cardA, .cardA .frame img, .cardC, .cardC .frame img, .btn, .tier .chev,
+  .cardA .glare, .cardC .glow, .cardC::before, .tray, .toast{transition:none !important}
+  .meter .fill{transition:none !important}
+  .cardA:hover .frame img, .cardC:hover .frame img{transform:none !important}
+  .detail{transition:none !important}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= STICKY LEGEND ================= -->
+<header class="legend">
+  <div class="wrap">
+    <div class="brandmark">
+      <div class="spark" aria-hidden="true">火</div>
+      <div>
+        <h1>FireFlow — Product Listing Explorations</h1>
+        <p>Three ways to display the Buldak line. Same 8 products, same data — pick the layout. Everything below is clickable & keyboard-operable.</p>
+      </div>
+    </div>
+    <nav aria-label="Jump to exploration">
+      <a href="#option-a"><b>A</b> Editorial grid</a>
+      <a href="#option-b"><b>B</b> Flame-tier list</a>
+      <a href="#option-c"><b>C</b> Immersive showcase</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ================= OPTION A ================= -->
+  <section class="section" id="option-a" aria-labelledby="a-title">
+    <div class="section-head">
+      <div>
+        <div class="opt-eyebrow"><span class="opt-badge" aria-hidden="true">A</span><span>Option A · Editorial magazine grid</span></div>
+        <h2 id="a-title">The <em>Buldak</em> shelf, styled</h2>
+      </div>
+      <p>Big photography on dark, generous air, a hero tile for the flagship. Hover lifts the pack with a moving glare and a whisper of 3D tilt — decoration only; every fact stays in text.</p>
+    </div>
+    <div class="grid-A" id="gridA"></div>
+  </section>
+
+  <!-- ================= OPTION B ================= -->
+  <section class="section" id="option-b" aria-labelledby="b-title">
+    <div class="section-head">
+      <div>
+        <div class="opt-eyebrow"><span class="opt-badge" aria-hidden="true">B</span><span>Option B · Flame-tier ranked list</span></div>
+        <h2 id="b-title">Ranked by <em>heat</em></h2>
+      </div>
+      <p>A scan-friendly ladder from mildest to hottest. Each row carries an animated heat meter; open one to slide out prep notes and formats without leaving the list.</p>
+    </div>
+    <div class="tierlist" id="tierlist" role="list"></div>
+  </section>
+
+  <!-- ================= OPTION C ================= -->
+  <section class="section" id="option-c" aria-labelledby="c-title">
+    <div class="section-head">
+      <div>
+        <div class="opt-eyebrow"><span class="opt-badge" aria-hidden="true">C</span><span>Option C · Immersive showcase</span></div>
+        <h2 id="c-title">Near-black <em>gallery</em></h2>
+      </div>
+      <p>Dense, tactile cards on near-black. A glowing border and inner light track the cursor; each card carries one obangsaek accent so the grid keeps a five-color rhythm. Built for quick side-by-side compare.</p>
+    </div>
+    <div class="showcase">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap">
+        <span class="obangsaek" aria-hidden="true"><i class="dot-cobalt"></i><i class="dot-ink"></i><i class="dot-red"></i><i class="dot-jade"></i><i class="dot-gold"></i></span>
+        <span style="font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);font-weight:800">Obangsaek — the Korean five-color system</span>
+      </div>
+      <div class="grid-C" id="gridC"></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Shared compare tray -->
+<div class="tray" id="tray" role="region" aria-label="Compare tray">
+  <div class="lead">Compare <b id="trayCount">0</b>/4</div>
+  <div class="slots" id="traySlots"><span class="empty">Add products from any option to line them up.</span></div>
+  <button class="clear" id="trayClear" type="button">Clear</button>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<footer>
+  <div class="wrap">
+    <span>FireFlow Product Intelligence — design exploration. Product photography © Samyang. Static preview; “View product” and “Compare” are stubbed for review.</span>
+    <span class="obangsaek" aria-hidden="true"><i class="dot-red"></i><i class="dot-gold"></i><i class="dot-jade"></i><i class="dot-cobalt"></i><i class="dot-ink"></i></span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- Shared data (8 real products, full heat range) ----
+  var IMG = '../public/products/';
+  var PRODUCTS = [
+    {id:'2x',       name:'2X Spicy',        brand:'Buldak', img:'buldak-multi-2x-spicy.png',        heat:5, word:'Extreme',  formats:3, accent:'#e8331c',
+      note:'Double the gochugaru of the Original — the line’s benchmark for extreme heat. Guide first-timers away from this one.'},
+    {id:'original', name:'Original',         brand:'Buldak', img:'buldak-multi-original.png',         heat:4, word:'Very hot', formats:4, accent:'#ff6a2b',
+      note:'The roasted-chicken flavor that started the category. Straight, honest heat with no dairy to soften it.'},
+    {id:'habanero', name:'Habanero Lime',    brand:'Buldak', img:'buldak-multi-habanero-lime.png',    heat:3, word:'Hot',      formats:2, accent:'#12b886',
+      note:'Bright citrus and habanero over the base sauce — hot, but the lime keeps it lively rather than punishing.'},
+    {id:'yakisoba', name:'Yakisoba',         brand:'Buldak', img:'buldak-multi-yakisoba.png',         heat:3, word:'Hot',      formats:1, accent:'#f5b301',
+      note:'A stir-fried, sauce-forward take with a savory-sweet edge. Sits a notch below Original on the tongue.'},
+    {id:'rose',     name:'Rosé',             brand:'Buldak', img:'buldak-multi-rose.png',             heat:2, word:'Moderate', formats:2, accent:'#2f6bff',
+      note:'Tomato-cream “rosé” sauce rounds the spice into something crowd-friendly. A reliable first step up.'},
+    {id:'carbonara',name:'Carbonara',        brand:'Buldak', img:'buldak-multi-carbonara.png',        heat:2, word:'Moderate', formats:4, accent:'#f5b301',
+      note:'The best-selling gateway: a creamy carbonara coat tames the heat to an easy, everyday level.'},
+    {id:'quattro',  name:'Quattro Cheese',   brand:'Buldak', img:'buldak-multi-quattro-cheese.png',   heat:2, word:'Moderate', formats:2, accent:'#f5b301',
+      note:'Four cheeses layered over the sauce for a richer, mellower bowl. Popular with cheese-forward eaters.'},
+    {id:'cream',    name:'Cream Carbonara',  brand:'Buldak', img:'buldak-multi-cream-carbonara.png',  heat:1, word:'Mild',     formats:2, accent:'#12b886',
+      note:'The softest landing in the range — extra cream, a gentle warmth. Where nervous newcomers should begin.'}
+  ];
+
+  var esc = function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
+
+  // Heat pips + word (accessible label; never color/hover alone)
+  function heatHTML(p){
+    var pips='';
+    for(var i=1;i<=5;i++){ pips += '<span class="pip '+(i<=p.heat?(p.heat===5?'on max':'on'):'')+'"></span>'; }
+    return '<span class="heat"><span class="pips" aria-hidden="true">'+pips+'</span>'+
+      '<span class="word w'+p.heat+'">'+esc(p.word)+'</span>'+
+      '<span class="sr" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Heat level '+p.heat+' of 5, '+esc(p.word)+'</span></span>';
+  }
+  function imgHTML(p, cls){
+    return '<img class="'+(cls||'')+'" loading="lazy" decoding="async" width="600" height="600" '+
+      'src="'+IMG+esc(p.img)+'" alt="'+esc(p.brand)+' '+esc(p.name)+' multipack" '+
+      'onerror="this.style.display=\'none\';this.insertAdjacentHTML(\'afterend\',\'<span class=\\\'imgfallback\\\'>'+esc(p.brand)+'<br>'+esc(p.name)+'</span>\');this.onerror=null;">';
+  }
+  function fmt(p){ return '<b>'+p.formats+'</b> '+(p.formats===1?'format':'formats'); }
+
+  // ---------- OPTION A: editorial grid ----------
+  (function buildA(){
+    var el = document.getElementById('gridA');
+    PRODUCTS.forEach(function(p,i){
+      var feature = i===0; // flagship hero tile
+      var card = document.createElement('article');
+      card.className = 'card reveal'+(feature?' feature':'');
+      card.innerHTML =
+        '<div class="cardA" tabindex="-1">'+
+          '<span class="glare" aria-hidden="true"></span>'+
+          '<span class="rank" aria-hidden="true">'+String(i+1).padStart(2,'0')+'</span>'+
+          '<span class="maeun" aria-hidden="true"></span>'+
+          '<div class="frame">'+imgHTML(p)+'</div>'+
+          '<div class="body">'+
+            '<div class="brandtag">'+esc(p.brand)+'</div>'+
+            '<h3>'+esc(p.name)+'</h3>'+
+            '<p class="note">'+esc(p.note)+'</p>'+
+            '<div class="meta">'+heatHTML(p)+'<span class="formats">'+fmt(p)+'</span></div>'+
+            '<div class="actions">'+
+              '<button class="btn primary" type="button" data-view="'+p.id+'">View product</button>'+
+              '<button class="btn ghost" type="button" data-compare="'+p.id+'" aria-pressed="false"><span class="lbl">Add to compare</span></button>'+
+            '</div>'+
+          '</div>'+
+        '</div>';
+      el.appendChild(card);
+      if(!REDUCED) attachTilt(card.querySelector('.cardA'));
+    });
+  })();
+
+  // Pointer 3D tilt + moving glare (transform/opacity only)
+  function attachTilt(node){
+    var raf=null, tx=0, ty=0;
+    node.addEventListener('pointermove', function(e){
+      if(e.pointerType==='touch') return;
+      var r=node.getBoundingClientRect();
+      var px=(e.clientX-r.left)/r.width, py=(e.clientY-r.top)/r.height;
+      tx=(py-0.5)*-6; ty=(px-0.5)*8;
+      node.style.setProperty('--mx',(px*100)+'%');
+      node.style.setProperty('--my',(py*100)+'%');
+      if(!raf) raf=requestAnimationFrame(apply);
+    });
+    function apply(){ raf=null; node.style.transform='perspective(900px) rotateX('+tx+'deg) rotateY('+ty+'deg)'; }
+    node.addEventListener('pointerleave', function(){ node.style.transform=''; });
+  }
+
+  // ---------- OPTION B: flame-tier ranked list ----------
+  (function buildB(){
+    var el = document.getElementById('tierlist');
+    // ranked mildest -> hottest
+    var ranked = PRODUCTS.slice().sort(function(a,b){return a.heat-b.heat;});
+    ranked.forEach(function(p,i){
+      var row = document.createElement('div');
+      row.className='tier reveal'; row.setAttribute('role','listitem'); row.dataset.open='false';
+      var pid='b-panel-'+p.id;
+      row.innerHTML =
+        '<button class="tier-head" type="button" aria-expanded="false" aria-controls="'+pid+'">'+
+          '<span class="idx" aria-hidden="true">'+(i+1)+'</span>'+
+          '<span class="thumb" aria-hidden="true">'+imgHTML(p)+'</span>'+
+          '<span class="who">'+
+            '<span class="brandtag">'+esc(p.brand)+'</span>'+
+            '<h3>'+esc(p.name)+'</h3>'+
+            '<span class="sub">'+heatHTML(p)+'<span aria-hidden="true">·</span><span class="formats">'+fmt(p)+' available</span></span>'+
+          '</span>'+
+          '<span class="meter" aria-hidden="true">'+
+            '<span class="label">Heat <b>'+esc(p.word)+'</b></span>'+
+            '<span class="track"><span class="fill" data-heat="'+p.heat+'"></span></span>'+
+          '</span>'+
+          '<span class="chev" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span>'+
+        '</button>'+
+        '<div class="detail"><div class="inner"><div class="pad" id="'+pid+'">'+
+          '<p class="note">'+esc(p.note)+'</p>'+
+          '<div class="stats">'+
+            '<span class="stat"><b>'+p.heat+'/5</b><span>'+esc(p.word)+'</span></span>'+
+            '<span class="stat"><b>'+p.formats+'</b><span>Formats</span></span>'+
+            '<span class="maeun" aria-hidden="true" style="align-self:center"></span>'+
+          '</div>'+
+          '<div class="actions">'+
+            '<button class="btn primary" type="button" data-view="'+p.id+'">View product</button>'+
+            '<button class="btn ghost" type="button" data-compare="'+p.id+'" aria-pressed="false"><span class="lbl">Add to compare</span></button>'+
+          '</div>'+
+        '</div></div></div>';
+      el.appendChild(row);
+
+      var head=row.querySelector('.tier-head');
+      head.addEventListener('click', function(e){
+        // ignore clicks that originate on the action buttons inside detail (they aren't in head anyway)
+        var open = row.dataset.open==='true';
+        row.dataset.open = open?'false':'true';
+        head.setAttribute('aria-expanded', open?'false':'true');
+      });
+    });
+
+    // Animate meters when scrolled into view
+    var fills = el.querySelectorAll('.fill');
+    function setFill(f){ f.style.width=(f.dataset.heat/5*100)+'%'; }
+    if(REDUCED || !('IntersectionObserver' in window)){ fills.forEach(setFill); }
+    else{
+      var mo=new IntersectionObserver(function(es){es.forEach(function(x){ if(x.isIntersecting){ setFill(x.target); mo.unobserve(x.target);} });},{threshold:.4});
+      fills.forEach(function(f){mo.observe(f);});
+    }
+  })();
+
+  // ---------- OPTION C: immersive showcase ----------
+  (function buildC(){
+    var el = document.getElementById('gridC');
+    PRODUCTS.forEach(function(p){
+      var card=document.createElement('article');
+      card.className='cardC reveal'; card.style.setProperty('--accent', p.accent);
+      card.innerHTML =
+        '<div class="surface">'+
+          '<span class="glow" aria-hidden="true"></span>'+
+          '<div class="topline">'+
+            '<span class="brandtag">'+esc(p.brand)+'</span>'+
+            '<span class="accentdot" aria-hidden="true"></span>'+
+          '</div>'+
+          '<div class="frame">'+imgHTML(p)+'</div>'+
+          '<h3>'+esc(p.name)+'</h3>'+
+          '<div class="cmeta">'+
+            '<div class="row">'+heatHTML(p)+'<span class="maeun" aria-hidden="true"></span></div>'+
+            '<div class="row"><span class="formats">'+fmt(p)+'</span></div>'+
+            '<div class="actions">'+
+              '<button class="btn primary" type="button" data-view="'+p.id+'">View</button>'+
+              '<button class="btn ghost" type="button" data-compare="'+p.id+'" aria-pressed="false"><span class="lbl">Compare</span></button>'+
+            '</div>'+
+          '</div>'+
+        '</div>';
+      el.appendChild(card);
+      if(!REDUCED){
+        card.addEventListener('pointermove', function(e){
+          var r=card.getBoundingClientRect();
+          card.style.setProperty('--mx',((e.clientX-r.left)/r.width*100)+'%');
+          card.style.setProperty('--my',((e.clientY-r.top)/r.height*100)+'%');
+        });
+      }
+    });
+  })();
+
+  // ---------- Compare tray (shared across A/B/C) ----------
+  var compare=[]; var MAX=4;
+  var tray=document.getElementById('tray'), slots=document.getElementById('traySlots'),
+      countEl=document.getElementById('trayCount'), clearBtn=document.getElementById('trayClear');
+  function byId(id){ for(var i=0;i<PRODUCTS.length;i++) if(PRODUCTS[i].id===id) return PRODUCTS[i]; }
+  function syncButtons(){
+    document.querySelectorAll('[data-compare]').forEach(function(b){
+      var on=compare.indexOf(b.getAttribute('data-compare'))>-1;
+      b.setAttribute('aria-pressed', on?'true':'false');
+      var lbl=b.querySelector('.lbl');
+      if(lbl) lbl.textContent = on ? (b.textContent.indexOf('Compare')>-1?'Added':'Added to compare')
+                                   : (b.closest('.cardC')?'Compare':'Add to compare');
+    });
+  }
+  function renderTray(){
+    countEl.textContent=compare.length;
+    if(!compare.length){ slots.innerHTML='<span class="empty">Add products from any option to line them up.</span>'; tray.classList.remove('show'); syncButtons(); return; }
+    slots.innerHTML='';
+    compare.forEach(function(id){
+      var p=byId(id); var s=document.createElement('span'); s.className='slot';
+      s.innerHTML='<img loading="lazy" src="'+IMG+p.img+'" alt="" onerror="this.style.display=\'none\'">'+esc(p.name)+
+        ' <button type="button" aria-label="Remove '+esc(p.name)+' from compare" data-remove="'+id+'">×</button>';
+      slots.appendChild(s);
+    });
+    tray.classList.add('show'); syncButtons();
+  }
+  function toggleCompare(id, btn){
+    var i=compare.indexOf(id);
+    if(i>-1){ compare.splice(i,1); }
+    else{ if(compare.length>=MAX){ showToast('Compare holds up to '+MAX+' products. Remove one first.'); return; } compare.push(id); }
+    renderTray();
+  }
+  clearBtn.addEventListener('click', function(){ compare=[]; renderTray(); });
+
+  // ---------- Toast for stubbed "View product" ----------
+  var toast=document.getElementById('toast'), toastT;
+  function showToast(msg){
+    toast.textContent=msg; toast.classList.add('show');
+    clearTimeout(toastT); toastT=setTimeout(function(){toast.classList.remove('show');},2600);
+  }
+
+  // Global click delegation for view/compare/remove
+  document.addEventListener('click', function(e){
+    var v=e.target.closest('[data-view]');
+    if(v){ var p=byId(v.getAttribute('data-view')); showToast('“'+p.name+'” — product page opens here in the live app.'); return; }
+    var c=e.target.closest('[data-compare]');
+    if(c){ toggleCompare(c.getAttribute('data-compare'), c); return; }
+    var r=e.target.closest('[data-remove]');
+    if(r){ var idx=compare.indexOf(r.getAttribute('data-remove')); if(idx>-1){compare.splice(idx,1); renderTray();} }
+  });
+
+  // ---------- Staggered reveal ----------
+  var revs=document.querySelectorAll('.reveal');
+  if(REDUCED || !('IntersectionObserver' in window)){ revs.forEach(function(n){n.classList.add('in');}); }
+  else{
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(x){ if(x.isIntersecting){ var n=x.target;
+        var sib=Array.prototype.indexOf.call(n.parentNode.children,n);
+        n.style.transitionDelay=Math.min(sib*60,360)+'ms'; n.classList.add('in'); io.unobserve(n);
+      }});
+    },{threshold:.15, rootMargin:'0px 0px -8% 0px'});
+    revs.forEach(function(n){io.observe(n);});
+  }
+})();
+</script>
+</body>
+</html>

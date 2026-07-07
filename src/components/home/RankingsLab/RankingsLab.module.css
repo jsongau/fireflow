@@ -1,0 +1,65 @@
+.section { background: var(--surface-0); scroll-margin-top: 64px; }
+.inner { max-width: 1080px; margin: 0 auto; padding: var(--space-8) var(--space-4); }
+.eyebrow { text-transform: uppercase; letter-spacing: 0.14em; font-size: var(--step--1); color: var(--accent); font-weight: 700; margin: 0 0 var(--space-2); }
+.h2 { font-family: var(--font-display); font-size: var(--step-4); color: var(--text-0); margin: 0 0 var(--space-2); }
+.lede { color: var(--text-1); max-width: 64ch; margin: 0 0 var(--space-5); }
+
+.tabsWrap { overflow-x: auto; margin-bottom: var(--space-4); }
+.tabs { display: inline-flex; gap: 4px; padding: 4px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px; }
+.tab {
+  font-family: var(--font-ui); font-weight: 600; font-size: var(--step--1);
+  border: none; background: transparent; color: var(--text-1);
+  border-radius: 999px; padding: 0.5em 0.9em; min-height: 40px; cursor: pointer; white-space: nowrap;
+}
+.tab:hover { background: var(--surface-3); color: var(--text-0); }
+.tabOn { background: var(--accent); color: #fff; }
+
+.viewHead { margin-bottom: var(--space-4); }
+.viewMeta { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; margin-bottom: var(--space-2); }
+.reviewed { font-size: var(--step--1); color: var(--text-2); }
+.purpose { font-size: var(--step-1); color: var(--text-1); margin: 0 0 var(--space-1); }
+.caveat { font-size: var(--step--1); color: var(--accent); background: var(--chili-050); border-radius: var(--radius-s); padding: var(--space-2) var(--space-3); margin: var(--space-2) 0 0; max-width: 70ch; }
+.count { font-size: var(--step--1); color: var(--text-2); margin: var(--space-2) 0 0; }
+
+.list { list-style: none; padding: 0; margin: var(--space-4) 0 0; display: grid; gap: var(--space-2); }
+.row {
+  display: grid;
+  grid-template-columns: 28px 8px 44px minmax(140px, 1.4fr) minmax(80px, 2fr) 40px auto auto;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--surface-1);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-s);
+  padding: var(--space-2) var(--space-3);
+}
+.rank { font-weight: 700; color: var(--text-2); text-align: center; }
+.accent { width: 8px; height: 24px; border-radius: 4px; }
+.thumb {
+  width: 44px; height: 44px; border-radius: var(--radius-s);
+  background: var(--surface-2); border: 1px solid var(--line);
+  overflow: hidden; display: grid; place-items: center;
+}
+.thumbImg { width: 100%; height: 100%; object-fit: contain; padding: 2px; }
+.rowName { text-align: left; background: none; border: none; font-weight: 700; color: var(--text-0); cursor: pointer; font-size: var(--step-0); }
+.rowName:hover { color: var(--accent); }
+.missing { color: var(--warn); font-weight: 700; margin-left: 3px; text-decoration: none; cursor: help; }
+.barWrap { background: var(--surface-3); border-radius: 999px; height: 10px; overflow: hidden; }
+.bar { display: block; height: 100%; background: linear-gradient(90deg, var(--ember), var(--accent)); border-radius: 999px; }
+.score { font-weight: 700; color: var(--text-0); font-variant-numeric: tabular-nums; text-align: right; }
+.rowConf { justify-self: start; }
+.rowActions { display: inline-flex; gap: var(--space-2); align-items: center; }
+.open { font-size: var(--step--1); font-weight: 600; color: var(--accent); text-decoration: none; }
+.add {
+  font-size: var(--step--1); font-weight: 600; background: none;
+  border: 1px solid var(--line-2); border-radius: 999px; padding: 0.3em 0.7em; min-height: 32px; cursor: pointer; color: var(--text-1);
+}
+.add:disabled { color: var(--text-2); cursor: default; }
+
+.method { margin-top: var(--space-5); background: var(--surface-1); border: 1px solid var(--line-2); border-radius: var(--radius-s); padding: var(--space-3) var(--space-4); color: var(--text-1); }
+.method summary { cursor: pointer; font-weight: 600; color: var(--text-0); }
+.methodNote { font-size: var(--step--1); color: var(--text-2); }
+
+@media (max-width: 720px) {
+  .row { grid-template-columns: 24px 6px 40px 1fr auto; row-gap: var(--space-1); }
+  .barWrap, .rowConf { display: none; }
+}

@@ -1,0 +1,64 @@
+.group {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--surface-2);
+  border-radius: 999px;
+  border: 1px solid var(--line-2);
+}
+
+.opt {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  border: none;
+  background: transparent;
+  color: var(--text-1);
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out);
+}
+
+.md .opt {
+  font-size: var(--step--1);
+  padding: 0.5em 1em;
+  min-height: 40px;
+}
+.sm .opt {
+  font-size: var(--step--1);
+  padding: 0.35em 0.8em;
+  min-height: 34px;
+}
+
+.opt:hover {
+  background: #ffffff12;
+  color: var(--text-0);
+}
+
+.selected {
+  background: var(--gold);
+  color: #1a1204;
+}
+.selected:hover {
+  background: var(--gold);
+  color: #1a1204;
+}
+
+/* On explicitly-tagged darker panels, lean on the accent pill instead. */
+:global([data-surface="dark"]) .group {
+  background: var(--surface-3);
+  border-color: var(--line-2);
+}
+:global([data-surface="dark"]) .opt {
+  color: var(--text-1);
+}
+:global([data-surface="dark"]) .selected {
+  background: var(--accent);
+  color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .opt {
+    transition: none;
+  }
+}

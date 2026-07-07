@@ -1,0 +1,192 @@
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-nav);
+  background: color-mix(in srgb, var(--surface-0) 94%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.bar {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  text-decoration: none;
+  flex: none;
+}
+.brandMark {
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  color: var(--text-0);
+}
+.brandTag {
+  font-size: var(--step--1);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.menubar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-left: auto;
+}
+.groupBtn {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: var(--step-0);
+  color: var(--text-1);
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  padding: 0.5em 0.9em;
+  min-height: 40px;
+  cursor: pointer;
+  transition: color var(--dur-1) var(--ease-out), background var(--dur-1) var(--ease-out);
+}
+.groupBtn:hover { color: var(--text-0); background: var(--surface-2); }
+.groupBtnOn {
+  color: var(--text-0);
+  background: var(--surface-2);
+  border-color: var(--line-2);
+}
+
+.drawerToggle {
+  display: none;
+  margin-left: auto;
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: var(--step--1);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-0);
+  background: var(--surface-2);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-s);
+  padding: 0.55em 1em;
+  min-height: 40px;
+  cursor: pointer;
+}
+
+/* --- Desktop split panel --- */
+.panel {
+  border-top: 1px solid var(--line);
+  background: var(--surface-1);
+  box-shadow: var(--shadow-2);
+  animation: panelIn var(--dur-2) var(--ease-out);
+}
+@keyframes panelIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.panelInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-4);
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: var(--space-6);
+}
+.catList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-1);
+  align-content: start;
+}
+.catLink {
+  display: block;
+  font-weight: 600;
+  color: var(--text-1);
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  padding: 0.6em 0.8em;
+  transition: color var(--dur-1) var(--ease-out), background var(--dur-1) var(--ease-out);
+}
+.catLink:hover,
+.catLink:focus-visible {
+  color: var(--text-0);
+  background: var(--surface-2);
+  border-color: var(--line-2);
+}
+
+.previewPane {
+  border-left: 1px solid var(--line);
+  padding-left: var(--space-6);
+  display: grid;
+  align-content: start;
+  gap: var(--space-2);
+  min-height: 120px;
+}
+.previewImg {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  border-radius: var(--radius-m);
+  background: var(--surface-3);
+  border: 1px solid var(--line);
+  padding: var(--space-2);
+}
+.previewTitle {
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  color: var(--text-0);
+  margin: 0;
+}
+.previewBlurb {
+  color: var(--text-1);
+  margin: 0;
+  max-width: 44ch;
+}
+
+/* --- Mobile drawer --- */
+.drawer {
+  border-top: 1px solid var(--line);
+  background: var(--surface-1);
+  padding: var(--space-4);
+  display: grid;
+  gap: var(--space-5);
+  max-height: 80vh;
+  overflow-y: auto;
+}
+.drawerGroup { display: grid; gap: var(--space-2); }
+.drawerLabel {
+  font-size: var(--step--1);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  margin: 0;
+}
+.drawerList { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-1); }
+.drawerLink {
+  display: grid;
+  gap: 2px;
+  text-decoration: none;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-s);
+  padding: var(--space-3);
+  background: var(--surface-2);
+}
+.drawerLinkLabel { font-weight: 700; color: var(--text-0); }
+.drawerLinkBlurb { font-size: var(--step--1); color: var(--text-2); }
+
+@media (max-width: 860px) {
+  .menubar { display: none; }
+  .drawerToggle { display: inline-block; }
+  .bar { gap: var(--space-3); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel { animation: none; }
+}

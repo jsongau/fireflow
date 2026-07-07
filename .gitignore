@@ -1,0 +1,18 @@
+node_modules
+dist
+dist-ssr
+*.local
+.DS_Store
+.vite
+
+# Env & logs
+.env
+.env.*
+*.log
+
+# Source research material — not part of the app build
+*.zip
+"SAMYANG AMERICA_files.zip"
+research/
+CoverCapy_Writing_Style_Anti_AI_Rules.md
+"samyang job.pdf"

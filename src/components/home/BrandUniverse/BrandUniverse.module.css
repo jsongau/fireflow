@@ -1,0 +1,189 @@
+.section {
+  background: var(--surface-0);
+  border-top: 1px solid var(--line);
+  scroll-margin-top: 72px;
+}
+.inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-4);
+}
+
+.head { max-width: 60ch; margin-bottom: var(--space-6); }
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: var(--step--1);
+  color: var(--gold);
+  margin: 0 0 var(--space-2);
+}
+.h2 { font-size: var(--step-5); color: var(--text-0); margin: 0 0 var(--space-2); }
+.lede { color: var(--text-1); font-size: var(--step-1); margin: 0; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-auto-rows: minmax(0, auto);
+  gap: var(--space-4);
+}
+
+.panel {
+  position: relative;
+  border: 1px solid var(--line-2);
+  border-top: 3px solid var(--brand-accent, var(--accent));
+  border-radius: var(--radius-l);
+  background: var(--surface-1);
+  padding: var(--space-5);
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+}
+
+.brandName {
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  color: var(--brand-accent, var(--text-0));
+}
+
+.positioning { color: var(--text-1); margin: 0; }
+.count { color: var(--text-1); margin: 0; }
+.count strong { color: var(--text-0); font-size: var(--step-1); }
+
+.angles {
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+.angles div {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: var(--space-3);
+  align-items: baseline;
+}
+.angles dt {
+  font-size: var(--step--1);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-2);
+}
+.angles dd { margin: 0; color: var(--text-1); font-size: var(--step--1); }
+
+.explore {
+  justify-self: start;
+  font-weight: 700;
+  color: var(--text-0);
+  background: var(--surface-3);
+  border: 1px solid var(--brand-accent, var(--line-2));
+  border-radius: var(--radius-s);
+  padding: 0.6em 1.1em;
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  margin-top: var(--space-1);
+}
+.explore:hover { background: var(--brand-accent, var(--surface-3)); color: var(--surface-0); }
+
+/* --- Buldak: wide feature panel with flagship photo --- */
+.buldak {
+  grid-column: 1 / -1;
+  grid-template-columns: 1.4fr 0.8fr;
+  align-items: center;
+  gap: var(--space-6);
+}
+.panelBody { display: grid; gap: var(--space-3); align-content: start; }
+.stat { display: flex; align-items: baseline; gap: var(--space-3); }
+.statNum {
+  font-family: var(--font-display);
+  font-size: var(--step-6);
+  color: var(--brand-accent);
+  line-height: 1;
+}
+.statLabel { color: var(--text-2); font-size: var(--step--1); max-width: 22ch; }
+
+.flagship {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  align-content: center;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  padding: var(--space-5);
+}
+.flagshipImg { width: 100%; max-width: 220px; height: auto; object-fit: contain; }
+.flagshipMark {
+  width: 120px;
+  height: 120px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-m);
+  background: var(--surface-3);
+  font-family: var(--font-display);
+  font-size: var(--step-5);
+  color: var(--brand-accent, var(--text-0));
+}
+.flagshipMeta { display: grid; justify-items: center; text-align: center; }
+.flagshipLabel {
+  font-size: var(--step--1);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-2);
+}
+.flagshipName { font-weight: 700; color: var(--text-0); }
+
+/* --- Samyang: heritage editorial --- */
+.samyang { background: linear-gradient(160deg, var(--surface-2), var(--surface-1) 70%); }
+.heritageTag {
+  justify-self: start;
+  font-size: var(--step--1);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--brand-accent);
+  border: 1px solid var(--brand-accent);
+  border-radius: 999px;
+  padding: 0.2em 0.7em;
+}
+.heritageQuote {
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  color: var(--text-0);
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* --- Tangle: protein stat --- */
+.proteinBadge {
+  justify-self: start;
+  font-size: var(--step--1);
+  font-weight: 700;
+  color: var(--surface-0);
+  background: var(--brand-accent);
+  border-radius: 999px;
+  padding: 0.25em 0.8em;
+}
+.flavorList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.flavorList li {
+  font-size: var(--step--1);
+  color: var(--text-1);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.25em 0.7em;
+}
+
+/* --- MEP: compact soup panel (base .panel styling; accent via --brand-accent) --- */
+
+@media (max-width: 860px) {
+  .grid { grid-template-columns: 1fr; }
+  .buldak { grid-template-columns: 1fr; }
+  .h2 { font-size: var(--step-4); }
+}

@@ -1,0 +1,54 @@
+.section { background: var(--surface-0); color: var(--text-1); scroll-margin-top: 64px; }
+.inner { max-width: 1100px; margin: 0 auto; padding: var(--space-8) var(--space-4); }
+.eyebrow { text-transform: uppercase; letter-spacing: 0.14em; font-size: var(--step--1); color: var(--accent); margin: 0 0 var(--space-2); }
+.h2 { font-size: var(--step-4); color: var(--text-0); margin: 0 0 var(--space-2); }
+.lede { color: var(--text-2); max-width: 66ch; margin: 0 0 var(--space-5); }
+.prompt { color: var(--text-2); border: 1px dashed var(--line-2); border-radius: var(--radius-m); padding: var(--space-6); text-align: center; background: var(--surface-1); }
+
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-5); align-items: start; }
+
+.path { border: 1px solid var(--line); border-radius: var(--radius-l); background: var(--surface-1); padding: var(--space-5); box-shadow: var(--shadow-1); scroll-margin-top: 72px; }
+.pathOn { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-600), var(--shadow-1); }
+.pathHead { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.pathHead h3 { font-family: var(--font-display); font-size: var(--step-2); margin: 0; color: var(--text-0); }
+.youAre { font-size: var(--step--1); font-weight: 700; color: var(--text-0); background: var(--accent-600); border-radius: 999px; padding: 0.2em 0.7em; }
+.context { font-size: var(--step--1); color: var(--text-1); background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-s); padding: var(--space-2) var(--space-3); }
+.context strong { color: var(--text-0); }
+
+.issues { border: none; margin: var(--space-3) 0 0; padding: 0; display: grid; gap: var(--space-2); }
+.legend { font-size: var(--step--1); font-weight: 700; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.06em; padding: 0; }
+.issue { display: flex; gap: var(--space-2); align-items: center; font-size: var(--step-0); color: var(--text-1); padding: 0.5em 0.7em; border: 1px solid var(--line); border-radius: var(--radius-s); cursor: pointer; }
+.issue input { accent-color: var(--accent); }
+.issue:hover { background: var(--surface-2); }
+.issueOn { border-color: var(--accent); background: var(--surface-2); color: var(--text-0); font-weight: 600; }
+
+.detail { margin-top: var(--space-4); border-top: 1px solid var(--line); padding-top: var(--space-4); display: grid; gap: var(--space-3); }
+.detailTop { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+
+/* Severity — icon (::before glyph) + word, never colour alone. */
+.severity { font-size: var(--step--1); font-weight: 700; padding: 0.25em 0.7em; border-radius: 999px; border: 1px solid; display: inline-flex; align-items: center; gap: 0.45em; }
+.severity::before { font-size: 0.85em; line-height: 1; }
+.severity[data-sev="standard"] { color: var(--info); border-color: var(--info); }
+.severity[data-sev="standard"]::before { content: "\25CB"; } /* ○ */
+.severity[data-sev="elevated"] { color: var(--warn); border-color: var(--warn); }
+.severity[data-sev="elevated"]::before { content: "\25C6"; } /* ◆ */
+.severity[data-sev="priority"] { color: var(--ember); border-color: var(--ember); }
+.severity[data-sev="priority"]::before { content: "\25B2"; } /* ▲ */
+.severity[data-sev="specialist"] { color: var(--text-0); background: var(--risk); border-color: var(--risk); }
+.severity[data-sev="specialist"]::before { content: "\26A0"; } /* ⚠ */
+.route { font-size: var(--step--1); color: var(--text-2); }
+
+.escalation { font-size: var(--step--1); color: var(--text-1); background: var(--surface-2); border: 1px solid var(--info); border-radius: var(--radius-s); padding: var(--space-3); margin: 0; }
+
+.steps { display: flex; flex-wrap: wrap; gap: var(--space-2); list-style: none; padding: 0; margin: 0; counter-reset: step; }
+.steps li { font-size: var(--step--1); font-weight: 600; color: var(--text-1); background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px; padding: 0.3em 0.7em; counter-increment: step; }
+.steps li::before { content: counter(step) ". "; color: var(--accent); font-weight: 800; }
+
+.evidence { font-size: var(--step--1); }
+.evLabel { font-weight: 700; color: var(--text-1); }
+.evidence ul { margin: var(--space-1) 0 0; padding-left: 1.1em; color: var(--text-2); display: grid; gap: 2px; }
+.detail a { text-decoration: none; }
+
+@media (max-width: 820px) {
+  .grid { grid-template-columns: 1fr; }
+}

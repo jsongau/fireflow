@@ -1,0 +1,89 @@
+.stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+}
+.hero { width: 100%; aspect-ratio: 1 / 1; max-width: 360px; }
+.rail { width: 96px; aspect-ratio: 3 / 4; }
+.thumb { width: 100%; aspect-ratio: 1 / 1; }
+
+.ground {
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, #ffffff1f, #ffffff00 72%);
+  z-index: -1;
+}
+
+.package {
+  --accent: var(--accent);
+  position: relative;
+  width: 62%;
+  height: 84%;
+  border-radius: var(--radius-m);
+  background: linear-gradient(160deg, var(--surface-3), var(--surface-1));
+  border: 1px solid var(--line-2);
+  box-shadow: var(--shadow-2);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 4px;
+  padding: 12% 10% 10%;
+  overflow: hidden;
+}
+.package::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 34%;
+  background: var(--accent);
+  opacity: 0.92;
+}
+.brandStrip {
+  position: relative;
+  align-self: flex-start;
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  margin-bottom: auto;
+}
+.name {
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.05;
+  color: var(--text-0);
+  font-size: 1.02rem;
+}
+.format {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+/* Real photo layered over the placeholder. If it fails to load, JS hides it
+   and the placeholder package shows through. */
+.photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 2;
+  filter: drop-shadow(0 12px 28px #00000070);
+}
+
+/* Archetype silhouettes — subtle shape cues (compound selectors) */
+.package.bottle,
+.package.stick { width: 44%; }
+.package.bag { width: 72%; border-radius: var(--radius-l) var(--radius-l) var(--radius-s) var(--radius-s); }
+.package.bowl { border-radius: var(--radius-l); }
+.package.cup { width: 52%; }
+.package.frozen-box { border-radius: var(--radius-s); }
+
+.rail .package { width: 78%; height: 92%; padding: 16% 10% 8%; }
+.rail .name { font-size: 0.72rem; }
+.rail .brandStrip { font-size: 0.56rem; }
+.rail .format { display: none; }

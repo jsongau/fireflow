@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FireFlow Product Intelligence. Comparison UI exploration (A / B / C)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Anton&family=Black+Han+Sans&family=Archivo:wght@500;600;700;800&display=swap');
+
+  :root{
+    --bg:#0f0b0d; --panel:#171013; --panel2:#20161a; --raised:#2a1c21;
+    --red:#e8331c; --red-700:#c0210f; --ember:#ff6a2b; --gold:#f5b301;
+    --jade:#12b886; --cobalt:#2f6bff; --text:#f7efe6; --muted:#b6a29b; --line:#ffffff16;
+    --ui:'Archivo', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    --display:'Anton', 'Archivo', system-ui, sans-serif;
+    --korean:'Black Han Sans', 'Anton', system-ui, sans-serif;
+    --radius:14px;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} }
+
+  body{
+    margin:0; background:
+      radial-gradient(1200px 600px at 80% -10%, #2a0f0a 0%, transparent 55%),
+      radial-gradient(900px 500px at -10% 10%, #1a1220 0%, transparent 50%),
+      var(--bg);
+    color:var(--text); font-family:var(--ui); font-size:16px; line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  a{color:var(--ember)}
+  :focus-visible{ outline:3px solid var(--gold); outline-offset:2px; border-radius:6px; }
+
+  .wrap{max-width:1120px; margin:0 auto; padding:0 20px}
+
+  /* ---------- Sticky legend ---------- */
+  .legend{
+    position:sticky; top:0; z-index:40;
+    background:linear-gradient(180deg, #120c0e 0%, #120c0ef2 100%);
+    border-bottom:1px solid var(--line);
+    backdrop-filter:saturate(1.2) blur(6px);
+  }
+  .legend__top{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; padding:12px 0 10px; }
+  .maeun{
+    font-family:var(--korean); font-size:20px; letter-spacing:.5px;
+    color:#fff; background:linear-gradient(180deg,var(--red),var(--red-700));
+    padding:6px 12px; border-radius:10px; line-height:1;
+    box-shadow:0 6px 18px #e8331c40, inset 0 1px 0 #ffffff33;
+  }
+  .brandline{ display:flex; flex-direction:column; margin-right:auto; }
+  .brandline b{ font-family:var(--display); font-weight:400; font-size:22px; letter-spacing:.6px; text-transform:uppercase; }
+  .brandline span{ color:var(--muted); font-size:12.5px }
+  .obang{ display:inline-flex; gap:5px; align-items:center }
+  .obang i{ width:11px; height:11px; border-radius:50%; display:block; box-shadow:inset 0 0 0 1px #00000040 }
+
+  .jump{ display:flex; gap:8px; flex-wrap:wrap; padding-bottom:10px }
+  .jump a{
+    display:inline-flex; align-items:center; min-height:38px; padding:6px 14px;
+    text-decoration:none; color:var(--text); font-weight:700; font-size:13.5px;
+    background:var(--raised); border:1px solid var(--line); border-radius:999px;
+  }
+  .jump a:hover{ border-color:var(--ember) }
+
+  .keys{ display:flex; gap:8px; flex-wrap:wrap; padding:0 0 12px; border-top:1px dashed var(--line); margin-top:2px; padding-top:10px }
+  .chip{
+    display:inline-flex; align-items:center; gap:7px; font-size:12px; font-weight:600;
+    padding:5px 10px; border-radius:999px; background:#00000030; border:1px solid var(--line); color:var(--muted);
+  }
+  .chip .dot{ width:9px; height:9px; border-radius:50% }
+  .chip.official{ color:var(--jade); border-color:#12b88655 } .chip.official .dot{ background:var(--jade) }
+  .chip.editorial{ color:var(--gold); border-color:#f5b30155 } .chip.editorial .dot{ background:var(--gold) }
+  .chip.verify{ color:var(--cobalt); border-color:#2f6bff55 } .chip.verify .dot{ background:var(--cobalt) }
+  .chip.heatnote{ color:var(--muted) }
+
+  /* ---------- Section shells ---------- */
+  section.opt{ padding:40px 0 8px; scroll-margin-top:150px }
+  .opt__head{ display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:6px }
+  .opt__tag{ font-family:var(--display); font-weight:400; font-size:14px; letter-spacing:2px; color:var(--ember); text-transform:uppercase }
+  .opt__title{ font-family:var(--display); font-weight:400; font-size:clamp(28px,4vw,44px); letter-spacing:.5px; text-transform:uppercase; margin:0; line-height:.98 }
+  .opt__desc{ color:var(--muted); max-width:70ch; margin:6px 0 18px; font-size:14.5px }
+
+  /* ---------- Controls ---------- */
+  .controls{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; align-items:center }
+  .toggle{
+    display:inline-flex; align-items:center; gap:9px; min-height:44px; padding:8px 14px;
+    background:var(--panel2); border:1px solid var(--line); border-radius:12px;
+    font-weight:600; font-size:14px; cursor:pointer; user-select:none;
+  }
+  .toggle:hover{ border-color:var(--ember) }
+  .toggle input{ width:18px; height:18px; accent-color:var(--red) }
+  select.swap{
+    min-height:44px; font-family:var(--ui); font-weight:700; font-size:14px; color:var(--text);
+    background:var(--raised); border:1px solid var(--line); border-radius:12px; padding:8px 12px; cursor:pointer;
+  }
+  select.swap:hover{ border-color:var(--ember) }
+  .lbl{ font-size:12px; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.6px }
+
+  /* ---------- Product thumbnail ---------- */
+  .thumb{ position:relative; display:inline-flex; align-items:center; justify-content:center; overflow:hidden; border-radius:12px;
+    background:radial-gradient(120% 120% at 50% 0%, #34222a 0%, #180f13 70%); border:1px solid var(--line) }
+  .thumb img{ width:100%; height:100%; object-fit:contain; display:block }
+  .thumb__fb{ display:none; position:absolute; inset:0; align-items:center; justify-content:center; text-align:center;
+    font-family:var(--display); text-transform:uppercase; letter-spacing:.5px; color:var(--muted); font-size:13px; padding:8px }
+  .thumb--fail .thumb__fb{ display:flex }
+  .thumb--sm{ width:64px; height:64px }
+  .thumb--md{ width:84px; height:84px }
+  .thumb--lg{ width:150px; height:150px }
+
+  .heatpill{ display:inline-flex; align-items:center; gap:6px; font-weight:800; font-size:12px; letter-spacing:.4px;
+    padding:4px 10px; border-radius:999px; background:#00000040; border:1px solid var(--line) }
+  .heatpill .flame{ filter:saturate(1.3) }
+
+  /* ---------- Flags (icon + word, never colour alone) ---------- */
+  .flag{ display:inline-flex; align-items:center; gap:6px; font-weight:800; font-size:11.5px; letter-spacing:.4px;
+    text-transform:uppercase; padding:3px 9px; border-radius:999px; border:1px solid var(--line) }
+  .flag .g{ font-size:12px; line-height:1 }
+  .flag--diff{ color:var(--ember); border-color:#ff6a2b55; background:#ff6a2b14 }
+  .flag--same{ color:var(--muted); background:#ffffff08 }
+
+  /* ---------- OPTION A : spec table ---------- */
+  .tableWrap{ overflow:auto; border:1px solid var(--line); border-radius:var(--radius); background:var(--panel); max-height:78vh }
+  table.spec{ border-collapse:separate; border-spacing:0; width:100%; min-width:640px }
+  table.spec caption{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0) }
+  table.spec th, table.spec td{ text-align:left; vertical-align:top; padding:14px 16px; border-bottom:1px solid var(--line) }
+  table.spec thead th{ position:sticky; top:0; z-index:5; background:linear-gradient(180deg,#241820,#1a1116);
+    border-bottom:1px solid var(--line) }
+  table.spec thead th.corner{ z-index:6 }
+  th.rowh{ position:sticky; left:0; z-index:4; background:var(--panel2); min-width:170px; font-size:13.5px }
+  thead th.corner{ position:sticky; left:0; z-index:7; background:#241820 }
+  .prodhead{ display:flex; flex-direction:column; gap:8px; min-width:150px }
+  .prodhead .nm{ font-family:var(--display); font-weight:400; font-size:16px; letter-spacing:.4px; text-transform:uppercase; line-height:1 }
+  td.cell{ font-size:14px }
+  td.cell .sub{ color:var(--muted); font-size:12px; display:block; margin-top:3px }
+  tr.diff td, tr.diff th.rowh{ background:#ff6a2b0f }
+  tr.diff th.rowh{ box-shadow:inset 3px 0 0 var(--ember) }
+  .rowh .flag{ margin-top:8px }
+  .verifyword{ color:var(--cobalt); font-weight:700 }
+  .tag-official{ color:var(--jade); font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:.4px }
+  .tag-ed{ color:var(--gold); font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:.4px }
+
+  /* ---------- OPTION B : versus / battle ---------- */
+  .battle{ display:grid; grid-template-columns:1fr 92px 1fr; gap:0; align-items:stretch;
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden }
+  .side{ padding:22px }
+  .side.right{ text-align:right }
+  .sideTop{ display:flex; gap:14px; align-items:center }
+  .side.right .sideTop{ flex-direction:row-reverse }
+  .sideName{ font-family:var(--display); font-weight:400; font-size:clamp(18px,2.4vw,26px); text-transform:uppercase; letter-spacing:.5px; line-height:1 }
+  .swaprow{ margin-top:12px }
+  .stat{ margin-top:18px }
+  .stat__top{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; font-size:12.5px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.5px }
+  .side.right .stat__top{ flex-direction:row-reverse }
+  .stat__val{ color:var(--text); font-family:var(--display); font-weight:400; font-size:17px; letter-spacing:.4px }
+  .stat__track{ margin-top:7px; height:16px; border-radius:999px; background:#00000045; border:1px solid var(--line); overflow:hidden }
+  .stat__fill{ height:100%; width:0; border-radius:999px; transition:width .95s cubic-bezier(.2,.8,.2,1) }
+  .stat.is-filled .stat__fill{ width:var(--fill) }
+  .side.right .stat__track{ transform:scaleX(-1) }
+  .fill-heat{ background:linear-gradient(90deg,var(--gold),var(--ember) 55%,var(--red)) }
+  .fill-cream{ background:linear-gradient(90deg,#5a3b2e,#e9d3b5) }
+  @media (prefers-reduced-motion: reduce){ .stat__fill{ transition:none; width:var(--fill) } }
+  .sideFacts{ margin-top:18px; border-top:1px dashed var(--line); padding-top:14px; font-size:13px }
+  .sideFacts dt{ color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.5px; font-weight:700; margin-top:10px }
+  .sideFacts dd{ margin:2px 0 0 }
+  .divider{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
+    background:linear-gradient(180deg,#2a1016,#160b0f); border-left:1px solid var(--line); border-right:1px solid var(--line) }
+  .divider .vs{ font-family:var(--display); font-size:30px; color:var(--red); text-shadow:0 0 18px #e8331c66 }
+  .divider .k{ font-family:var(--korean); font-size:16px; color:var(--gold); writing-mode:vertical-rl }
+
+  /* ---------- OPTION C : diff focus ---------- */
+  .diffpick{ display:flex; gap:16px; flex-wrap:wrap; align-items:flex-end; margin-bottom:14px }
+  .diffpick .col{ display:flex; flex-direction:column; gap:6px }
+  .difflist{ border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; background:var(--panel) }
+  .drow{ display:grid; grid-template-columns:190px 1fr 1fr auto; gap:14px; align-items:start; padding:14px 16px; border-bottom:1px solid var(--line) }
+  .drow:last-child{ border-bottom:0 }
+  .drow .attr{ font-weight:800; font-size:13px; text-transform:uppercase; letter-spacing:.4px; color:var(--muted) }
+  .drow .v{ font-size:14px }
+  .drow .v .who{ display:block; font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:3px }
+  .drow .fl{ justify-self:end }
+  .drow.is-diff{ background:#ff6a2b0d }
+  .difftitle{ display:flex; gap:10px; align-items:center; padding:12px 16px; background:#1c1217; border-bottom:1px solid var(--line); font-weight:800; font-size:12px; text-transform:uppercase; letter-spacing:.6px; color:var(--muted) }
+
+  .foot{ color:var(--muted); font-size:12.5px; padding:26px 0 60px; border-top:1px solid var(--line); margin-top:30px }
+  .foot b{ color:var(--text) }
+
+  @media (max-width:720px){
+    .drow{ grid-template-columns:1fr 1fr; grid-template-areas:'attr attr' 'a b' 'fl fl'; }
+    .drow .attr{ grid-area:attr } .drow .fl{ grid-area:fl; justify-self:start }
+    .battle{ grid-template-columns:1fr; }
+    .divider{ flex-direction:row; padding:10px; border-left:0; border-right:0; border-top:1px solid var(--line); border-bottom:1px solid var(--line) }
+    .divider .k{ writing-mode:horizontal-tb }
+    .side.right, .side.right .sideTop, .side.right .stat__top{ text-align:left; flex-direction:row }
+    .side.right .stat__track{ transform:none }
+    .fill-heat, .fill-cream{ }
+  }
+</style>
+</head>
+<body>
+
+<header class="legend">
+  <div class="wrap">
+    <div class="legend__top">
+      <span class="maeun">매운맛</span>
+      <span class="brandline">
+        <b>FireFlow Product Intelligence</b>
+        <span>Comparison UI exploration for Samyang America. Three ways to line up two or three Buldak products.</span>
+      </span>
+      <span class="obang" aria-hidden="true" title="Obangsaek palette">
+        <i style="background:#2f6bff"></i><i style="background:#e8331c"></i><i style="background:#f5b301"></i><i style="background:#f7efe6"></i><i style="background:#1a1013"></i>
+      </span>
+    </div>
+    <nav class="jump" aria-label="Jump to a comparison option">
+      <a href="#opt-a">Option A. Spec table</a>
+      <a href="#opt-b">Option B. Versus battle</a>
+      <a href="#opt-c">Option C. Diff focus</a>
+    </nav>
+    <div class="keys">
+      <span class="chip official"><span class="dot"></span>Official. From the package we have on file</span>
+      <span class="chip editorial"><span class="dot"></span>Editorial. Our read, not a lab number</span>
+      <span class="chip verify"><span class="dot"></span>Verify the package. No confirmed data for this format</span>
+      <span class="chip heatnote">Heat is positioning words placed in order. It is not a Scoville figure.</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- OPTION A -->
+  <section class="opt" id="opt-a" aria-labelledby="a-title">
+    <div class="opt__head">
+      <span class="opt__tag">Option A</span>
+      <h2 class="opt__title" id="a-title">Side by side spec table</h2>
+    </div>
+    <p class="opt__desc">A sticky product row keeps the photos in view while you scroll the attributes. The creamy trio looks nearly identical on the shelf, so the two toggles help a customer or a support agent see what actually sets them apart.</p>
+    <div class="controls">
+      <label class="toggle"><input type="checkbox" id="a-highlight"> Highlight differences</label>
+      <label class="toggle"><input type="checkbox" id="a-hide"> Hide matching rows</label>
+    </div>
+    <div class="tableWrap" tabindex="0" role="region" aria-label="Product spec table, scrollable">
+      <table class="spec" id="a-table">
+        <caption>Buldak Carbonara, Cream Carbonara and Quattro Cheese compared across brand, heat, creaminess, formats, allergens, preparation, serving style and first time fit.</caption>
+        <thead><tr id="a-thead"></tr></thead>
+        <tbody id="a-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- OPTION B -->
+  <section class="opt" id="opt-b" aria-labelledby="b-title">
+    <div class="opt__head">
+      <span class="opt__tag">Option B</span>
+      <h2 class="opt__title" id="b-title">Versus battle</h2>
+    </div>
+    <p class="opt__desc">Two products face off across a center divider. The heat and creaminess bars fill when the panel scrolls into view, and each side has a swap control so you can rebuild the matchup. Heat is the brand positioning order, not a spice score.</p>
+    <div class="battle" id="battle">
+      <div class="side left" id="side-left"></div>
+      <div class="divider" aria-hidden="true"><span class="vs">VS</span><span class="k">대결</span></div>
+      <div class="side right" id="side-right"></div>
+    </div>
+  </section>
+
+  <!-- OPTION C -->
+  <section class="opt" id="opt-c" aria-labelledby="c-title">
+    <div class="opt__head">
+      <span class="opt__tag">Option C</span>
+      <h2 class="opt__title" id="c-title">Diff focus</h2>
+    </div>
+    <p class="opt__desc">One column of attributes. Each row shows both values and flags them as the same or different with an icon and a word, so the meaning never rides on colour alone. Toggle to only the rows that differ when you want the short answer.</p>
+    <div class="diffpick">
+      <div class="col"><label class="lbl" for="c-a">Left product</label><select class="swap" id="c-a"></select></div>
+      <div class="col"><label class="lbl" for="c-b">Right product</label><select class="swap" id="c-b"></select></div>
+      <label class="toggle"><input type="checkbox" id="c-only"> Show only differences</label>
+    </div>
+    <div class="difflist" id="c-list" role="group" aria-label="Attribute by attribute comparison"></div>
+  </section>
+
+  <p class="foot">
+    <b>Honesty notes.</b> Allergens and preparation are read from the Multi pack statement and are bound to that exact format. Switch to a Big Bowl or Cup and the honest answer becomes verify the current package, because carrying one format's facts onto another would be wrong for a food product. Creaminess and first time fit are labelled editorial. Heat words are placed in a fixed order for the bars, which is a positioning ladder and not a Scoville reading. Product photos load from <b>../public/products/</b> with a text fallback on every image.
+  </p>
+</main>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---- Product data (grounded in the project's family + variant records) ----
+  // heatRank: ordinal position of the brand's positioning word, NOT a Scoville value.
+  var P = {
+    carbonara: {
+      key:'carbonara', name:'Buldak Carbonara', short:'Carbonara', img:'buldak-multi-carbonara.png',
+      brand:'Buldak (Samyang)', heat:'Moderate', heatRank:2, cream:4,
+      formats:['Multi','Big Bowl','Cup'],
+      allergens:['Wheat','Soy','Milk'], allergensSrc:'official',
+      prep:'Cook about five minutes, drain leaving a little water, add the liquid sauce and cheese powder, then mix well.', prepSrc:'official',
+      serving:'Stir fry. Drain most of the water, then coat the noodles.',
+      firstTime:'A good first Buldak. The cream and cheese take the edge off the heat.'
+    },
+    cream: {
+      key:'cream', name:'Buldak Cream Carbonara', short:'Cream Carbo', img:'buldak-multi-cream-carbonara.png',
+      brand:'Buldak (Samyang)', heat:'Moderate', heatRank:2, cream:5,
+      formats:['Multi','Big Bowl'],
+      allergens:['Wheat','Soy','Milk'], allergensSrc:'official',
+      prep:null, prepSrc:'verify',
+      serving:'Stir fry. Drain most of the water, then coat the noodles.',
+      firstTime:'A gentle first Buldak. The milkiest of the carbonara line by our read.'
+    },
+    quattro: {
+      key:'quattro', name:'Buldak Quattro Cheese', short:'Quattro', img:'buldak-multi-quattro-cheese.png',
+      brand:'Buldak (Samyang)', heat:'Moderate', heatRank:2, cream:5,
+      formats:['Multi','Big Bowl'],
+      allergens:['Wheat','Soy','Milk'], allergensSrc:'official',
+      prep:null, prepSrc:'verify',
+      serving:'Stir fry. Drain most of the water, then coat the noodles.',
+      firstTime:'A gentle first Buldak. Heavy cheese, mild burn by our read.'
+    },
+    original: {
+      key:'original', name:'Buldak Original', short:'Original', img:'buldak-multi-original.png',
+      brand:'Buldak (Samyang)', heat:'Very hot', heatRank:4, cream:0,
+      formats:['Multi','Big Bowl','Cup'],
+      allergens:['Wheat','Soy','Sesame'], allergensSrc:'official',
+      prep:'Cook about five minutes, drain to roughly four ounces of water, add the liquid sauce and stir fry briefly, then add the roasted sesame and seaweed flakes.', prepSrc:'official',
+      serving:'Stir fry. Drain most of the water, then coat the noodles.',
+      firstTime:'Take a smaller first taste. This is the very hot original.'
+    },
+    spicy2x: {
+      key:'spicy2x', name:'Buldak 2X Spicy', short:'2X Spicy', img:'buldak-multi-2x-spicy.png',
+      brand:'Buldak (Samyang)', heat:'Extreme', heatRank:5, cream:0,
+      formats:['Multi','Big Bowl','Cup'],
+      allergens:['Wheat','Soy','Sesame'], allergensSrc:'official',
+      prep:null, prepSrc:'verify',
+      serving:'Stir fry. Drain most of the water, then coat the noodles.',
+      firstTime:'Built for experienced heat eaters. Keep milk within reach.'
+    }
+  };
+  var ORDER = ['carbonara','cream','quattro','original','spicy2x'];
+  var HEAT_MAX = 5, CREAM_MAX = 5;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+  function thumb(p, size){
+    return '<span class="thumb thumb--'+size+'">'
+      + '<img src="../public/products/'+p.img+'" alt="'+esc(p.name)+' Multi pack" loading="lazy" '
+      + 'onerror="this.style.display=\'none\';this.closest(\'.thumb\').classList.add(\'thumb--fail\')">'
+      + '<span class="thumb__fb" aria-hidden="true">'+esc(p.short)+'</span></span>';
+  }
+  function flame(rank){ var f=''; for(var i=0;i<rank;i++) f+='🌶'; return f; }
+  function heatPill(p){ return '<span class="heatpill"><span class="flame" aria-hidden="true">'+flame(p.heatRank)+'</span>'+esc(p.heat)+'</span>'; }
+  function allergenText(p){ return esc(p.allergens.join(', ')) + ' (Multi pack)'; }
+
+  // ---------- OPTION A ----------
+  var A_KEYS = ['carbonara','cream','quattro'];
+  var A_ROWS = [
+    { key:'brand',   label:'Brand',                  tag:'',           get:function(p){ return esc(p.brand); } },
+    { key:'heat',    label:'Heat positioning',       tag:'',           get:function(p){ return heatPill(p); } },
+    { key:'cream',   label:'Creaminess',             tag:'editorial',  get:function(p){ return p.cream+' of 5 <span class="tag-ed">editorial</span>'; } },
+    { key:'serving', label:'Serving style',          tag:'',           get:function(p){ return esc(p.serving); } },
+    { key:'formats', label:'Formats',                tag:'',           get:function(p){ return esc(p.formats.join(', ')); } },
+    { key:'allerg',  label:'Allergens',              tag:'official',   get:function(p){ return allergenText(p)+' <span class="tag-official">official</span>'; } },
+    { key:'prep',    label:'Preparation',            tag:'',           get:function(p){ return p.prep ? esc(p.prep)+' <span class="tag-official">official</span>' : '<span class="verifyword">Verify the current package.</span> No confirmed Multi prep on file.'; } },
+    { key:'first',   label:'First time fit',         tag:'editorial',  get:function(p){ return esc(p.firstTime)+' <span class="tag-ed">editorial</span>'; } }
+  ];
+  // comparison value used for same/different detection (text only)
+  var A_CMP = {
+    brand:function(p){return p.brand;}, heat:function(p){return p.heat+p.heatRank;},
+    cream:function(p){return p.cream;}, serving:function(p){return p.serving;},
+    formats:function(p){return p.formats.join('|');}, allerg:function(p){return p.allergens.join('|');},
+    prep:function(p){return p.prep||'verify';}, first:function(p){return p.firstTime;}
+  };
+
+  function renderA(){
+    var prods = A_KEYS.map(function(k){ return P[k]; });
+    var thead = document.getElementById('a-thead');
+    var tbody = document.getElementById('a-tbody');
+    var highlight = document.getElementById('a-highlight').checked;
+    var hide = document.getElementById('a-hide').checked;
+
+    var head = '<th class="corner" scope="col">Attribute</th>';
+    prods.forEach(function(p){
+      head += '<th scope="col"><div class="prodhead">'+thumb(p,'md')+'<span class="nm">'+esc(p.name)+'</span>'+heatPill(p)+'</div></th>';
+    });
+    thead.innerHTML = head;
+
+    var body = '';
+    A_ROWS.forEach(function(row){
+      var vals = prods.map(function(p){ return A_CMP[row.key](p); });
+      var same = vals.every(function(v){ return v===vals[0]; });
+      if(hide && same) return;
+      var cls = (highlight && !same) ? ' class="diff"' : '';
+      var flag = highlight
+        ? (same ? '<span class="flag flag--same"><span class="g" aria-hidden="true">=</span>Same</span>'
+                : '<span class="flag flag--diff"><span class="g" aria-hidden="true">◆</span>Differs</span>')
+        : '';
+      var tr = '<tr'+cls+'><th scope="row" class="rowh">'+esc(row.label)+'<br>'+flag+'</th>';
+      prods.forEach(function(p){ tr += '<td class="cell">'+row.get(p)+'</td>'; });
+      tr += '</tr>';
+      body += tr;
+    });
+    tbody.innerHTML = body;
+  }
+  document.getElementById('a-highlight').addEventListener('change', renderA);
+  document.getElementById('a-hide').addEventListener('change', renderA);
+
+  // ---------- OPTION B ----------
+  var B = { left:'carbonara', right:'original' };
+
+  function optionList(selectedKey, exclude){
+    return ORDER.map(function(k){
+      if(k===exclude && k!==selectedKey) { /* still allow, but discourage dup by re-picking */ }
+      return '<option value="'+k+'"'+(k===selectedKey?' selected':'')+'>'+esc(P[k].name)+'</option>';
+    }).join('');
+  }
+
+  function statBlock(label, valText, pct, kind){
+    return '<div class="stat" data-fill="'+pct+'%">'
+      + '<div class="stat__top"><span>'+label+'</span><span class="stat__val">'+valText+'</span></div>'
+      + '<div class="stat__track"><div class="stat__fill fill-'+kind+'"></div></div></div>';
+  }
+
+  function renderSide(sideId, sideKey, otherKey){
+    var el = document.getElementById(sideId);
+    var p = P[sideKey];
+    var side = sideId==='side-left' ? 'left' : 'right';
+    var html = '<div class="sideTop">'+thumb(p,'lg')+'<div><div class="sideName">'+esc(p.name)+'</div>'+heatPill(p)+'</div></div>';
+    html += '<div class="swaprow"><label class="lbl" for="'+sideId+'-sel">Swap this side</label><br>'
+      + '<select class="swap" id="'+sideId+'-sel" aria-label="Swap the '+side+' product">'+optionList(sideKey)+'</select></div>';
+    html += statBlock('Heat positioning', esc(p.heat)+' ('+p.heatRank+' of 5)', Math.round(p.heatRank/HEAT_MAX*100), 'heat');
+    html += statBlock('Creaminess, editorial', p.cream+' of 5', Math.round(p.cream/CREAM_MAX*100), 'cream');
+    html += '<dl class="sideFacts">'
+      + '<dt>Formats</dt><dd>'+esc(p.formats.join(', '))+'</dd>'
+      + '<dt>Allergens, official</dt><dd>'+allergenText(p)+'</dd>'
+      + '<dt>First time fit, editorial</dt><dd>'+esc(p.firstTime)+'</dd></dl>';
+    el.innerHTML = html;
+    document.getElementById(sideId+'-sel').addEventListener('change', function(e){
+      B[side] = e.target.value;
+      renderSide(sideId, B[side], side==='left'?B.right:B.left);
+      fillBars(el);
+    });
+  }
+
+  function fillBars(scope){
+    var stats = scope.querySelectorAll('.stat');
+    stats.forEach(function(s){
+      s.style.setProperty('--fill', s.getAttribute('data-fill'));
+      if(reduce){ s.classList.add('is-filled'); return; }
+      s.classList.remove('is-filled');
+      // force reflow so a re-render re-animates
+      void s.offsetWidth;
+      s.classList.add('is-filled');
+    });
+  }
+
+  function renderB(){
+    renderSide('side-left', B.left, B.right);
+    renderSide('side-right', B.right, B.left);
+  }
+
+  // ---------- OPTION C ----------
+  var C = { a:'carbonara', b:'original' };
+  var C_ROWS = [
+    { label:'Heat positioning', get:function(p){ return heatPill(p); }, cmp:function(p){ return p.heat+p.heatRank; } },
+    { label:'Creaminess', get:function(p){ return p.cream+' of 5 <span class="tag-ed">editorial</span>'; }, cmp:function(p){ return p.cream; } },
+    { label:'Serving style', get:function(p){ return esc(p.serving); }, cmp:function(p){ return p.serving; } },
+    { label:'Formats', get:function(p){ return esc(p.formats.join(', ')); }, cmp:function(p){ return p.formats.join('|'); } },
+    { label:'Allergens', get:function(p){ return allergenText(p)+' <span class="tag-official">official</span>'; }, cmp:function(p){ return p.allergens.join('|'); } },
+    { label:'Preparation', get:function(p){ return p.prep ? esc(p.prep)+' <span class="tag-official">official</span>' : '<span class="verifyword">Verify the current package.</span>'; }, cmp:function(p){ return p.prep||'verify'; } },
+    { label:'First time fit', get:function(p){ return esc(p.firstTime)+' <span class="tag-ed">editorial</span>'; }, cmp:function(p){ return p.firstTime; } }
+  ];
+
+  function renderC(){
+    var pa = P[C.a], pb = P[C.b];
+    var only = document.getElementById('c-only').checked;
+    var list = document.getElementById('c-list');
+    var diffs = C_ROWS.filter(function(r){ return r.cmp(pa)!==r.cmp(pb); }).length;
+    var html = '<div class="difftitle"><span>'+esc(pa.name)+' vs '+esc(pb.name)+'</span><span aria-live="polite">'+diffs+' of '+C_ROWS.length+' attributes differ</span></div>';
+    C_ROWS.forEach(function(r){
+      var diff = r.cmp(pa)!==r.cmp(pb);
+      if(only && !diff) return;
+      var flag = diff
+        ? '<span class="flag flag--diff"><span class="g" aria-hidden="true">◆</span>Differs</span>'
+        : '<span class="flag flag--same"><span class="g" aria-hidden="true">=</span>Same</span>';
+      html += '<div class="drow'+(diff?' is-diff':'')+'">'
+        + '<div class="attr">'+esc(r.label)+'</div>'
+        + '<div class="v"><span class="who">'+esc(pa.short)+'</span>'+r.get(pa)+'</div>'
+        + '<div class="v"><span class="who">'+esc(pb.short)+'</span>'+r.get(pb)+'</div>'
+        + '<div class="fl">'+flag+'</div></div>';
+    });
+    list.innerHTML = html;
+  }
+
+  function buildCPickers(){
+    var sa = document.getElementById('c-a'), sb = document.getElementById('c-b');
+    sa.innerHTML = ORDER.map(function(k){ return '<option value="'+k+'"'+(k===C.a?' selected':'')+'>'+esc(P[k].name)+'</option>'; }).join('');
+    sb.innerHTML = ORDER.map(function(k){ return '<option value="'+k+'"'+(k===C.b?' selected':'')+'>'+esc(P[k].name)+'</option>'; }).join('');
+    sa.addEventListener('change', function(e){ C.a=e.target.value; renderC(); });
+    sb.addEventListener('change', function(e){ C.b=e.target.value; renderC(); });
+    document.getElementById('c-only').addEventListener('change', renderC);
+  }
+
+  // ---------- init ----------
+  renderA();
+  renderB();
+  buildCPickers();
+  renderC();
+
+  // fill Option B bars when the battle scrolls into view (reduced motion = instant)
+  var battle = document.getElementById('battle');
+  if(reduce){
+    fillBars(battle);
+  } else if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){ if(en.isIntersecting){ fillBars(battle); io.disconnect(); } });
+    }, { threshold:0.35 });
+    io.observe(battle);
+  } else {
+    fillBars(battle);
+  }
+})();
+</script>
+</body>
+</html>

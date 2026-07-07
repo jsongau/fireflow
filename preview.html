@@ -1,0 +1,987 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FireFlow Product Intelligence — Preview</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Black+Han+Sans&family=Inter:wght@400;500;600;700;800;900&display=swap');
+:root{
+--bg:#0f0b0d;--panel:#171013;--panel2:#20161a;--raised:#2a1c21;
+--red:#e8331c;--red-700:#c0210f;--ember:#ff6a2b;--gold:#f5b301;--jade:#12b886;--cobalt:#2f6bff;
+--text:#f7efe6;--muted:#b6a29b;--dim:#9c8b83;
+--ink-900:#f7efe6;--ink-800:#f2e9e0;--ink-700:#cbb9ae;--ink:#f2e9e0;
+--paper-50:#0f0b0d;--paper-100:#171013;--paper-200:#20161a;
+--chili-600:#e8331c;--chili-500:#ff6a2b;--chili-050:#e8331c1f;--carbo-400:#f5b301;--coral-700:#c0210f;
+--samyang-accent:#f0a91f;--tangle-accent:#22b57f;--mep-accent:#3fb8c9;
+--ok-500:#8fd14f;--warn-500:#f5b301;--risk-600:#ff6a4a;--info-500:#6f9bf0;
+--src-official:#e0a94c;--src-retail:#c8b6a6;--src-editorial:#ff8a3c;--src-synthetic:#c58bd6;
+--slate-600:#b6a29b;--slate-400:#9c8b83;--line:#ffffff16;--line-strong:#ffffff2a;
+--font-display:"Anton","Archivo Black",Impact,system-ui,sans-serif;
+--font-ui:"Inter",system-ui,-apple-system,sans-serif;
+--r-sm:8px;--r-md:12px;--r-lg:18px;
+--sh1:0 1px 2px #00000055,0 6px 20px #00000040;--sh2:0 18px 50px #00000075;--sh3:0 24px 60px #000000a6;
+--focus:#f5b301;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--font-ui);color:var(--text);background:
+ radial-gradient(1100px 560px at 82% -6%, #2a0f0b 0%, #0f0b0d00 60%),
+ radial-gradient(820px 460px at -8% 14%, #1c0f14 0%, #0f0b0d00 55%),
+ var(--bg);line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:400;letter-spacing:.012em;line-height:1.05;margin:0 0 12px;text-transform:uppercase}
+button{font-family:var(--font-ui);cursor:pointer}
+a{color:var(--ember);text-decoration:none}
+img{max-width:100%}
+.wrap{max-width:1200px;margin:0 auto;padding:0 16px}
+.eyebrow{text-transform:uppercase;letter-spacing:.16em;font-size:.74rem;color:var(--ember);margin:0 0 8px;font-weight:800}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:.74rem;font-weight:700;line-height:1;padding:.35em .7em;border-radius:999px;border:1px solid var(--line-strong);background:var(--raised);color:var(--text)}
+.dot{width:8px;height:8px;border-radius:50%;flex:none}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:4px}
+.previewbanner{background:linear-gradient(90deg,#241503,#1a1013);color:var(--gold);text-align:center;font-size:.82rem;font-weight:700;padding:8px 16px;border-bottom:1px solid var(--line)}
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .55s cubic-bezier(.2,.7,.2,1),transform .55s cubic-bezier(.2,.7,.2,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* ===== Mega nav (Option B split panel) ===== */
+.mnav{position:sticky;top:0;z-index:60;background:var(--panel);border-bottom:1px solid var(--line);box-shadow:0 8px 24px #00000055}
+.mnav .bar{display:flex;align-items:center;gap:10px;padding:8px 16px;max-width:1200px;margin:0 auto}
+.brandmark{font-family:var(--font-display);font-weight:400;font-size:1.35rem;color:var(--text);margin-right:8px;line-height:.9;letter-spacing:.02em}
+.brandmark small{font-family:var(--font-ui);font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ember);display:block;margin-top:3px;font-weight:700}
+.mgroups{display:flex;gap:2px;flex:1}
+.mgroup{background:none;border:1px solid transparent;color:var(--text);font-weight:600;font-size:.92rem;padding:.6em .85em;border-radius:8px;min-height:44px;display:inline-flex;align-items:center;position:relative}
+.mgroup[aria-expanded="true"],.mgroup:hover{background:var(--raised)}
+.mgroup[aria-expanded="true"]::after{content:"";position:absolute;left:12px;right:12px;bottom:-9px;height:3px;background:var(--red);border-radius:3px}
+.soundbtn{background:var(--raised);border:1px solid var(--line-strong);color:var(--text);border-radius:999px;font-weight:700;font-size:.8rem;padding:.5em .9em;min-height:40px;display:inline-flex;gap:7px;align-items:center}
+.soundbtn .wave{width:8px;height:8px;border-radius:50%;background:var(--dim)}
+.soundbtn[aria-pressed="true"] .wave{background:var(--ok-500);box-shadow:0 0 8px var(--ok-500)}
+.hamb{display:none}
+.mpanel{position:absolute;left:0;right:0;top:100%;background:var(--panel2);color:var(--text);border-bottom:1px solid var(--line);box-shadow:var(--sh2);display:none}
+.mpanel::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--red),var(--ember))}
+.mpanel.open{display:block}
+.mpanel .inner{max-width:1200px;margin:0 auto;padding:24px 16px;display:grid;grid-template-columns:1fr 1.25fr;gap:24px;min-height:230px}
+.mkicker{font-size:.66rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--ember);margin:0 0 8px}
+.catlist{display:flex;flex-direction:column;gap:2px;border-right:1px solid var(--line);padding-right:16px}
+.cat{display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--text);font-weight:600;font-size:.95rem;padding:.6em .6em;border-radius:8px;min-height:44px;background:none;border:1px solid transparent;text-align:left;width:100%}
+.cat:hover,.cat:focus-visible{background:var(--raised)}
+.mprev{background:var(--raised);border:1px solid var(--line);border-radius:var(--r-md);padding:18px;display:grid;grid-template-columns:150px 1fr;gap:18px;align-items:center}
+.mprev .previmg{width:150px;height:150px;object-fit:contain;background:radial-gradient(closest-side,#ffffff12,transparent 72%);border-radius:10px}
+.mprev .prevname{font-size:1.35rem;margin:0 0 6px;color:var(--text)}
+.mprev .prevtext{color:var(--muted);font-size:.9rem;margin:0 0 12px}
+.mplanned{font-size:.6rem;color:var(--bg);background:var(--muted);border-radius:4px;font-weight:800;padding:.12em .4em;text-transform:uppercase;letter-spacing:.08em;margin-left:6px}
+/* mobile drawer */
+.mdrawer{position:fixed;inset:0;z-index:120;display:none}
+.mdrawer[data-open="true"]{display:block}
+.mdrawer .scrim{position:absolute;inset:0;background:#000000aa}
+.mdrawer .sheet{position:absolute;top:0;right:0;bottom:0;width:min(340px,86vw);background:var(--panel2);border-left:1px solid var(--line);padding:16px;overflow:auto;box-shadow:var(--sh2)}
+.mdrawer .sheet h3{margin:0 0 12px;font-size:1.2rem}
+.mdrawer details{border-bottom:1px solid var(--line);padding:4px 0}
+.mdrawer summary{cursor:pointer;font-weight:700;padding:10px 4px;color:var(--text);list-style:none}
+.mdrawer summary::-webkit-details-marker{display:none}
+.mdrawer a{display:block;color:var(--muted);font-weight:600;padding:8px 6px;min-height:40px}
+.mdrawer a:hover{color:var(--text)}
+.dclose{background:var(--raised);border:1px solid var(--line);color:var(--text);border-radius:8px;min-height:40px;padding:0 14px;font-weight:700;float:right}
+
+/* ===== Breadcrumb ===== */
+.trail{font-size:.82rem;color:var(--muted);padding:12px 16px;max-width:1200px;margin:0 auto}
+.trail b{color:var(--dim);font-weight:400;margin:0 .4em}
+
+/* ===== Stage / package ===== */
+.stage{position:relative;display:grid;place-items:center;width:100%}
+.stage.hero{aspect-ratio:1/1;max-width:380px}
+.stage.dossier{aspect-ratio:1/1;max-width:340px}
+.stage .ground{position:absolute;inset:6%;border-radius:50%;background:radial-gradient(closest-side,#e8331c30,#e8331c00 72%);z-index:0}
+.pkg{position:relative;z-index:1;width:60%;aspect-ratio:3/4;border-radius:14px;background:linear-gradient(160deg,#241519,#161014);border:1px solid var(--line-strong);box-shadow:var(--sh2);display:flex;flex-direction:column;justify-content:flex-end;gap:4px;padding:14% 10% 10%;overflow:hidden}
+.pkg::before{content:"";position:absolute;inset:0 0 auto 0;height:34%;background:var(--accent,var(--red));opacity:.92}
+.pkg .bs{position:relative;color:#fff;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:.72rem;margin-bottom:auto}
+.pkg .pn{font-family:var(--font-display);font-weight:400;line-height:1.05;color:var(--text);font-size:1rem}
+.pkg .pf{font-size:.72rem;font-weight:600;color:var(--muted)}
+.pimg{position:absolute;z-index:2;inset:2%;width:96%;height:96%;object-fit:contain;filter:drop-shadow(0 16px 24px #000a)}
+
+/* ===== Hero ===== */
+.hero{position:relative;background:radial-gradient(130% 130% at var(--mx,80%) var(--my,0%),#3a1912,#140b0d 58%);color:var(--text);overflow:hidden;border-bottom:1px solid var(--line)}
+.hero .wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center;padding:64px 16px;position:relative;z-index:1}
+.hero h1{color:var(--text);font-size:clamp(2.3rem,5.4vw,3.6rem);max-width:16ch;letter-spacing:.01em;line-height:.98}
+.lede{color:#f7efe6cc;font-size:1.14rem;max-width:52ch}
+.controls{display:flex;flex-wrap:wrap;gap:24px;margin:24px 0}
+.cl{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;display:block;margin-bottom:8px;font-weight:700}
+.seg{display:inline-flex;gap:4px;padding:3px;background:#00000040;border:1px solid var(--line-strong);border-radius:999px}
+.seg button{font-weight:700;font-size:.82rem;border:none;background:transparent;color:var(--muted);border-radius:999px;padding:.5em 1em;min-height:38px}
+.seg button[aria-pressed="true"]{background:var(--red);color:#160d0b}
+.picks{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:8px}
+.pick{font-weight:700;font-size:.82rem;color:var(--text);background:#ffffff10;border:1px solid var(--line-strong);border-radius:999px;padding:.55em .95em;min-height:40px}
+.pick[aria-pressed="true"]{background:var(--gold);color:#231400;border-color:var(--gold)}
+.focus{display:grid;gap:16px;justify-items:center}
+.fname{font-family:var(--font-display);font-size:1.8rem;color:var(--text);margin:0}
+.fsub{color:var(--muted);font-size:.833rem;margin:0}
+.actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:8px}
+.btn{font-weight:700;border:1px solid transparent;border-radius:8px;display:inline-flex;align-items:center;gap:8px;font-size:.833rem;padding:.6em 1em;min-height:42px;transition:transform .12s var(--ease,ease),filter .18s,background .18s}
+.btn.primary{background:var(--red);color:#fff;box-shadow:0 6px 18px #e8331c40}
+.btn.primary:hover{background:var(--ember);color:#1a0a00}
+.btn.secondary{background:var(--raised);color:var(--text);border-color:var(--line-strong)}
+.btn.secondary:hover{border-color:var(--ember)}
+.btn.ghost{background:transparent;color:var(--ember)}
+.btn.ghost:hover{background:#ffffff10}
+.empty-hero{border:1px dashed var(--line-strong);border-radius:14px;padding:32px;text-align:center;max-width:340px}
+
+/* ===== Sections ===== */
+section.sec{scroll-margin-top:104px}
+.sec.light{background:transparent}
+.sec.light2{background:#130d10}
+.sec.dark{background:#0c080a;color:var(--text);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.sec.dark .h2{color:var(--text)}.sec.dark .muted{color:var(--muted)}
+.sec .wrap{padding:64px 16px}
+.h2{font-size:clamp(1.9rem,3.6vw,2.4rem);margin:0 0 8px;color:var(--text)}
+.muted{color:var(--muted);max-width:64ch}
+.chip{font-weight:700;font-size:.82rem;background:var(--raised);border:1px solid var(--line-strong);border-radius:999px;padding:.45em .85em;min-height:38px;display:inline-flex;align-items:center;gap:8px;color:var(--text)}
+.chip[aria-pressed="true"]{background:var(--red);color:#fff;border-color:var(--red)}
+.chipdot{width:9px;height:9px;border-radius:50%}
+.row-filters{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+
+/* ===== Portfolio — Option C immersive showcase ===== */
+.showcase{background:radial-gradient(1000px 500px at 50% -10%, #1a0e12, transparent 60%);border-radius:22px;padding:clamp(16px,2.4vw,30px);border:1px solid var(--line);margin-top:16px}
+.grid-C{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;list-style:none;padding:0;margin:0}
+.grid-C>li{min-width:0}
+.cardC{position:relative;border-radius:16px;padding:1px;background:#0c080a;overflow:hidden;min-height:290px;transition:transform .2s ease;height:100%}
+.cardC:hover{transform:translateY(-3px)}
+.cardC.on{outline:2px solid var(--gold);outline-offset:2px}
+.cardC::before{content:"";position:absolute;inset:0;border-radius:16px;padding:1.4px;background:radial-gradient(220px circle at var(--mx,50%) var(--my,50%),var(--accent,var(--ember)),transparent 60%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .3s ease;z-index:5;pointer-events:none}
+.cardC:hover::before,.cardC:focus-within::before{opacity:1}
+.cardC .surface{position:relative;height:100%;border-radius:15px;background:linear-gradient(180deg,#181013,#100a0c);padding:16px;display:flex;flex-direction:column;overflow:hidden}
+.cardC .cglow{position:absolute;inset:0;pointer-events:none;background:radial-gradient(240px circle at var(--mx,50%) var(--my,50%),color-mix(in oklab,var(--accent,var(--ember)) 20%,transparent),transparent 55%);opacity:0;transition:opacity .3s ease}
+.cardC:hover .cglow,.cardC:focus-within .cglow{opacity:1}
+.cardC .topline{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;position:relative;z-index:2}
+.cardC .brandtag{font-size:.66rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.cardC .accentdot{width:9px;height:9px;border-radius:50%;background:var(--accent,var(--ember));box-shadow:0 0 12px var(--accent,var(--ember))}
+.cardC .frame{position:relative;z-index:2;aspect-ratio:1/1;display:grid;place-items:center;margin:2px 0 12px;background:none;border:none;width:100%;cursor:pointer;padding:0}
+.cardC .frame img{max-height:100%;max-width:88%;object-fit:contain;filter:drop-shadow(0 16px 22px #000a);transition:transform .35s cubic-bezier(.2,.7,.2,1)}
+.cardC:hover .frame img,.cardC:focus-within .frame img{transform:scale(1.06) translateY(-4px)}
+.cardC .cn{font-family:var(--font-display);font-weight:400;text-transform:uppercase;font-size:clamp(15px,1.5vw,20px);margin:0 0 8px;line-height:1;position:relative;z-index:2;color:var(--text);background:none;border:none;text-align:left;padding:0;cursor:pointer;letter-spacing:.01em}
+.cardC .cmeta{position:relative;z-index:2;margin-top:auto;display:grid;gap:8px}
+.cardC .cmeta .row{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.cardC .formats{font-size:11.5px;color:var(--muted)}
+.cardC .cbtns{display:flex;gap:8px;margin-top:4px}
+.cardC .cbtns .btn{flex:1;justify-content:center;padding:.5em .6em;font-size:12.5px;min-height:38px}
+.cardC .atag{font-size:.62rem;font-weight:800;color:var(--gold);border:1px solid #f5b30155;background:#f5b30115;border-radius:999px;padding:.15em .5em;text-transform:uppercase;letter-spacing:.04em}
+
+/* ===== heat pips (shared) ===== */
+.heatpips{display:inline-flex;gap:3px;align-items:center}
+.heatpips i{width:7px;height:7px;border-radius:50%;background:#ffffff1f;display:inline-block}
+.heatpips i.on{background:linear-gradient(180deg,var(--ember),var(--red));box-shadow:0 0 7px #e8331c66}
+
+/* ===== Rankings ===== */
+.tabs{display:inline-flex;gap:4px;padding:4px;background:#00000040;border:1px solid var(--line-strong);border-radius:999px;flex-wrap:wrap}
+.tabs button{font-weight:700;font-size:.82rem;border:none;background:transparent;color:var(--muted);border-radius:999px;padding:.5em .9em;min-height:38px}
+.tabs button[aria-selected="true"]{background:var(--red);color:#fff}
+.vmeta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0}
+.purpose{font-size:1.1rem;margin:0;color:var(--text)}
+.caveat{font-size:.833rem;color:var(--gold);background:#f5b3011a;border:1px solid #f5b30133;border-radius:8px;padding:8px 12px;max-width:70ch}
+.rlist{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:8px}
+.rrow{display:grid;grid-template-columns:26px 44px minmax(120px,1.3fr) minmax(70px,2fr) 40px auto auto;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.rk{font-family:var(--font-display);font-weight:400;color:var(--ember);text-align:center;font-size:1.1rem}
+.rthumb{width:44px;height:44px;object-fit:contain;background:var(--raised);border-radius:8px}
+.rn{text-align:left;background:none;border:none;font-weight:700;color:var(--text);font-size:1rem}
+.bar{background:#00000055;border:1px solid var(--line);border-radius:999px;height:11px;overflow:hidden}
+.bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--ember) 55%,var(--red));width:0;transition:width .8s cubic-bezier(.2,.7,.2,1)}
+.sc{font-family:var(--font-display);font-weight:400;text-align:right;font-variant-numeric:tabular-nums;color:var(--text)}
+.miss{color:var(--warn-500);font-weight:700}
+.add{font-size:.8rem;font-weight:700;background:var(--raised);border:1px solid var(--line-strong);border-radius:999px;padding:.35em .8em;color:var(--text);min-height:34px}
+.add[disabled]{opacity:.5;cursor:default}
+
+/* ===== Heat dial ===== */
+.heatwrap{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center;background:linear-gradient(160deg,color-mix(in oklab,var(--panel2),var(--red) calc(var(--t,0)*22%)),var(--panel));border-radius:var(--r-lg);padding:32px;border:1px solid var(--line);transition:background .4s}
+.heatgauge{position:relative;display:grid;place-items:center}
+.heatgauge svg{width:220px;height:220px;position:absolute}
+.heatsteps{display:flex;gap:6px;margin:16px 0}
+.heatstep{flex:1;height:10px;border-radius:999px;background:#ffffff1f;border:none;min-height:24px}
+.heatstep.on{background:linear-gradient(90deg,var(--gold),var(--red))}
+.heatcap{color:var(--text)}
+.heatctrl{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+
+/* ===== Dossier ===== */
+.dgrid{display:grid;grid-template-columns:360px 1fr;gap:48px;align-items:start}
+.dleft{display:grid;gap:16px;justify-items:center;position:sticky;top:112px}
+.dframe{position:relative;border-radius:var(--r-lg);padding:2px;background:linear-gradient(140deg,var(--card-accent,var(--red)),transparent 60%)}
+.dframe .inner{background:var(--panel);border-radius:calc(var(--r-lg) - 2px);padding:12px}
+.flabel{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:800}
+.name{font-family:var(--font-display);font-size:clamp(1.7rem,3vw,2.2rem);margin:4px 0 12px;color:var(--text)}
+.story{font-size:1.1rem;max-width:60ch;color:#f7efe6cc}
+.attrs{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin:16px 0}
+.attrs dt{font-size:.72rem;color:var(--muted);font-weight:800;text-transform:uppercase}
+.attrs dd{margin:0;font-weight:700;color:var(--text)}
+.factcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--sh1)}
+.facthead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.fact{display:grid;gap:4px;padding:12px 0;border-top:1px solid var(--line)}
+.fl{font-size:.72rem;color:var(--muted);font-weight:800;text-transform:uppercase;display:inline-flex;gap:8px;align-items:center}
+.fv{color:var(--text);display:inline-flex;flex-wrap:wrap;gap:8px;align-items:center}
+.unknown{color:var(--muted);font-style:italic}
+.reminder{font-size:.833rem;color:var(--muted);background:var(--raised);border-radius:8px;padding:8px 12px;margin:12px 0 0}
+.qwrap{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}
+.qb{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:16px}
+.qb h4{color:var(--text)}
+.qb.mut{opacity:.5}
+.qb ul{margin:0;padding-left:1.1em;color:var(--muted);font-size:.833rem;display:grid;gap:4px}
+.relchips{display:flex;flex-wrap:wrap;gap:8px}
+.relchip{font-size:.8rem;font-weight:600;background:var(--raised);border:1px solid var(--line-strong);border-radius:999px;padding:.35em .7em;color:var(--text);display:inline-flex;gap:6px;align-items:center;min-height:34px}
+.relchip img{width:20px;height:20px;object-fit:contain}
+
+/* ===== Compare — Option B versus battle ===== */
+.cmp-presets{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+.battle{display:grid;grid-template-columns:1fr 92px 1fr;gap:0;align-items:stretch;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;margin-top:8px}
+.bside{padding:22px;min-width:0}
+.bside.right{text-align:right}
+.bsideTop{display:flex;gap:14px;align-items:center}
+.bside.right .bsideTop{flex-direction:row-reverse}
+.bside .bthumb{width:66px;height:66px;object-fit:contain;background:var(--raised);border-radius:10px;flex:none}
+.bsideName{font-family:var(--font-display);font-weight:400;font-size:clamp(17px,2.2vw,24px);text-transform:uppercase;letter-spacing:.4px;line-height:1;color:var(--text)}
+.bswap{margin-top:12px}
+.bstat{margin-top:18px}
+.bstat__top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.bside.right .bstat__top{flex-direction:row-reverse}
+.bstat__val{color:var(--text);font-family:var(--font-display);font-weight:400;font-size:16px;letter-spacing:.4px}
+.bstat__track{margin-top:7px;height:16px;border-radius:999px;background:#00000055;border:1px solid var(--line);overflow:hidden}
+.bstat__fill{height:100%;width:0;border-radius:999px;transition:width .95s cubic-bezier(.2,.8,.2,1)}
+.bside.right .bstat__track{transform:scaleX(-1)}
+.fill-heat{background:linear-gradient(90deg,var(--gold),var(--ember) 55%,var(--red))}
+.fill-cream{background:linear-gradient(90deg,#5a3b2e,#e9d3b5)}
+.bfacts{margin-top:18px;border-top:1px dashed var(--line);padding-top:14px;font-size:13px}
+.bfacts dt{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;font-weight:800;margin-top:10px}
+.bfacts dd{margin:2px 0 0;color:var(--text)}
+.bactions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.bside.right .bactions{justify-content:flex-end}
+.bdivider{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:linear-gradient(180deg,#2a1016,#160b0f);border-left:1px solid var(--line);border-right:1px solid var(--line)}
+.bdivider .vs{font-family:var(--font-display);font-size:30px;color:var(--red);text-shadow:0 0 18px #e8331c66}
+.bdivider .k{font-family:var(--font-ui);font-weight:800;font-size:14px;color:var(--gold);writing-mode:vertical-rl}
+.bswap select,.cmp-empty select{font-family:var(--font-ui);font-size:.85rem;color:var(--text);background:var(--raised);border:1px solid var(--line-strong);border-radius:8px;padding:.45em .6em;min-height:40px;max-width:100%}
+.cmp-empty{padding:28px;text-align:center;color:var(--muted);border:1px dashed var(--line-strong);border-radius:14px;background:var(--panel)}
+.tag-ed{font-size:.62rem;font-weight:800;color:var(--src-editorial);text-transform:uppercase;letter-spacing:.06em}
+
+/* ===== Paths ===== */
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+.path{border:1px solid var(--line);border-radius:22px;background:var(--panel);padding:24px;box-shadow:var(--sh1)}
+.path.on{border-color:var(--ember);box-shadow:0 0 0 2px #ff6a2b22,var(--sh1)}
+.phead{display:flex;justify-content:space-between;align-items:center}
+.phead h3{color:var(--text)}
+.youare{font-size:.72rem;font-weight:800;color:var(--ember);background:#ff6a2b1a;border:1px solid #ff6a2b55;border-radius:999px;padding:.2em .7em}
+.ctx{font-size:.833rem;color:var(--muted);background:var(--raised);border-radius:8px;padding:8px 12px;display:flex;gap:10px;align-items:center}
+.ctx b{color:var(--text)}
+.ctx img{width:34px;height:34px;object-fit:contain}
+.issues{display:grid;gap:8px;margin-top:12px}
+.issue{display:flex;gap:8px;align-items:center;font-size:1rem;padding:.6em .7em;border:1px solid var(--line);border-radius:8px;color:var(--text)}
+.issue.on{border-color:var(--ember);background:#ff6a2b12;font-weight:600}
+.detail{margin-top:16px;border-top:1px solid var(--line);padding-top:16px;display:grid;gap:12px}
+.sev{font-size:.833rem;font-weight:800;padding:.25em .7em;border-radius:999px;border:1px solid}
+.sev[data-s="standard"]{color:var(--cobalt);border-color:var(--cobalt)}
+.sev[data-s="elevated"]{color:var(--warn-500);border-color:var(--warn-500)}
+.sev[data-s="priority"]{color:var(--ember);border-color:var(--ember)}
+.sev[data-s="specialist"]{color:#fff;background:var(--red);border-color:var(--red)}
+.escal{font-size:.833rem;background:#1a1013;border:1px solid #ffffff1f;border-left:3px solid var(--cobalt);border-radius:8px;padding:12px;color:var(--muted)}
+.steps{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:0;counter-reset:step}
+.steps li{font-size:.833rem;font-weight:700;background:var(--raised);border-radius:999px;padding:.3em .7em;counter-increment:step;color:var(--text)}
+.steps li::before{content:counter(step) ". ";color:var(--ember);font-weight:800}
+
+/* ===== Simulator ===== */
+.pickrow{display:flex;flex-wrap:wrap;gap:8px}
+.spick{font-size:.833rem;font-weight:700;color:var(--text);background:#ffffff10;border:1px solid var(--line-strong);border-radius:999px;padding:.5em .9em;min-height:40px}
+.spick[aria-pressed="true"]{background:var(--gold);color:#231400;border-color:var(--gold)}
+.case{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:22px;padding:32px;margin-top:20px}
+.casehead{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.ctitle{font-family:var(--font-display);font-size:1.7rem;margin:0;color:var(--text)}
+.timeline{list-style:none;display:flex;flex-wrap:wrap;padding:0;margin:16px 0 20px}
+.timeline li{flex:1 1 auto;min-width:92px}
+.tbtn{display:grid;justify-items:center;gap:8px;width:100%;background:none;border:none;padding:8px 4px;position:relative}
+.tbtn::before,.tbtn::after{content:"";position:absolute;top:11px;height:2px;background:var(--line-strong)}
+.tbtn::before{left:0;right:50%}.tbtn::after{left:50%;right:0}
+.timeline li:first-child .tbtn::before{display:none}.timeline li:last-child .tbtn::after{display:none}
+.tdot{width:14px;height:14px;border-radius:50%;background:var(--panel);border:2px solid var(--dim);position:relative;z-index:1}
+.tlabel{font-size:.78rem;font-weight:600;color:var(--muted);text-align:center}
+.tdone .tdot{background:var(--jade);border-color:var(--jade)}.tdone .tbtn::before,.tdone .tbtn::after{background:var(--jade)}
+.tcur .tdot{background:var(--red);border-color:var(--red);box-shadow:0 0 0 4px #e8331c33}
+.tcur .tlabel{color:var(--text);font-weight:800}
+.stagebox{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:20px}
+.stagebox h4{color:var(--text)}
+.catt{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.att{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:16px}
+.att h5{margin:0 0 8px;font-size:.72rem;text-transform:uppercase;color:var(--muted);font-family:var(--font-ui);letter-spacing:.08em}
+.att ul{margin:0;padding-left:1.1em;font-size:.833rem;display:grid;gap:4px;color:var(--text)}
+.att p{margin:0 0 4px;font-size:.833rem;color:var(--text)}
+.att b{color:var(--text)}
+
+/* ===== Footer ===== */
+footer.foot{background:#0c080a;color:var(--text);border-top:1px solid var(--line)}
+.foot .top{height:3px;background:linear-gradient(90deg,var(--red),var(--ember));transform:scaleX(0);transform-origin:center;transition:transform .7s ease}
+.foot .top.in{transform:scaleX(1)}
+.foot .wrap{padding:48px 16px;display:grid;gap:24px}
+.fcols{display:grid;grid-template-columns:1.4fr repeat(4,1fr);gap:24px}
+.fcol h4{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);margin:0 0 10px}
+.fcol a{display:block;color:var(--muted);font-size:.9rem;padding:3px 0}
+.fcol a:hover{color:var(--text)}
+.flead{font-family:var(--font-display);font-size:1.4rem;color:var(--text);margin:0 0 8px}
+.disc{font-size:.8rem;color:var(--muted);max-width:90ch;margin:0}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:.8rem;color:var(--muted)}
+
+/* ===== Selected-product rail — Option B (fixed) ===== */
+.rail{position:fixed;left:0;right:0;bottom:0;z-index:35;background:linear-gradient(180deg,var(--panel2),var(--panel));border-top:1px solid var(--line);box-shadow:0 -10px 30px #00000066}
+.rail .wrap{display:flex;align-items:center;gap:12px;flex-wrap:nowrap;overflow-x:auto;padding:10px 16px;max-width:1200px;margin:0 auto}
+.railaccent{display:none}
+.railphoto{width:46px;height:46px;object-fit:contain;background:var(--raised);border-radius:10px;flex:none}
+.railmain{display:flex;flex-direction:column;gap:2px;min-width:0}
+.brandchip{display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:.66rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text)}
+.brandchip .bdot{width:8px;height:8px;border-radius:50%}
+.rname{font-weight:700;color:var(--text);white-space:nowrap}
+.rfmt{color:var(--muted);font-weight:500}
+.railheat{display:inline-flex;align-items:center;gap:8px;font-size:.78rem;color:var(--text);font-weight:700}
+.railheat .word{color:var(--muted);font-weight:600}
+.rmode{font-size:.72rem;font-weight:800;text-transform:capitalize;padding:.2em .6em;border-radius:999px;border:1px solid var(--line-strong);color:var(--muted);flex:none}
+.railact{display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:.8rem;border:1px solid var(--line-strong);border-radius:8px;background:#ffffff08;color:var(--text);padding:.5em .7em;min-height:40px;white-space:nowrap;flex:none}
+.railact .sub{display:none}
+.railact.primary{background:linear-gradient(180deg,var(--red),var(--red-700));border-color:#ffffff22;color:#fff}
+.railact.ghost{background:transparent}
+.railact svg{width:18px;height:18px;flex:none}
+.railreset{font-size:.8rem;font-weight:700;background:none;border:1px solid var(--line-strong);border-radius:999px;padding:.4em .8em;color:var(--muted);flex:none;min-height:40px}
+.railprompt{color:var(--muted);font-size:.85rem}
+.spacer{flex:1;min-width:8px}
+@media(min-width:1760px){
+ .rail{left:auto;right:16px;bottom:auto;top:96px;width:300px;border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:var(--sh2)}
+ .rail::before{content:"";display:block;height:5px;background:linear-gradient(90deg,var(--red),var(--ember))}
+ .rail .wrap{display:block;overflow:visible;padding:0}
+ .railphoto{width:100%;height:180px;border-radius:0;background:radial-gradient(closest-side,#e8331c1f,transparent 72%)}
+ .railtop{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 4px}
+ .railbody{padding:2px 16px 8px}
+ .railmain{padding:0 0 8px}
+ .rname{white-space:normal;font-family:var(--font-display);font-weight:400;font-size:1.4rem;text-transform:uppercase}
+ .railactions{display:grid;gap:8px;padding:6px 16px 18px}
+ .railact{width:100%;justify-content:flex-start}
+ .railact .sub{display:block;font-weight:500;font-size:.7rem;color:#f7efe6b0;margin-top:1px}
+ .raildivider{height:1px;background:var(--line);margin:6px 2px}
+}
+@media(max-width:1759px){
+ body{padding-bottom:78px}
+ .railtop,.railactions{display:contents}
+ .railmain .rmode{display:none}
+}
+
+/* ===== Support widget — Option C ===== */
+.ffw{position:fixed;right:18px;bottom:18px;z-index:70}
+@media(max-width:1759px){.ffw{bottom:90px}}
+.fab{position:relative;display:inline-flex;align-items:center;gap:9px;min-height:52px;padding:0 18px 0 15px;border:none;border-radius:999px;font-weight:800;font-size:.94rem;color:#fff;background:linear-gradient(135deg,var(--ember),var(--red) 52%,var(--red-700));box-shadow:0 10px 26px #e8331c40,0 4px 10px #00000066;transition:transform .18s ease,box-shadow .18s ease}
+.fab:hover{transform:translateY(-1px)}
+.fab .flame{width:22px;height:22px;flex:none}
+.fab[aria-expanded="true"]{background:var(--raised);color:var(--text);box-shadow:0 6px 18px #00000066}
+.fpanel{position:absolute;right:0;bottom:64px;width:min(316px,calc(100vw - 36px));max-height:460px;display:flex;flex-direction:column;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:16px;box-shadow:0 24px 60px #000000a6,0 4px 14px #00000080;overflow:hidden;transform-origin:bottom right;transform:translateY(10px) scale(.96);opacity:0;visibility:hidden;transition:transform .2s var(--ease,ease),opacity .2s,visibility 0s linear .2s}
+.fpanel.open{transform:none;opacity:1;visibility:visible;transition-delay:0s}
+.fflourish{position:absolute;top:-10px;right:-6px;font-family:var(--font-display);font-size:5.4rem;line-height:1;color:#ffffff08;pointer-events:none;z-index:0}
+.p-head{position:relative;z-index:1;display:flex;align-items:flex-start;gap:10px;padding:15px 15px 12px;border-bottom:1px solid var(--line)}
+.p-title{font-family:var(--font-display);font-size:1.16rem;letter-spacing:.02em;line-height:1.05;margin:0;color:var(--text)}
+.p-sub{font-size:.8rem;color:var(--muted);margin:3px 0 0}
+.p-close{flex:none;width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--raised);display:grid;place-items:center;color:var(--text);margin-left:auto}
+.p-close svg{width:15px;height:15px}
+.p-body{position:relative;z-index:1;overflow-y:auto;padding:13px 15px 15px;display:grid;gap:11px}
+.fseg{display:flex;background:#00000040;border:1px solid var(--line);border-radius:999px;padding:3px;gap:3px}
+.fseg button{flex:1;min-height:38px;border:none;background:none;color:var(--muted);font-weight:800;font-size:.86rem;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.fseg button svg{width:15px;height:15px}
+.fseg button[aria-pressed="true"]{background:var(--raised);color:var(--text);box-shadow:0 1px 4px #00000059}
+.statline{display:flex;gap:9px;align-items:flex-start;font-size:.85rem;color:var(--text)}
+.statline .sic{flex:none;width:18px;height:18px;color:var(--jade);margin-top:1px}
+.statline .sic.g{color:var(--gold)}
+.statline .sic svg{width:18px;height:18px}
+.statline b{font-weight:800}
+.statline span span{color:var(--muted)}
+.tinynote{font-size:.71rem;color:var(--dim);line-height:1.45}
+.fact-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:46px;border-radius:999px;font-weight:800;font-size:.94rem;border:1px solid transparent;background:linear-gradient(135deg,var(--ember),var(--red) 60%,var(--red-700));color:#fff;box-shadow:0 6px 16px #e8331c33}
+.fact-primary svg{width:17px;height:17px}
+
+/* ===== Command Center ===== */
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin:20px 0}
+.kpi{text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;min-height:96px;display:flex;flex-direction:column;gap:4px;color:var(--text);transition:transform .12s ease,border-color .18s}
+.kpi:hover{transform:translateY(-2px);border-color:var(--line-strong)}
+.kpi[aria-pressed="true"]{border-color:var(--ember);box-shadow:0 0 0 1px var(--ember)}
+.kpi .kn{font-family:var(--font-display);font-weight:400;font-size:1.9rem;line-height:1;color:var(--text)}
+.kpi .kl{font-size:.78rem;font-weight:700;color:var(--text)}
+.kpi .ks{font-size:.7rem;color:var(--muted)}
+.caselist{display:grid;gap:8px;margin-top:8px}
+.caserow{display:grid;grid-template-columns:minmax(160px,2fr) auto auto minmax(120px,1fr) minmax(140px,1.2fr) auto;gap:12px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.caserow.od{border-left:3px solid var(--risk-600)}
+.caserow .ct{font-weight:700;color:var(--text);font-size:.95rem}
+.caserow .own{font-size:.82rem;color:var(--text)}
+.caserow .nxt{font-size:.8rem;color:var(--muted)}
+.caserow .nxt.odt{color:var(--risk-600);font-weight:700}
+.caserow .add{white-space:nowrap}
+.sev svg{margin-right:3px;vertical-align:-1px}
+.chtag{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;border:1px solid var(--line-strong);border-radius:999px;padding:.28em .6em;color:var(--text);display:inline-flex;gap:6px;align-items:center;min-height:auto}
+.chtag .cd{width:8px;height:8px;border-radius:2px;flex:none}
+
+/* ===== Signals ===== */
+.siggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin:20px 0}
+.sigcard{text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;color:var(--text);display:flex;flex-direction:column;gap:8px;min-height:158px;transition:transform .12s ease,border-color .18s}
+.sigcard:hover{transform:translateY(-2px);border-color:var(--line-strong)}
+.sigcard[aria-pressed="true"]{border-color:var(--ember);box-shadow:0 0 0 1px var(--ember)}
+.sigcard h4{font-family:var(--font-display);font-weight:400;font-size:1.16rem;margin:0;color:var(--text)}
+.sigcard .sp{font-size:.82rem;color:var(--muted);margin:0}
+.sigflow{display:flex;flex-wrap:wrap;gap:6px;font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--ember);margin-top:auto}
+.sigflow span::after{content:"\2192";margin-left:6px;color:var(--dim)}
+.sigflow span:last-child::after{content:""}
+.sigdetail{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:24px;margin-top:8px;display:grid;gap:16px}
+.sighead{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.sigcols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.sigcols .att{margin:0}
+
+/* ===== Brand universe ===== */
+.brandwall{display:grid;gap:16px;margin-top:20px}
+.bfeature{border:1px solid var(--line);border-radius:18px;padding:24px;background:var(--panel);border-top:3px solid var(--baccent,var(--ember))}
+.bhead{display:flex;align-items:center;gap:10px}
+.bhead .bd{width:13px;height:13px;border-radius:50%;background:var(--baccent,var(--ember));flex:none;box-shadow:0 0 12px var(--baccent,var(--ember))}
+.btitle{font-family:var(--font-display);font-weight:400;font-size:1.7rem;margin:0;color:var(--text)}
+.bpos{color:var(--muted);font-size:.92rem;margin:8px 0 14px;max-width:60ch}
+.bsub{display:grid;grid-template-columns:280px 1fr;gap:24px;align-items:center}
+.bnum{font-family:var(--font-display);font-weight:400;font-size:2.6rem;color:var(--baccent,var(--ember));line-height:1}
+.bnum small{display:block;font-family:var(--font-ui);font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.bflag{display:flex;gap:14px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:14px}
+.bflag img{width:78px;height:78px;object-fit:contain;flex:none;background:radial-gradient(closest-side,#ffffff10,transparent 72%);border-radius:8px}
+.bflagbody .fn{font-weight:800;color:var(--text)}
+.bflagbody .fk{font-size:.76rem;color:var(--muted)}
+.bangle{display:grid;gap:8px;font-size:.86rem;margin:14px 0}
+.bangle .row{display:flex;gap:8px}
+.bangle b{color:var(--text);flex:none}
+.bangle span{color:var(--muted)}
+.brandtri{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.bmini{border:1px solid var(--line);border-radius:18px;padding:20px;background:var(--panel);border-top:3px solid var(--baccent,var(--ember));display:flex;flex-direction:column;gap:10px}
+.bminibox{width:118px;margin:2px auto 4px}
+@media(max-width:820px){.brandtri{grid-template-columns:1fr}.bsub{grid-template-columns:1fr}}
+
+/* ===== FAQ ===== */
+.faqlist{display:grid;gap:8px;margin-top:20px;max-width:80ch}
+.faqlist details{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:2px 16px}
+.faqlist summary{cursor:pointer;font-weight:700;color:var(--text);padding:14px 0;list-style:none;display:flex;justify-content:space-between;gap:12px;align-items:center;min-height:44px}
+.faqlist summary::-webkit-details-marker{display:none}
+.faqlist summary::after{content:"+";font-family:var(--font-display);color:var(--ember);font-size:1.3rem;line-height:1}
+.faqlist details[open] summary::after{content:"\2013"}
+.faqlist details[open] summary{border-bottom:1px solid var(--line)}
+.faqp{color:var(--muted);font-size:.92rem;padding:12px 0 14px;margin:0}
+
+/* ===== Responsive ===== */
+@media(max-width:1100px){.grid-C{grid-template-columns:repeat(3,1fr)}.kpis{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:820px){.caserow{grid-template-columns:1fr auto auto}.caserow .own,.caserow .nxt{display:none}}
+@media(max-width:560px){.kpis{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:980px){.grid-C{grid-template-columns:repeat(2,1fr)}.fcols{grid-template-columns:1fr 1fr}}
+@media(max-width:860px){.hero .wrap{grid-template-columns:1fr}.dgrid{grid-template-columns:1fr}.dleft{position:static}.qwrap{grid-template-columns:1fr}.pgrid{grid-template-columns:1fr}.heatwrap{grid-template-columns:1fr}.focus{order:-1}.mgroups{display:none}.hamb{display:inline-flex}.mpanel .inner{grid-template-columns:1fr}.catlist{border-right:none;border-bottom:1px solid var(--line);padding-right:0;padding-bottom:12px}.battle{grid-template-columns:1fr}.bside.right,.bside.right .bsideTop,.bside.right .bstat__top,.bside.right .bactions{text-align:left;flex-direction:row;justify-content:flex-start}.bside.right .bstat__track{transform:none}.bdivider{flex-direction:row;padding:10px;border-left:0;border-right:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.bdivider .k{writing-mode:horizontal-tb}}
+@media(max-width:560px){.grid-C{grid-template-columns:1fr}.fcols{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}.reveal{opacity:1!important;transform:none!important;transition:none!important}.bar>span,.bstat__fill{transition:none!important}.cardC,.cardC .frame img{transition:none!important}.cardC:hover{transform:none}.foot .top{transform:scaleX(1)!important;transition:none!important}.fab,.fpanel,.fab:hover{transition:none!important}.fpanel{transform:none}.fpanel:not(.open){opacity:0;visibility:hidden}}
+</style>
+</head>
+<body>
+<div class="previewbanner">Static preview of the FireFlow React build — real product photos, real data, faithful interactions. Production app runs on React + Vite + TypeScript.</div>
+
+<nav class="mnav" id="mnav" aria-label="Primary"></nav>
+<div class="rail"><div class="wrap" id="rail"></div></div>
+<div class="trail">FireFlow <b>/</b> Product Intelligence <b>/</b> U.S. Portfolio</div>
+<main id="app"></main>
+<footer class="foot"><div class="top" id="foottop"></div><div class="wrap" id="footwrap"></div></footer>
+<div id="support"></div>
+
+<script src="preview-data.js"></script>
+<script>
+const FF=window.FF;
+const RM=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const byId=a=>Object.fromEntries(a.map(x=>[x.id,x]));
+const famById=byId(FF.families),varById=byId(FF.variants),brandById=byId(FF.brands),catById=byId(FF.categories),fmtById=byId(FF.formats),rankById=byId(FF.rankings),scenById=byId(FF.scenarios);
+const varsFor=fid=>FF.variants.filter(v=>v.familyId===fid);
+const defVar=fid=>{const vs=varsFor(fid);return vs.find(v=>v.format==='multi')||vs[0]};
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const HEAT={mild:'Mild',moderate:'Moderate heat',hot:'Hot','very-hot':'Very hot',extreme:'Extreme heat','sauce-dependent':'Sauce-dependent','not-applicable':'—'};
+const HEATN={mild:1,moderate:2,hot:3,'very-hot':4,extreme:5,'sauce-dependent':2,'not-applicable':0};
+const SERV={'stir-fry':'Stir-fry',soup:'Soup',sauce:'Condiment',snack:'Snack','frozen-meal':'Frozen meal'};
+const SEV={standard:'Standard',elevated:'Elevated',priority:'Priority',specialist:'Specialist escalation'};
+const STORE={'refrigerate-after-opening':'Refrigerate after opening',frozen:'Keep frozen',ambient:'Ambient'};
+const imgFor=(vid,fid)=>(vid&&FF.images.variant[vid])||(fid&&FF.images.family[fid])||null;
+let animated=false;
+
+const st={familyId:null,variantId:null,brand:'featured',mode:'explore',rankingMode:'portfolio-priority',compareIds:[],scenarioId:FF.scenarios[0].id,pfBrand:'all',pfCat:'all',pfView:'family',stage:0,cIssue:null,vIssue:null,heat:1,commandFilter:'all',signalId:null};
+
+function selFamily(fid){const f=famById[fid];if(!f)return;st.familyId=fid;st.variantId=(defVar(fid)||{}).id||null;st.brand=f.brand;FFSound.tick();render()}
+
+const FFSound=(()=>{let ctx=null,master=null,enabled=(localStorage.getItem('ff.sound')==='on');
+ function ensure(){if(!ctx){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;ctx=new AC();master=ctx.createGain();master.gain.value=0.14;master.connect(ctx.destination);}if(ctx.state==='suspended')ctx.resume();return ctx;}
+ function tone(freq,dur,type){if(!enabled)return;if(!ensure())return;const g=ctx.createGain();g.gain.value=0;const o=ctx.createOscillator();o.type=type||'sine';o.frequency.value=freq;o.connect(g);g.connect(master);const t=ctx.currentTime;g.gain.linearRampToValueAtTime(0.5,t+0.01);g.gain.exponentialRampToValueAtTime(0.001,t+dur);o.start(t);o.stop(t+dur+0.02);}
+ function sizzle(intensity){if(!enabled)return;if(!ensure())return;const dur=0.34,n=ctx.sampleRate*dur,buf=ctx.createBuffer(1,n,ctx.sampleRate),d=buf.getChannelData(0);for(let i=0;i<n;i++)d[i]=Math.random()*2-1;const s=ctx.createBufferSource();s.buffer=buf;const bp=ctx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=900+intensity*1900;bp.Q.value=0.8;const g=ctx.createGain();g.gain.value=0;s.connect(bp);bp.connect(g);g.connect(master);const t=ctx.currentTime;g.gain.linearRampToValueAtTime(0.18+intensity*0.16,t+0.03);g.gain.exponentialRampToValueAtTime(0.001,t+dur);s.start(t);s.stop(t+dur);}
+ return {tick(){tone(430,0.07,'triangle')},chime(){tone(660,0.16);setTimeout(()=>tone(990,0.2),90)},sizzle,
+  toggle(){enabled=!enabled;localStorage.setItem('ff.sound',enabled?'on':'off');if(enabled)ensure();return enabled},isOn(){return enabled}};
+})();
+
+function srcBadge(t){const m=FF.sourceTypes[t];return `<span class="badge"><span class="dot" style="background:var(${m.token})"></span>${esc(m.short)}</span>`}
+function confBadge(l){const n=l==='high'?3:l==='medium'?2:1;let d='';for(let i=0;i<3;i++)d+=`<span style="width:6px;height:6px;border-radius:50%;background:${i<n?'var(--ink-700)':'transparent'};border:1px solid var(--slate-400);display:inline-block"></span>`;return `<span class="badge"><span style="display:inline-flex;gap:2px">${d}</span>${l[0].toUpperCase()+l.slice(1)}</span>`}
+function heatPips(h){const n=HEATN[h]||0;let s='<span class="heatpips" title="Heat positioning">';for(let i=0;i<5;i++)s+=`<i class="${i<n?'on':''}"></i>`;return s+`</span> <span style="font-size:.75rem;color:var(--slate-600)">${h?HEAT[h]:''}</span>`}
+const synthBadge=()=>'<span class="badge"><span class="dot" style="background:var(--src-synthetic)"></span>Synthetic</span>';
+function sevMark(sev){const ic={standard:'<circle cx="8" cy="8" r="5"/>',elevated:'<path d="M8 2.5l6 11H2z"/>',priority:'<path d="M8 1.2l6.8 6.8L8 14.8 1.2 8z"/>',specialist:'<rect x="2.5" y="2.5" width="11" height="11" rx="2.5"/>'}[sev]||'';return `<span class="sev" data-s="${sev}"><svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor" aria-hidden="true">${ic}</svg>${SEV[sev]}</span>`}
+const chMark=ch=>`<span class="chtag"><span class="cd" style="background:${ch==='vendor'?'var(--cobalt)':'var(--jade)'}"></span>${ch==='vendor'?'Vendor':'Consumer'}</span>`;
+
+function stageHTML(f,v,size){const b=brandById[f.brand],src=imgFor(v?v.id:null,f.id);
+ const pkg=`<span class="pkg" style="--accent:var(${b.accentToken})"><span class="bs">${esc(b.name)}</span><span class="pn">${esc(f.name)}</span>${v?`<span class="pf">${esc(v.formatLabel)}</span>`:''}</span>`;
+ return `<div class="stage ${size||''}"><div class="ground"></div>${pkg}${src?`<img class="pimg" loading="lazy" src="${esc(src)}" alt="${esc(b.name+' '+f.name)}" onerror="this.remove()">`:''}</div>`}
+
+const NAVGROUPS=[
+ ['Explore',[['Product rankings','#rankings'],['All products','#portfolio'],['Brand universe','#brands'],['Compare','#compare'],['Flavor & heat','#heat'],['Product dossier','#product']]],
+ ['Consumer Care',[['Product help','#resolve'],['Ingredients & allergens','#product'],['Report an issue','#resolve'],['Case status','#simulate']]],
+ ['Vendor Support',[['Product information','#vendor'],['Order support','#vendor'],['Deductions & disputes','#simulate'],['Marketing assets','#vendor',1]]],
+ ['CX Intelligence',[['Command Center','#command'],['Product signals','#signals'],['Resolution simulator','#simulate'],['Methodology','#methodology']]],
+ ['About',[['Straight answers','#faq'],['Sources','#methodology'],['Limitations','#methodology'],['About Nathan','#methodology',1]]]
+];
+const NAVIMG={'Product rankings':'buldak-multi-carbonara.png','All products':'buldak-multi-original.png','Brand universe':'buldak-multi-rose.png','Straight answers':'buldak-multi-original.png','Compare':'buldak-multi-2x-spicy.png','Flavor & heat':'buldak-multi-habanero-lime.png','Product dossier':'buldak-multi-cheese.png','Product help':'buldak-multi-2x-spicy.png','Ingredients & allergens':'buldak-sauce-original.png','Report an issue':'buldak-potato-original.png','Case status':'buldak-multi-rose.png','Product information':'buldak-sauce-carbonara.png','Order support':'buldak-multi-original.png','Deductions & disputes':'buldak-potato-original.png','Marketing assets':'buldak-multi-carbonara.png','Resolution simulator':'buldak-multi-2x-spicy.png','Command Center':'buldak-multi-carbonara.png','Product signals':'buldak-multi-habanero-lime.png','Methodology':'buldak-multi-cheese.png','Case study':'buldak-multi-carbonara.png','Sources':'buldak-multi-original.png','Limitations':'buldak-potato-original.png','About Nathan':'buldak-sauce-carbonara.png'};
+const NAVTEXT={'Product rankings':'Multi-axis rankings — each measures one thing and shows its inputs.','All products':'The full U.S. portfolio: 45 families across 76 formats.','Brand universe':'Four house brands, four distinct roles across the portfolio.','Straight answers':'Honest answers about what FireFlow is and is not.','Compare':'Line up to four products face to face.','Flavor & heat':'Heat as brand positioning, not a Scoville number.','Product dossier':'Everything known about one product, format by format.','Product help':'Prep, allergens, and heat guidance for consumers.','Ingredients & allergens':'Format-bound allergen data — always verify the package.','Report an issue':'Structured intake that routes to the right team.','Case status':'Follow a case through its governed stages.','Product information':'Specs and sell-sheet data for retail partners.','Order support':'Orders, freight, and delivery questions.','Deductions & disputes':'Invoice and deduction review workflow.','Marketing assets':'Approved imagery and copy for partners.','Resolution simulator':'Watch a reported issue become a governed case.','Command Center':'The CX operations overview.','Product signals':'Emerging signals across the portfolio.','Methodology':'How facts are sourced, labeled, and reviewed.','Case study':'The story behind this concept.','Sources':'Where every fact comes from.','Limitations':'What this data does and does not cover.','About Nathan':'The person behind FireFlow.'};
+const NAVFALLBACK='buldak-multi-carbonara.png';
+function navImg(label){return 'public/products/'+(NAVIMG[label]||NAVFALLBACK)}
+const IMGERR="this.style.display='none'";
+function renderNav(){
+ const el=document.getElementById('mnav');
+ const bar=`<div class="bar">
+ <span class="brandmark">FireFlow<small>Product Intelligence</small></span>
+ <div class="mgroups" role="menubar">${NAVGROUPS.map((g,i)=>`<button class="mgroup" role="menuitem" aria-haspopup="true" aria-controls="mpanel-${i}" aria-expanded="false" data-nav="${i}">${esc(g[0])}</button>`).join('')}</div>
+ <button class="hamb soundbtn" data-navmob aria-controls="mdrawer" aria-expanded="false" aria-label="Open menu">Menu</button>
+ <button class="soundbtn" id="soundbtn" aria-pressed="${FFSound.isOn()}"><span class="wave"></span>Sound ${FFSound.isOn()?'on':'off'}</button>
+ </div>`;
+ const panels=NAVGROUPS.map((g,i)=>{
+  const cats=g[1].map((l,ix)=>`<a class="cat" href="${l[1]}" data-navcat data-navlink data-img="${esc(navImg(l[0]))}" data-name="${esc(l[0])}" data-text="${esc(NAVTEXT[l[0]]||'')}"${ix===0?' data-first="1"':''}><span>${esc(l[0])}${l[2]?'<span class="mplanned">Planned</span>':''}</span></a>`).join('');
+  const first=g[1][0][0];
+  return `<div class="mpanel" id="mpanel-${i}" role="region" aria-label="${esc(g[0])} menu"><div class="inner">
+  <div class="catlist">${cats}</div>
+  <div class="mprev" aria-live="polite"><img class="previmg" loading="lazy" src="${esc(navImg(first))}" alt="${esc(first)}" onerror="${IMGERR}"><div><p class="mkicker">Preview</p><h3 class="prevname">${esc(first)}</h3><p class="prevtext">${esc(NAVTEXT[first]||'')}</p><a class="btn primary" href="${esc(g[1][0][1])}" data-navlink>Open</a></div></div>
+  </div></div>`;
+ }).join('');
+ const drawer=`<div class="mdrawer" id="mdrawer" data-open="false"><div class="scrim" data-dclose></div><div class="sheet" role="dialog" aria-modal="true" aria-label="Menu"><button class="dclose" id="dclose" data-dclose>Close</button><h3>Menu</h3>${NAVGROUPS.map(g=>`<details><summary>${esc(g[0])}</summary><div>${g[1].map(l=>`<a href="${l[1]}" data-navlink data-dlink>${esc(l[0])}${l[2]?'<span class="mplanned">Planned</span>':''}</a>`).join('')}</div></details>`).join('')}</div></div>`;
+ el.innerHTML=bar+panels+drawer;
+ wireNav();
+}
+function syncPreview(panel,cat){
+ if(!panel||!cat)return;
+ const img=panel.querySelector('.previmg');
+ img.onerror=function(){this.style.display='none'};img.style.display='';
+ img.setAttribute('alt',cat.getAttribute('data-name'));img.src=cat.getAttribute('data-img');
+ panel.querySelector('.prevname').textContent=cat.getAttribute('data-name');
+ panel.querySelector('.prevtext').textContent=cat.getAttribute('data-text');
+ const cta=panel.querySelector('.mprev .btn');if(cta)cta.setAttribute('href',cat.getAttribute('href'));
+}
+function closePanels(){document.querySelectorAll('.mpanel.open').forEach(p=>p.classList.remove('open'));document.querySelectorAll('.mgroup[aria-expanded="true"]').forEach(b=>b.setAttribute('aria-expanded','false'))}
+function wireNav(){
+ const nav=document.getElementById('mnav');
+ nav.querySelectorAll('.mgroup').forEach(btn=>{btn.addEventListener('click',()=>{const i=btn.dataset.nav,p=document.getElementById('mpanel-'+i),open=p.classList.contains('open');closePanels();if(!open){p.classList.add('open');btn.setAttribute('aria-expanded','true');syncPreview(p,p.querySelector('.cat[data-first]'))}})});
+ nav.querySelectorAll('.mpanel .cat').forEach(cat=>{const p=cat.closest('.mpanel');cat.addEventListener('mouseenter',()=>syncPreview(p,cat));cat.addEventListener('focus',()=>syncPreview(p,cat))});
+ nav.querySelectorAll('.mpanel').forEach(p=>{p.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();const t=document.querySelector('[aria-controls="'+p.id+'"]');closePanels();if(t)t.focus()}})});
+ const sb=document.getElementById('soundbtn');sb.addEventListener('click',()=>{const on=FFSound.toggle();sb.setAttribute('aria-pressed',on);sb.innerHTML=`<span class="wave"></span>Sound ${on?'on':'off'}`;if(on)FFSound.chime()});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')closePanels()});
+ nav.querySelectorAll('[data-navlink]').forEach(a=>a.addEventListener('click',()=>closePanels()));
+ // mobile drawer
+ const drawer=document.getElementById('mdrawer'),hamb=nav.querySelector('[data-navmob]'),dclose=document.getElementById('dclose');let opener=null;
+ function openD(){opener=hamb;drawer.setAttribute('data-open','true');hamb.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';dclose.focus()}
+ function closeD(){drawer.setAttribute('data-open','false');hamb.setAttribute('aria-expanded','false');document.body.style.overflow='';if(opener){opener.focus();opener=null}}
+ hamb.addEventListener('click',openD);
+ drawer.querySelectorAll('[data-dclose]').forEach(b=>b.addEventListener('click',closeD));
+ drawer.querySelectorAll('[data-dlink]').forEach(a=>a.addEventListener('click',closeD));
+ drawer.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();closeD();return}if(e.key==='Tab'){const f=Array.prototype.slice.call(drawer.querySelectorAll('a,button,summary')).filter(x=>x.offsetParent!==null);if(!f.length)return;const first=f[0],last=f[f.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
+}
+function heroPicks(){if(st.brand==='featured')return FF.families.filter(f=>f.isAnchor);return FF.families.filter(f=>f.brand===st.brand&&(f.popularityTier==='A'||f.popularityTier==='B')).slice(0,8)}
+function renderHero(){
+ const brands=[['featured','Featured'],['buldak','Buldak'],['samyang','Samyang'],['tangle','Tangle'],['mep','MEP']];
+ const f=st.familyId?famById[st.familyId]:null,v=st.variantId?varById[st.variantId]:null,b=f?brandById[f.brand]:null,picks=heroPicks();
+ return `<section class="hero" data-spotlight><div class="wrap">
+ <div><p class="eyebrow" style="color:var(--carbo-400)">FireFlow Product Intelligence</p>
+ <h1>Know the product. Understand the friction. Resolve the experience.</h1>
+ <p class="lede">Explore Samyang America&rsquo;s public U.S. product portfolio, compare how each product is experienced, and see how consumer and vendor questions become structured Customer Experience workflows.</p>
+ <div class="controls">
+  <div><span class="cl">Browse by brand</span><div class="seg">${brands.map(([v2,l])=>`<button data-act="hbrand" data-brand="${v2}" aria-pressed="${st.brand===v2}">${l}</button>`).join('')}</div></div>
+  </div>
+ <ul class="picks">${picks.map(p=>`<li><button class="pick" data-act="pick" data-fid="${p.id}" aria-pressed="${p.id===st.familyId}">${esc(p.name)}</button></li>`).join('')}</ul></div>
+ <div class="focus">${f&&b?`${stageHTML(f,v,'hero')}<div style="text-align:center;display:grid;gap:8px;justify-items:center"><p class="fname">${esc(f.name)}</p><p class="fsub">${esc(b.name)} · ${esc(catById[f.category].label)}${v?' · '+esc(v.formatLabel):''}</p>${f.source?srcBadge(f.source.type):''}
+ <div class="actions"><a href="#product" class="btn primary" data-act="noop">Explore product</a><a href="#compare" class="btn secondary" data-act="add" data-fid="${f.id}">Compare</a><a href="#resolve" class="btn secondary" data-act="mode" data-mode="consumer">Ask as a consumer</a><a href="#vendor" class="btn secondary" data-act="mode" data-mode="vendor">Ask as a vendor</a></div></div>`:`<div class="empty-hero"><p style="font-family:var(--font-display);font-size:1.44rem;color:var(--text);margin:0 0 8px">Pick a product to begin</p><p style="color:var(--muted);margin:0">Choose a featured product to see how FireFlow carries it through discovery, comparison, and support.</p></div>`}</div>
+ </div></section>`}
+
+function railHeatHTML(h){const n=HEATN[h]||0;let s='<span class="heatpips" aria-hidden="true">';for(let i=0;i<5;i++)s+=`<i class="${i<n?'on':''}"></i>`;s+='</span>';return `<span class="railheat">${s}<span class="word">${h?esc(HEAT[h]):'—'}${n?` · heat ${n}/5`:''}</span></span>`}
+function renderRail(){const el=document.getElementById('rail');const f=st.familyId?famById[st.familyId]:null,v=st.variantId?varById[st.variantId]:null,b=f?brandById[f.brand]:null;
+ if(!f){el.innerHTML=`<p class="railprompt">No product selected — pick one from the portfolio to see it here.</p>`;return}
+ const src=imgFor(v?v.id:null,f.id);
+ const inc=st.compareIds.includes(f.id);
+ el.innerHTML=`${src?`<img class="railphoto" loading="lazy" src="${esc(src)}" alt="${esc(f.name)}" onerror="${IMGERR}">`:''}
+ <div class="railtop"><span class="brandchip"><span class="bdot" style="background:var(${b.accentToken})"></span>${esc(b.name)}</span><span class="rmode">${esc(st.mode)}</span></div>
+ <div class="railbody railmain"><span class="rname">${esc(f.name)}${v?`<span class="rfmt"> · ${esc(v.formatLabel)}</span>`:''}</span>${f.heatPositioning?railHeatHTML(f.heatPositioning):''}</div>
+ <div class="railactions">
+  <a class="railact primary" href="#resolve" data-act="mode" data-mode="consumer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 0 1 16 0"/><path d="M4 12v3a2 2 0 0 0 2 2h1v-5H6a2 2 0 0 0-2 2z"/><path d="M20 12v3a2 2 0 0 1-2 2h-1v-5h1a2 2 0 0 1 2 2z"/></svg><span>Consumer care<span class="sub">Help, prep, allergens</span></span></a>
+  <a class="railact" href="#vendor" data-act="mode" data-mode="vendor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.7"/><circle cx="17" cy="18" r="1.7"/></svg><span>Vendor support<span class="sub">Orders, freight, invoices</span></span></a>
+  <div class="raildivider" role="presentation"></div>
+  <button class="railact ghost" data-act="add" data-fid="${f.id}"${inc?' disabled':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="7" height="16" rx="1.5"/><rect x="14" y="4" width="7" height="16" rx="1.5"/><path d="M12 9v6M9 12h6"/></svg><span>${inc?'In compare':'Add to compare'}<span class="sub">Up to four side by side</span></span></button>
+  <button class="railreset" data-act="reset">Reset</button>
+ </div>`}
+function pcardHTML(f){const b=brandById[f.brand],v=defVar(f.id),src=imgFor(v?v.id:null,f.id),on=f.id===st.familyId,inc=st.compareIds.includes(f.id);
+ const fb=`<span class="imgfallback" style="display:${src?'none':'grid'};place-items:center;font-family:var(--font-display);color:var(--muted);text-transform:uppercase;font-size:13px;text-align:center;padding:10px">${esc(f.name)}</span>`;
+ const photo=(src?`<img loading="lazy" src="${esc(src)}" alt="${esc(f.name)} package" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">`:'')+fb;
+ return `<article class="cardC reveal ${animated?'in':''}${on?' on':''}" data-glow style="--accent:var(${b.accentToken})">
+ <div class="surface"><span class="cglow" aria-hidden="true"></span>
+  <div class="topline"><span class="brandtag">${esc(b.name)}</span><span class="accentdot" aria-hidden="true"></span></div>
+  <button class="frame" data-act="pick" data-fid="${f.id}" aria-label="Open ${esc(f.name)}">${photo}</button>
+  <button class="cn" data-act="pick" data-fid="${f.id}">${esc(f.name)}</button>
+  <div class="cmeta">
+   <div class="row">${f.heatPositioning?heatPips(f.heatPositioning):'<span class="formats">Heat n/a</span>'}${f.isAnchor?'<span class="atag">Anchor</span>':''}</div>
+   <div class="row"><span class="formats">${esc(catById[f.category].label)} · ${f.formats.length} format${f.formats.length>1?'s':''}</span></div>
+   ${st.pfView==='format'?`<div class="row" style="gap:6px">${varsFor(f.id).map(x=>`<button class="add" data-act="pickvar" data-fid="${f.id}" data-vid="${x.id}"${x.id===st.variantId?' style="background:var(--red);color:#fff;border-color:var(--red)"':''}>${esc(x.formatLabel)}</button>`).join('')}</div>`:''}
+   <div class="cbtns"><button class="btn primary" data-act="pick" data-fid="${f.id}">View</button><button class="btn secondary" data-act="add" data-fid="${f.id}"${inc?' disabled':''}>${inc?'Added':'Compare'}</button></div>
+  </div>
+ </div></article>`}
+function renderPortfolio(){
+ const fam=FF.families.filter(f=>(st.pfBrand==='all'||f.brand===st.pfBrand)&&(st.pfCat==='all'||f.category===st.pfCat));
+ const totV=fam.reduce((n,f)=>n+f.formats.length,0);
+ const cats=[...new Set(FF.families.filter(f=>st.pfBrand==='all'||f.brand===st.pfBrand).map(f=>f.category))].map(id=>catById[id]);
+ return `<section class="sec light" id="portfolio"><div class="wrap">
+ <p class="eyebrow">Explore</p><div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
+ <div><h2 class="h2">Portfolio Pulse</h2><p class="muted">Samyang lists formats as separate products. FireFlow normalizes them into <b>45 families</b> across <b>76 formats</b>. Showing <b>${fam.length}</b> famil${fam.length===1?'y':'ies'} · <b>${totV}</b> formats.</p></div>
+ <div class="seg">${[['family','Family view'],['format','Format view']].map(([v,l])=>`<button data-act="pfview" data-view="${v}" aria-pressed="${st.pfView===v}">${l}</button>`).join('')}</div></div>
+ <div class="row-filters">${[['all','All brands'],...FF.brands.map(b=>[b.id,b.name])].map(([id,l])=>`<button class="chip" data-act="pfbrand" data-brand="${id}" aria-pressed="${st.pfBrand===id}">${id!=='all'?`<span class="chipdot" style="background:var(${brandById[id].accentToken})"></span>`:''}${l}</button>`).join('')}</div>
+ <div class="row-filters">${[['all','All categories'],...cats.map(c=>[c.id,c.label])].map(([id,l])=>`<button class="chip" data-act="pfcat" data-cat="${id}" aria-pressed="${st.pfCat===id}">${l}</button>`).join('')}</div>
+ ${fam.length?`<div class="showcase"><ul class="grid-C">${fam.map(f=>`<li>${pcardHTML(f)}</li>`).join('')}</ul></div>`:`<p class="cmp-empty" style="margin-top:16px">No families match these filters. Try clearing the category.</p>`}
+ </div></section>`}
+function renderRankings(){
+ const view=rankById[st.rankingMode]||FF.rankings[0],entries=view.entries.slice(0,12);
+ const IL={officialProminence:'Official prominence',retailVisibility:'Retail visibility',categoryImportance:'Category importance',supportInquiryValue:'Support & inquiry value',evidenceConfidence:'Evidence confidence',heatAccessibility:'Heat accessibility',familiarFlavor:'Familiar flavor',preparationSimplicity:'Preparation simplicity',formatConvenience:'Format breadth',guidanceConfidence:'Guidance confidence',categoryGrowth:'Category growth',educationNeed:'Education need',marketingSupportPotential:'Marketing support',inquiryDemand:'Inquiry demand',componentComplexity:'Component complexity',handlingComplexity:'Handling complexity',allergenComplexity:'Allergen complexity',preparationSteps:'Preparation steps'};
+ return `<section class="sec light2" id="rankings"><div class="wrap">
+ <p class="eyebrow">Explore</p><h2 class="h2">Rankings Lab</h2>
+ <p class="muted">No single &ldquo;best&rdquo; list. Each view measures one thing, shows how it is calculated, and labels its source and confidence. Retail counts are engagement snapshots, never sales.</p>
+ <div class="tabs" style="margin:16px 0">${FF.rankings.map(v=>`<button data-act="rank" data-rank="${v.id}" aria-selected="${v.id===view.id}">${esc(v.label)}</button>`).join('')}</div>
+ <div class="vmeta">${srcBadge(view.sourceType)}${confBadge(view.confidence)}<span style="font-size:.833rem;color:var(--slate-400)">Reviewed ${view.lastReviewed}</span></div>
+ <p class="purpose">${esc(view.purpose)}</p>${view.caveat?`<p class="caveat">${esc(view.caveat)}</p>`:''}
+ <p style="font-size:.833rem;color:var(--slate-600)">${view.entries.length} of 45 families scored${view.entries.length<45?' — others are not scored here rather than guessed.':''}</p>
+ <ol class="rlist">${entries.map((e,i)=>{const f=famById[e.familyId],b=brandById[f.brand],vv=defVar(f.id),src=imgFor(vv?vv.id:null,f.id),inc=st.compareIds.includes(f.id);return `<li class="rrow"><span class="rk">${i+1}</span>${src?`<img class="rthumb" loading="lazy" src="${esc(src)}" alt="">`:`<span class="rthumb" style="display:grid;place-items:center;color:var(--slate-400);font-size:.6rem">${esc(b.name)}</span>`}<button class="rn" data-act="pick" data-fid="${f.id}">${esc(f.name)}${e.hasMissingInputs?'<abbr class="miss" title="derived/missing inputs — lower confidence">*</abbr>':''}</button><span class="bar"><span data-w="${e.score}"></span></span><span class="sc">${e.score}</span><span>${confBadge(e.confidence)}</span><span style="display:inline-flex;gap:8px;align-items:center"><a href="#product" data-act="pick" data-fid="${f.id}" style="font-size:.83rem;font-weight:600">Open</a><button class="add" data-act="add" data-fid="${f.id}"${inc?' disabled':''}>${inc?'In compare':'Compare'}</button></span></li>`}).join('')}</ol>
+ <details style="margin-top:20px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px 16px"><summary style="cursor:pointer;font-weight:600">How ${esc(view.label)} is calculated</summary><ul>${Object.entries(view.weights).map(([k,w])=>`<li>${IL[k]||k}: weight ${Math.round(w*100)}%</li>`).join('')}</ul></details>
+ </div></section>`}
+
+const HEAT_LADDER=[['moderate','buldak-carbonara'],['hot','buldak-habanero-lime'],['very-hot','buldak-original'],['extreme','buldak-2x-spicy']];
+const HEAT_CAP={moderate:'Creamy and cheese-forward tempers the burn — the most approachable Buldak heat.',hot:'Habanero brightness with real heat; lime keeps it lively.',
+ 'very-hot':'The original spicy-chicken benchmark. Assertive, but a known quantity.',
+ extreme:'An intense product. Start with a small amount and use only part of the sauce if you are unsure. This is not a challenge, and we never give medical advice.'};
+function renderHeat(){
+ const step=Math.min(st.heat,HEAT_LADDER.length-1),lvl=HEAT_LADDER[step][0],fid=HEAT_LADDER[step][1],f=famById[fid],v=defVar(fid),src=imgFor(v?v.id:null,fid),n=HEATN[lvl],t=(n-1)/4;
+ const circ=2*Math.PI*92,off=circ*(1-n/5);
+ return `<section class="sec light" id="heat"><div class="wrap">
+ <p class="eyebrow">Explore</p><h2 class="h2">The Heat Dial</h2>
+ <p class="muted">Heat here is <b>positioning, not a Scoville number</b>. Step through the ladder to set expectations honestly — the reason so many first-time questions are really about heat.</p>
+ <div class="heatwrap reveal ${animated?'in':''}" style="--t:${t}">
+ <div class="heatgauge">${src?`<img loading="lazy" src="${esc(src)}" alt="${esc(f.name)}" style="width:150px;height:150px;object-fit:contain;filter:drop-shadow(0 12px 20px #00000030);position:relative;z-index:1">`:''}
+ <svg viewBox="0 0 200 200" aria-hidden="true" style="transform:rotate(-90deg)"><circle cx="100" cy="100" r="92" fill="none" stroke="#ffffff14" stroke-width="12"></circle><circle cx="100" cy="100" r="92" fill="none" stroke="url(#hg)" stroke-width="12" stroke-linecap="round" stroke-dasharray="${circ}" stroke-dashoffset="${RM?off:circ}" data-heatarc="${off}"></circle><defs><linearGradient id="hg"><stop offset="0" stop-color="#e0a021"></stop><stop offset="1" stop-color="#c2341d"></stop></linearGradient></defs></svg></div>
+ <div><p class="flabel">${esc(f.name)} · ${esc(v?v.formatLabel:'')}</p><h3 style="font-size:1.7rem;margin:.2em 0">${HEAT[lvl]}</h3>
+ <div class="heatsteps">${HEAT_LADDER.map((_,i)=>`<button class="heatstep ${i<=step?'on':''}" data-act="heat" data-i="${i}" aria-label="Heat level ${i+1}"></button>`).join('')}</div>
+ <p class="heatcap">${esc(HEAT_CAP[lvl])}</p>
+ <div class="heatctrl"><button class="btn secondary" data-act="heatdown" ${step===0?'disabled':''}>Cooler</button><button class="btn primary" data-act="heatup" ${step>=HEAT_LADDER.length-1?'disabled':''}>Hotter</button><a href="#product" class="btn ghost" data-act="pick" data-fid="${fid}">Open ${esc(f.name)}</a></div>
+ <p style="font-size:.78rem;color:var(--slate-400);margin-top:10px">Turn on sound in the top bar to hear a soft sizzle as the heat rises. Off by default; motion and sound respect your system settings.</p>
+ </div></div></div></section>`}
+
+function cmpAllergen(f){const v=defVar(f.id);return v&&v.allergens&&v.allergens.length?esc(v.allergens.join(', ')+' ('+v.formatLabel+')'):'Verify package'}
+function cmpHeatPill(f){const h=f.heatPositioning,n=HEATN[h]||0;let s='<span class="heatpips" aria-hidden="true">';for(let i=0;i<5;i++)s+=`<i class="${i<n?'on':''}"></i>`;s+='</span>';return `<span style="display:inline-flex;gap:8px;align-items:center;font-size:.8rem;font-weight:700">${s}${h?esc(HEAT[h]):'—'}</span>`}
+function cmpSideHTML(f,slot,side){const v=defVar(f.id),src=imgFor(v?v.id:null,f.id),b=brandById[f.brand];
+ const ft=byId(rankById['first-time-fit'].entries),ftv=ft[f.id]?ft[f.id].score:null;
+ const heatN=HEATN[f.heatPositioning]||0,heatPct=Math.round(heatN/5*100);
+ const cream=typeof f.creaminess==='number'?f.creaminess:null,creamPct=cream!=null?Math.round(cream/5*100):0;
+ return `<div class="bside ${side}">
+ <div class="bsideTop">${src?`<img class="bthumb" loading="lazy" src="${esc(src)}" alt="" onerror="${IMGERR}">`:''}<div><div class="bsideName">${esc(f.name)}</div>${cmpHeatPill(f)}</div></div>
+ <div class="bswap"><button class="add" data-act="cmpswap" data-slot="${slot}">Swap this side ▸</button></div>
+ <div class="bstat"><div class="bstat__top"><span>Heat positioning</span><span class="bstat__val">${f.heatPositioning?esc(HEAT[f.heatPositioning]):'—'} (${heatN} of 5)</span></div><div class="bstat__track"><div class="bstat__fill fill-heat" data-fillbar="${heatPct}%" style="width:0"></div></div></div>
+ <div class="bstat"><div class="bstat__top"><span>Creaminess <span class="tag-ed">editorial</span></span><span class="bstat__val">${cream!=null?cream+' of 5':'—'}</span></div><div class="bstat__track"><div class="bstat__fill fill-cream" data-fillbar="${creamPct}%" style="width:0"></div></div></div>
+ <dl class="bfacts"><dt>Brand · Category</dt><dd>${esc(b.name)} · ${esc(catById[f.category].label)}</dd><dt>Formats</dt><dd>${esc(f.formats.map(x=>fmtById[x].label).join(', '))}</dd><dt>Allergens, default format</dt><dd>${cmpAllergen(f)}</dd><dt>First-time fit <span class="tag-ed">editorial</span></dt><dd>${ftv!=null?ftv+' / 100':'—'}</dd></dl>
+ <div class="bactions"><a class="add" href="#resolve" data-act="pickmode" data-fid="${f.id}" data-mode="consumer">Consumer</a><a class="add" href="#vendor" data-act="pickmode" data-fid="${f.id}" data-mode="vendor">Vendor</a><button class="add" data-act="rm" data-fid="${f.id}">Remove</button></div>
+ </div>`}
+function renderCompare(){
+ const PRE=[['Carbonara vs Cream Carbonara',['buldak-carbonara','buldak-cream-carbonara']],['Original vs 2X Spicy',['buldak-original','buldak-2x-spicy']],['Cheese vs Quattro Cheese',['buldak-cheese','buldak-quattro-cheese']],['Original vs Carbonara sauce',['buldak-original-hot-sauce','buldak-carbonara-hot-sauce']]];
+ const fams=st.compareIds.map(id=>famById[id]).filter(Boolean);
+ const presets=`<div class="cmp-presets"><span style="font-size:.833rem;color:var(--muted);font-weight:800;align-self:center">Try:</span>${PRE.map(p=>`<button class="chip" data-act="preset" data-ids="${p[1].join(',')}">${p[0]}</button>`).join('')}${fams.length?'<button class="chip" data-act="clearcmp">Clear all</button>':''}</div>`;
+ let body;
+ if(fams.length>=2){
+  body=`<div class="battle" id="battle">${cmpSideHTML(fams[0],0,'left')}<div class="bdivider" aria-hidden="true"><span class="vs">VS</span><span class="k">대결</span></div>${cmpSideHTML(fams[1],1,'right')}</div>${fams.length>2?`<p class="muted" style="margin-top:12px;font-size:.82rem">Showing the first two of ${fams.length} selected. Remove one to bring another into the ring.</p>`:''}`;
+ } else {
+  body=`<div class="cmp-empty"><p style="margin:0 0 6px;color:var(--text);font-weight:700">Line up two products face to face.</p><p style="margin:0">Add a second product from the portfolio, rankings, or a preset above. ${fams.length===1?esc(fams[0].name)+' is ready and waiting.':''}</p></div>`;
+ }
+ return `<section class="sec light2" id="compare"><div class="wrap"><p class="eyebrow">Explore</p><h2 class="h2">Comparison Lab</h2><p class="muted">Two products, one arena. Heat is brand positioning order, not a spice score; creaminess and first-time fit are editorial. Allergens reflect each product&rsquo;s default format — switch formats in the dossier to compare another.</p>${presets}${body}</div></section>`}
+function renderDossier(){
+ const f=st.familyId?famById[st.familyId]:null;
+ if(!f)return `<section class="sec light" id="product"><div class="wrap"><p class="eyebrow">Explore</p><h2 class="h2">Product Dossier</h2><p style="color:var(--slate-600);border:1px dashed var(--line);border-radius:14px;padding:32px;text-align:center">Select a product from the portfolio to open its dossier.</p></div></section>`;
+ const b=brandById[f.brand],vs=varsFor(f.id),v=st.variantId?varById[st.variantId]:vs[0];
+ return `<section class="sec light" id="product"><div class="wrap"><p class="eyebrow">Explore</p><h2 class="h2">Product Dossier</h2>
+ <div class="dgrid"><div class="dleft"><div class="dframe" style="--card-accent:var(${b.accentToken})"><div class="inner">${stageHTML(f,v,'dossier')}</div></div>
+ <div style="display:grid;gap:8px;justify-items:center"><span class="flabel">Format</span><div class="seg" style="background:#00000010;border-color:var(--line)">${vs.map(x=>`<button data-act="setfmt" data-vid="${x.id}" aria-pressed="${x.id===v.id}" style="color:var(--ink-800)">${esc(x.formatLabel)}</button>`).join('')}</div></div></div>
+ <div><p class="pcbrand">${esc(b.name)} · ${esc(catById[f.category].label)}</p><h3 class="name">${esc(f.name)}</h3>${f.flavorStory?`<p class="story">${esc(f.flavorStory)}</p>`:''}
+ <dl class="attrs">${f.heatPositioning?`<div><dt>Heat</dt><dd>${HEAT[f.heatPositioning]}</dd></div>`:''}${f.servingStyle?`<div><dt>Style</dt><dd>${SERV[f.servingStyle]}</dd></div>`:''}${typeof f.creaminess==='number'?`<div><dt>Creaminess <span style="font-weight:400;color:var(--slate-400)">(editorial)</span></dt><dd>${f.creaminess}/5</dd></div>`:''}<div><dt>Formats</dt><dd>${vs.map(x=>x.formatLabel).join(', ')}</dd></div></dl>
+ <div class="factcard"><div class="facthead"><h4 style="margin:0;font-size:1.2rem">For ${esc(v.formatLabel)}</h4>${confBadge(v.dataConfidence)}</div>
+ <div class="fact"><span class="fl">Allergens</span>${v.allergens&&v.allergens.length?`<span class="fv">${v.allergens.join(', ')}${v.allergenSource?srcBadge(v.allergenSource.type):''}</span>`:`<span class="unknown">Not in our public data for this exact format. Verify the current package.</span>`}</div>
+ <div class="fact"><span class="fl">Preparation</span>${v.preparation?`<span class="fv">${esc(v.preparation)}</span>`:`<span class="unknown">Format-specific preparation not in public data — verify the package.</span>`}</div>
+ ${v.components&&v.components.length?`<div class="fact"><span class="fl">In the package</span><span class="fv">${v.components.map(esc).join(' · ')}</span></div>`:''}
+ ${v.storage?`<div class="fact"><span class="fl">Storage</span><span class="fv">${STORE[v.storage]}</span></div>`:''}
+ ${v.retailSignals&&v.retailSignals.length?`<div class="fact"><span class="fl">Retail signal ${srcBadge('retail-signal')}</span><span class="fv">${v.retailSignals.map(s=>esc(s.retailer+': '+s.marker+' ('+s.snapshotDate+')')).join(' · ')}</span></div>`:''}
+ <p class="reminder">${esc(FF.reminder)}</p></div>
+ ${(f.consumerQuestions||f.vendorQuestions)?`<div class="qwrap">${f.consumerQuestions?`<div class="qb${st.mode==='vendor'?' mut':''}"><h4 style="font-size:1rem;margin:0 0 8px">Common consumer questions</h4><ul>${f.consumerQuestions.map(q=>`<li>${esc(q)}</li>`).join('')}</ul></div>`:''}${f.vendorQuestions?`<div class="qb${st.mode==='consumer'?' mut':''}"><h4 style="font-size:1rem;margin:0 0 8px">Common vendor questions</h4><ul>${f.vendorQuestions.map(q=>`<li>${esc(q)}</li>`).join('')}</ul></div>`:''}</div>`:''}
+ ${f.relatedFamilyIds?`<div style="display:grid;gap:8px;margin:16px 0"><span class="flabel">Related</span><div class="relchips">${f.relatedFamilyIds.map(id=>{const r=famById[id];if(!r)return '';const rv=defVar(id),rs=imgFor(rv?rv.id:null,id);return `<button class="relchip" data-act="pick" data-fid="${id}">${rs?`<img loading="lazy" src="${esc(rs)}" alt="">`:''}${esc(r.name)}</button>`}).join('')}</div></div>`:''}
+ <div class="actions" style="justify-content:flex-start;margin:16px 0"><a href="#resolve" class="btn primary" data-act="mode" data-mode="consumer">Ask as a consumer</a><a href="#vendor" class="btn secondary" data-act="mode" data-mode="vendor">Ask as a vendor</a><a href="#compare" class="btn ghost" data-act="add" data-fid="${f.id}">Add to compare</a></div>
+ ${f.source?`<p style="font-size:.833rem;color:var(--slate-600);display:inline-flex;flex-wrap:wrap;gap:8px;align-items:center">${srcBadge(f.source.type)} ${esc(f.source.note||'')} · Last verified ${esc(f.source.lastVerified||'')}</p>`:''}
+ </div></div></div></section>`}
+
+function relIssues(list,f){return list.filter(i=>i.appliesToCategories.length===0||i.appliesToCategories.includes(f.category))}
+function pathCol(ch,list,activeId){
+ const f=famById[st.familyId],v=st.variantId?varById[st.variantId]:null,src=imgFor(v?v.id:null,f.id),active=list.find(i=>i.id===activeId),emph=st.mode===ch,scen=active?FF.scenarios.find(s=>s.issueId===active.id):null;
+ return `<div class="path${emph?' on':''}"${ch==='vendor'?' id="vendor"':''}><div class="phead"><h3 style="font-size:1.44rem;margin:0">${ch==='consumer'?'Consumer Care':'Vendor & Retailer Support'}</h3>${emph?'<span class="youare">You&rsquo;re here</span>':''}</div>
+ <p class="ctx">${src?`<img loading="lazy" src="${esc(src)}" alt="">`:''}<span>About: <b>${esc(f.name)}</b>${v?' · '+esc(v.formatLabel):''} · ${esc(catById[f.category].label)}</span></p>
+ <div class="issues">${list.map(i=>`<label class="issue${i.id===activeId?' on':''}"><input type="radio" name="i-${ch}" ${i.id===activeId?'checked':''} data-act="issue" data-channel="${ch}" data-iid="${i.id}">${esc(i.label)}</label>`).join('')}</div>
+ ${active?`<div class="detail"><div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center"><span class="sev" data-s="${active.defaultSeverity}">${SEV[active.defaultSeverity]}</span><span style="font-size:.833rem;color:var(--slate-600)">Routes to: ${active.routeTo.map(esc).join(', ')}</span></div>
+ ${active.requiresSpecialistEscalation?`<p class="escal">This is routed to specialist escalation. FireFlow does not diagnose, minimize, or provide medical advice — it captures the facts and hands the case to the right team.</p>`:''}
+ <ol class="steps"><li>Identify</li><li>Verify</li><li>Gather evidence</li><li>Route</li><li>Resolve</li><li>Update</li></ol>
+ ${active.evidenceRequested.length?`<div style="font-size:.833rem"><b style="color:var(--slate-600)">Why we ask, and for what:</b><ul style="margin:4px 0 0;padding-left:1.1em;color:var(--slate-600)">${active.evidenceRequested.map(e=>`<li>${esc(e)}</li>`).join('')}</ul></div>`:''}
+ <a href="#simulate" class="btn primary" data-act="startcase" data-ch="${ch}" data-sid="${scen?scen.id:''}">${scen?'See this resolved':'Start a case'}</a></div>`:''}</div>`}
+function renderPaths(){
+ const f=st.familyId?famById[st.familyId]:null;
+ if(!f)return `<section class="sec light2" id="resolve"><div class="wrap"><p class="eyebrow">Resolve</p><h2 class="h2">Two Paths: Consumer & Vendor</h2><p style="color:var(--slate-600);border:1px dashed var(--line);border-radius:14px;padding:32px;text-align:center">Select a product first — an inquiry always starts from the exact product, so you never re-enter what the system already knows.</p></div></section>`;
+ return `<section class="sec light2" id="resolve"><div class="wrap"><p class="eyebrow">Resolve</p><h2 class="h2">Two Paths: Consumer & Vendor</h2><p class="muted">Every inquiry starts from the exact product and asks only what changes the routing or resolution. The system already knows the family, format, category, components, and public allergen information.</p>
+ <div class="pgrid" style="margin-top:20px">${pathCol('consumer',relIssues(FF.consumerIssues,f),st.cIssue)}${pathCol('vendor',relIssues(FF.vendorIssues,f),st.vIssue)}</div></div></section>`}
+
+function renderSim(){
+ const s=scenById[st.scenarioId]||FF.scenarios[0],f=famById[s.familyId],stage=Math.min(st.stage,s.stages.length-1),cons=FF.scenarios.filter(x=>x.channel==='consumer'),ven=FF.scenarios.filter(x=>x.channel==='vendor');
+ const pickRow=(label,arr)=>`<div style="display:grid;gap:8px"><span class="cl" style="color:var(--muted)">${label}</span><div class="pickrow">${arr.map(x=>`<button class="spick" data-act="scen" data-sid="${x.id}" aria-pressed="${x.id===s.id}">${esc(x.title)}</button>`).join('')}</div></div>`;
+ const att=(h,items)=>`<div class="att"><h5>${h}</h5><ul>${items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul></div>`;
+ return `<section class="sec dark" id="simulate"><div class="wrap"><p class="eyebrow" style="color:var(--carbo-400)">Resolve</p><h2 class="h2">Resolution Simulator</h2>
+ <p class="muted">How a reported issue becomes a governed case — verified facts separated from assumptions, one accountable owner, a visible next update, and approvals before any commitment.</p>
+ <div style="display:grid;gap:12px;margin:20px 0">${pickRow('Consumer',cons)}${pickRow('Vendor',ven)}</div>
+ <div class="case"><div class="casehead"><div><h3 class="ctitle">${esc(s.title)}</h3><p style="font-size:.833rem;color:var(--slate-600);margin:4px 0 0">${esc(f?f.name:s.familyId)} · ${s.channel==='consumer'?'Consumer':'Vendor'} case</p></div><div style="display:inline-flex;gap:8px;align-items:center"><span class="sev" data-s="${s.severity}">${SEV[s.severity]}</span><span class="badge"><span class="dot" style="background:var(--src-synthetic)"></span>Synthetic</span></div></div>
+ <p style="margin:16px 0"><b>Reported:</b> ${esc(s.reported)}</p>
+ <ol class="timeline">${s.stages.map((x,i)=>`<li class="${i===stage?'tcur':i<stage?'tdone':''}"><button class="tbtn" data-act="stage" data-i="${i}"><span class="tdot"></span><span class="tlabel">${esc(x.title)}</span></button></li>`).join('')}</ol>
+ <div class="stagebox"><h4 style="margin:0 0 8px;font-size:1.44rem">${esc(s.stages[stage].title)}</h4><p style="margin:0 0 12px">${esc(s.stages[stage].detail)}</p><div style="display:flex;gap:8px"><button class="btn secondary" data-act="stageprev" ${stage===0?'disabled':''}>Previous</button><button class="btn primary" data-act="stagenext" ${stage>=s.stages.length-1?'disabled':''}>${stage>=s.stages.length-1?'Complete':'Advance'}</button></div></div>
+ <div class="catt">${att('Verified facts',s.verifiedFacts)}${att('Evidence needed & why',s.evidenceNeeded)}<div class="att"><h5>Ownership</h5><p><b>Owner:</b> ${esc(s.owner)}</p><p><b>Collaborators:</b> ${esc(s.collaborators.join(', ')||'—')}</p></div><div class="att"><h5>Customer commitment</h5><p>${esc(s.customerUpdateCommitment)}</p></div>${att('Resolution options',s.resolutionOptions)}${att('Approvals required',s.approvalsRequired)}<div class="att"><h5>Root cause</h5><p>${esc(s.rootCause)}</p></div><div class="att"><h5>Corrective action</h5><p>${esc(s.correctiveAction)}</p></div></div>
+ <p style="margin-top:20px;font-size:.833rem;color:var(--slate-600);font-style:italic">All names, cases, owners, and outcomes here are fictional, created to demonstrate the workflow.</p>
+ </div></div></section>`}
+
+function renderMethodology(){return `<section class="sec light" id="methodology"><div class="wrap"><p class="eyebrow">Trust</p><h2 class="h2">Methodology &amp; sources</h2><p class="muted">Product facts are labeled by origin: official Samyang America product information, public retail signals (single-listing, date-stamped, never sales), FireFlow editorial models, and synthetic demonstration data. Allergens and preparation are bound to the exact format. Rankings are multi-axis and show their inputs, confidence, and last-reviewed date. Unknown vendor specifications are shown as unavailable or as information that would require an approved sell sheet.</p></div></section>`}
+
+const CMDMETA={
+ 's-carbonara-missing-sauce':{age:'Opened 4h ago',next:'First reply due today'},
+ 's-chips-crushed':{age:'Opened 6h ago',next:'First reply due today'},
+ 's-sauce-leaking':{age:'Opened 1d 3h ago',next:'Quality note overdue',overdue:true},
+ 's-carbonara-allergen':{age:'Opened 2h ago',next:'Same-day factual answer'},
+ 's-carbonara-partial-order':{age:'Opened 8h ago',next:'Backorder date due tomorrow'},
+ 's-retailer-deduction':{age:'Opened 2d 4h ago',next:'Validity decision overdue',overdue:true},
+ 's-edi-failure':{age:'Opened 5h ago',next:'Reprocessing plan due today'}
+};
+const isDed=s=>/deduction|chargeback|edi/i.test(s.title);
+function renderCommand(){
+ const scen=FF.scenarios,filt=st.commandFilter||'all';
+ const cons=scen.filter(s=>s.channel==='consumer').length,ven=scen.filter(s=>s.channel==='vendor').length;
+ const KPIS=[
+  {k:'all',n:scen.length,label:'Open cases',sub:'Whole live queue'},
+  {k:'sla',n:scen.filter(s=>s.severity==='priority'||s.severity==='elevated').length,label:'SLA exposure',sub:'Priority + elevated'},
+  {k:'overdue',n:scen.filter(s=>CMDMETA[s.id]&&CMDMETA[s.id].overdue).length,label:'Overdue updates',sub:'Past a commitment'},
+  {k:'deductions',n:scen.filter(isDed).length,label:'Open deductions',sub:'Vendor finance'},
+  {k:'consumer',n:cons,label:'Product concerns',sub:'Consumer channel'},
+  {k:'vendor',n:ven+' / '+cons,label:'Vendor vs consumer',sub:'Vendor / consumer split'}
+ ];
+ const match=s=>filt==='all'?true:filt==='sla'?(s.severity==='priority'||s.severity==='elevated'):filt==='overdue'?!!(CMDMETA[s.id]&&CMDMETA[s.id].overdue):filt==='deductions'?isDed(s):filt==='consumer'?s.channel==='consumer':filt==='vendor'?s.channel==='vendor':true;
+ const rows=scen.filter(match);
+ const active=KPIS.find(x=>x.k===filt)||KPIS[0];
+ return `<section class="sec light2" id="command"><div class="wrap">
+ <p class="eyebrow">CX Intelligence</p>
+ <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
+  <div><h2 class="h2">CX Command Center</h2><p class="muted">A manager&rsquo;s view of the live queue: what is open, what is exposed to a service level, and who owns the next commitment. Select any tile to filter the case list below.</p></div>
+  ${synthBadge()}
+ </div>
+ <div class="kpis" role="group" aria-label="Case queue metrics — select to filter">${KPIS.map(x=>`<button class="kpi" data-act="cmdfilter" data-filter="${x.k}" aria-pressed="${filt===x.k}"><span class="kn">${x.n}</span><span class="kl">${esc(x.label)}</span><span class="ks">${esc(x.sub)}</span></button>`).join('')}</div>
+ <p class="muted" style="font-size:.85rem;margin:0 0 8px">Showing <b>${rows.length}</b> of ${scen.length} cases — <b>${esc(active.label)}</b>. All figures below are synthetic demonstration data.</p>
+ <div class="caselist">${rows.map(s=>{const m=CMDMETA[s.id]||{};const f=famById[s.familyId];return `<div class="caserow${m.overdue?' od':''}">
+  <div><div class="ct">${esc(s.title)}</div><div class="own" style="color:var(--muted);font-size:.76rem">${esc(f?f.name:s.familyId)} · ${esc(m.age||'')}</div></div>
+  ${chMark(s.channel)}
+  ${sevMark(s.severity)}
+  <div class="own">${esc(s.owner)}</div>
+  <div class="nxt${m.overdue?' odt':''}">${esc(m.next||s.customerUpdateCommitment)}</div>
+  <a class="add" href="#simulate" data-act="scen" data-sid="${s.id}">Open case</a>
+ </div>`}).join('')||`<p class="cmp-empty">No cases match this filter right now.</p>`}</div>
+ <p class="reminder" style="margin-top:16px">These counts, owners, ages, and commitments are invented to demonstrate an order-management and SLA workflow. They are not real Samyang operational data.</p>
+ </div></section>`}
+
+const SIGNALS=[
+ {id:'sig-carbonara-heat',title:'Carbonara heat expectations',fams:['buldak-carbonara','buldak-cream-carbonara'],inquiry:'First-time buyers ask whether Carbonara is spicy, then report it was hotter than the creamy look suggested.',pattern:'Repeated first-time inquiries cluster on one family where the visual reads mild but the base is Buldak-level heat.',rootCause:'Creamy, cheese-forward styling sets a mild expectation the product does not meet.',action:'Add a plain heat-expectation line to product help and the dossier; brief care team on approved framing.',measure:'Share of Carbonara inquiries that mention heat surprise, tracked month over month.',owner:'Consumer Care lead + Product marketing',conf:'medium',impact:{consumer:'Fewer surprised first-time buyers; heat framed as positioning, not a Scoville number.',vendor:'Retail partners get a consistent answer for shelf-level questions.'}},
+ {id:'sig-chip-damage',title:'Chip shipping damage',fams:['buldak-potato-chips-original','buldak-potato-chips-quattro-cheese'],inquiry:'Consumers report crushed potato-chip bags arriving through certain fulfillment routes.',pattern:'Crushed-product reports concentrate in a subset of shipments rather than spreading evenly.',rootCause:'Suspected handling and protection gap in specific pack-out or carrier lanes; not a product defect.',action:'Log lane and carrier on every report; escalate to logistics when a lane recurs above threshold.',measure:'Crushed-report rate per fulfillment lane, watched for lane-level spikes.',owner:'Consumer Care + Logistics',conf:'low',impact:{consumer:'Faster replacement and a route to the real fix, not a scripted apology.',vendor:'Evidence to raise pack-out standards with the responsible lane.'}},
+ {id:'sig-sauce-leak',title:'Hot-sauce leakage by lot',fams:['buldak-original-hot-sauce','buldak-carbonara-hot-sauce'],inquiry:'Shoppers report leaking or seeping hot-sauce bottles.',pattern:'Leak reports begin to share a lot code rather than appearing at random.',rootCause:'Possible cap-seal or fill variance isolated to one or more lots.',action:'Capture the lot code on every leak report; open a Quality review when a single lot recurs.',measure:'Leak reports grouped by lot; a recurring lot triggers escalation.',owner:'Consumer Care + Quality',conf:'medium',impact:{consumer:'A concrete safety-and-quality path instead of one-off refunds.',vendor:'Lot-level signal supports any retailer withdrawal conversation.'}},
+ {id:'sig-milk-allergen',title:'Creamy-variant milk-allergen questions',fams:['buldak-carbonara','buldak-cheese','buldak-quattro-cheese'],inquiry:'Consumers ask whether creamy and cheese variants contain milk before buying.',pattern:'Allergen questions concentrate on the cheese-forward families and ask for the same fact.',rootCause:'Milk is expected in these formats, but buyers want confirmation before purchase — a guidance gap, not a formulation issue.',action:'Surface format-bound allergen facts prominently in the dossier with a verify-the-package reminder.',measure:'Pre-purchase allergen inquiries resolved on first reply for these families.',owner:'Consumer Care lead',conf:'high',impact:{consumer:'Clear, format-specific allergen answers with a package-verification reminder.',vendor:'Reduced allergen escalations at the retail level.'}},
+ {id:'sig-deduction-codes',title:'Deductions by reason code',fams:['buldak-original','buldak-carbonara'],inquiry:'Retailer deductions arrive against invoices with varied reason codes.',pattern:'Deductions concentrate on a few reason codes rather than spreading evenly across all.',rootCause:'A small set of recurring reason codes drives most disputable deductions.',action:'Tag every deduction with its reason code; review the top codes with the account and finance.',measure:'Deduction dollars and recovery rate grouped by reason code.',owner:'Customer Experience manager + Finance',conf:'medium',impact:{consumer:'None directly — this is a vendor-finance signal.',vendor:'Faster, better-documented deduction disputes within the retailer window.'}},
+ {id:'sig-sellsheet',title:'Repeated vendor sell-sheet requests',fams:['buldak-carbonara','buldak-2x-spicy'],inquiry:'Retail partners repeatedly ask for the same specs and sell-sheet details.',pattern:'The same handful of families generate most repeat information requests from vendors.',rootCause:'Approved partner-facing information is not surfaced where vendors first look.',action:'Publish an approved product-information view for the most-requested families.',measure:'Repeat sell-sheet requests per family after publishing the approved view.',owner:'Customer Experience manager + Product marketing',conf:'medium',impact:{consumer:'None directly — this is a vendor-enablement signal.',vendor:'Self-serve access to approved specs, fewer back-and-forth emails.'}}
+];
+function renderSignals(){
+ const active=SIGNALS.find(s=>s.id===st.signalId)||SIGNALS[0];
+ const att=(h,body)=>`<div class="att"><h5>${h}</h5>${body}</div>`;
+ const relProducts=active.fams.map(id=>famById[id]).filter(Boolean);
+ return `<section class="sec dark" id="signals"><div class="wrap">
+ <p class="eyebrow" style="color:var(--carbo-400)">CX Intelligence</p>
+ <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
+  <div><h2 class="h2">Product Signals &amp; Continuous Improvement</h2><p class="muted">Individual inquiries are noise; repetition is signal. Each card follows the same loop — repeated inquiry to pattern to root cause to action to measurement. Select one to open its detail.</p></div>
+  ${synthBadge()}
+ </div>
+ <div class="siggrid" role="group" aria-label="Product signals — select to expand">${SIGNALS.map(s=>`<button class="sigcard" data-act="signal" data-sid="${s.id}" aria-pressed="${s.id===active.id}"><h4>${esc(s.title)}</h4><p class="sp">${esc(s.inquiry)}</p><div class="sigflow"><span>Inquiry</span><span>Pattern</span><span>Root cause</span><span>Action</span><span>Measure</span></div></button>`).join('')}</div>
+ <div class="sigdetail">
+  <div class="sighead"><h3 style="font-family:var(--font-display);font-weight:400;font-size:1.5rem;margin:0;color:var(--text)">${esc(active.title)}</h3><div style="display:inline-flex;gap:8px;align-items:center">${confBadge(active.conf)}${synthBadge()}</div></div>
+  <div class="sigcols">
+   ${att('Evidence &amp; pattern',`<p style="margin:0;font-size:.86rem;color:var(--text)">${esc(active.pattern)}</p>`)}
+   ${att('Root cause',`<p style="margin:0;font-size:.86rem;color:var(--text)">${esc(active.rootCause)}</p>`)}
+   ${att('Proposed action',`<p style="margin:0;font-size:.86rem;color:var(--text)">${esc(active.action)}</p>`)}
+   ${att('How we measure it',`<p style="margin:0;font-size:.86rem;color:var(--text)">${esc(active.measure)}</p>`)}
+   ${att('Customer &amp; vendor impact',`<p style="margin:0 0 6px;font-size:.86rem;color:var(--text)"><b>Consumer:</b> ${esc(active.impact.consumer)}</p><p style="margin:0;font-size:.86rem;color:var(--text)"><b>Vendor:</b> ${esc(active.impact.vendor)}</p>`)}
+   ${att('Owner',`<p style="margin:0;font-size:.86rem;color:var(--text)">${esc(active.owner)}</p>`)}
+  </div>
+  ${relProducts.length?`<div style="display:grid;gap:8px"><span class="flabel">Affected products</span><div class="relchips">${relProducts.map(f=>{const v=defVar(f.id),rs=imgFor(v?v.id:null,f.id);return `<button class="relchip" data-act="pick" data-fid="${f.id}">${rs?`<img loading="lazy" src="${esc(rs)}" alt="">`:''}${esc(f.name)}</button>`}).join('')}</div></div>`:''}
+ </div>
+ <p class="reminder" style="margin-top:16px">Signals, patterns, and measures shown here are synthetic, built to demonstrate a continuous-improvement loop. They are not real Samyang findings.</p>
+ </div></section>`}
+
+const BFLAG={buldak:'buldak-carbonara',samyang:'samyang-ramen',tangle:'tangle-bulgogi-alfredo',mep:'mep-red-pepper-chicken-cilantro'};
+const BANGLE={
+ buldak:{consumer:'Heat, prep, and allergen questions across the widest format range in the portfolio.',vendor:'The demand driver — orders, deductions, and sell-sheet requests concentrate here.'},
+ samyang:{consumer:'Soup preparation and heritage-flavor questions from long-time fans.',vendor:'Legacy line ordering and steady, familiar retail placement.'},
+ tangle:{consumer:'Protein content, cook method, and familiar-sauce questions.',vendor:'A better-for-you extension that needs clear positioning at shelf.'},
+ mep:{consumer:'Broth style and flavor-pairing questions on a smaller, focused line.',vendor:'Specialist soup range with distinct pairings to explain.'}
+};
+const BNUMLABEL={buldak:'families · noodles, sauces, snacks, frozen',samyang:'families · soup + heritage snacks',tangle:'protein pastas',mep:'broth-led soups'};
+function brandFlag(bid){const f=famById[BFLAG[bid]];if(!f)return '';const v=defVar(f.id),src=imgFor(v?v.id:null,f.id);
+ if(src)return `<div class="bflag"><img loading="lazy" src="${esc(src)}" alt="${esc(f.name)}" onerror="${IMGERR}"><div class="bflagbody"><div class="fn">${esc(f.name)}</div><div class="fk">Flagship · ${esc(catById[f.category].label)}</div></div></div>`;
+ return `<div class="bflag"><div class="bminibox">${stageHTML(f,v,'')}</div><div class="bflagbody"><div class="fn">${esc(f.name)}</div><div class="fk">Flagship · ${esc(catById[f.category].label)}</div></div></div>`}
+function renderBrands(){
+ const count=bid=>FF.families.filter(f=>f.brand===bid).length;
+ const b=byId(FF.brands);
+ const mini=bid=>`<div class="bmini" style="--baccent:var(${b[bid].accentToken})">
+  <div class="bhead"><span class="bd"></span><h3 class="btitle" style="font-size:1.35rem">${esc(b[bid].name)}</h3></div>
+  <div class="bnum" style="font-size:1.9rem">${count(bid)}<small>${esc(BNUMLABEL[bid])}</small></div>
+  <p class="bpos" style="margin:2px 0 6px">${esc(b[bid].positioning)}</p>
+  ${brandFlag(bid)}
+  <div class="bangle"><div class="row"><b>Consumer:</b><span>${esc(BANGLE[bid].consumer)}</span></div><div class="row"><b>Vendor:</b><span>${esc(BANGLE[bid].vendor)}</span></div></div>
+  <a class="btn secondary" href="#portfolio" data-act="pfbrand" data-brand="${bid}" style="margin-top:auto;justify-content:center">Explore ${esc(b[bid].name)}</a>
+ </div>`;
+ return `<section class="sec light" id="brands"><div class="wrap">
+ <p class="eyebrow">Explore</p><h2 class="h2">Brand Universe</h2>
+ <p class="muted">Four house brands, four distinct roles. Buldak is the center of gravity; Samyang carries the heritage; Tangle and MEP extend into protein pasta and specialist soups. Positioning is drawn from public brand information; the consumer and vendor angles are a FireFlow reading.</p>
+ <div class="brandwall">
+  <div class="bfeature" style="--baccent:var(${b.buldak.accentToken})">
+   <div class="bhead"><span class="bd"></span><h3 class="btitle">${esc(b.buldak.name)}</h3><span class="atag" style="margin-left:6px">Portfolio center</span></div>
+   <p class="bpos">${esc(b.buldak.positioning)} ${esc(b.buldak.role)}</p>
+   <div class="bsub">
+    <div>${brandFlag('buldak')}</div>
+    <div>
+     <div class="bnum">${count('buldak')}<small>${esc(BNUMLABEL.buldak)}</small></div>
+     <div class="bangle"><div class="row"><b>Consumer:</b><span>${esc(BANGLE.buldak.consumer)}</span></div><div class="row"><b>Vendor:</b><span>${esc(BANGLE.buldak.vendor)}</span></div></div>
+     <a class="btn primary" href="#portfolio" data-act="pfbrand" data-brand="buldak">Explore Buldak</a>
+    </div>
+   </div>
+  </div>
+  <div class="brandtri">${mini('samyang')}${mini('tangle')}${mini('mep')}</div>
+ </div>
+ </div></section>`}
+
+const FAQS=[
+ ['Is this an official Samyang site?','No. FireFlow is an independent Customer Experience portfolio concept built by Nathan as a job-application piece. It is not affiliated with, endorsed by, or operated by Samyang. Product facts reference public information; everything operational is a demonstration.'],
+ ['How are products ranked?','There is no single &ldquo;best&rdquo; list. Rankings are multi-axis — each view measures one thing (official prominence, retail visibility, first-time fit, and so on), shows the weighted inputs it used, and labels its source, confidence, and last-reviewed date. Families that are not scored in a view are left out rather than guessed.'],
+ ['Are the inquiry records real?','No. Every case, owner, timeline, metric, and signal in the Command Center, Resolution Simulator, and Product Signals is synthetic demonstration data, labeled with a Synthetic badge. It exists to show the workflow, not to report real Samyang operations.'],
+ ['Why are formats grouped into families?','Samyang lists each format as its own product. FireFlow normalizes them into 45 families across 76 formats, so a shopper can compare, for example, Carbonara across its multi-pack, sauce, and snack formats without treating each as an unrelated item.'],
+ ['Can consumers submit a real complaint here?','No. This is a static preview. The support flows show how an issue would be captured and routed — the exact product, the evidence requested, the severity, and the owner — but no submission is sent anywhere.'],
+ ['Can vendors place a real order here?','No. The vendor paths demonstrate order, freight, deduction, and sell-sheet workflows. Nothing is transmitted; there is no live ordering, EDI, or account system behind the preview.'],
+ ['Where does product information come from?','Facts are labeled by origin: official Samyang America public product information, public retail signals (single-listing, date-stamped, and never sales figures), FireFlow editorial models that are clearly not official ratings, and synthetic demonstration data. Each label tells you how much to trust a given fact.'],
+ ['How are allergens handled?','Allergens and preparation are bound to the exact format, not the family, because they can differ between a multi-pack and a sauce. Where public data does not cover a specific format, FireFlow says so and reminds you to verify the current package rather than guessing.'],
+ ['What does Customer Guidance Opportunity mean?','It is a repeated question that a small guidance change could answer before it becomes a complaint — for example, the same milk-allergen question on creamy variants. It is treated as an improvement to make, not a customer error.'],
+ ['Why was FireFlow created?','To demonstrate, in a real product domain, how Nathan approaches Customer Experience: know the product, understand the friction, and resolve the experience with clear ownership, honest sourcing, and a continuous-improvement loop. It is a portfolio concept for a Samyang CX role.']
+];
+function renderFaq(){
+ return `<section class="sec dark" id="faq"><div class="wrap">
+ <p class="eyebrow" style="color:var(--carbo-400)">About</p><h2 class="h2">Straight answers</h2>
+ <p class="muted">Honest answers about what this project is, where its facts come from, and what it does and does not do.</p>
+ <div class="faqlist">${FAQS.map(([q,a])=>`<details><summary>${esc(q)}</summary><p class="faqp">${a}</p></details>`).join('')}</div>
+ </div></section>`}
+
+function renderFooter(){
+ document.getElementById('footwrap').innerHTML=`<div><p class="flead">FireFlow Product Intelligence</p><p class="disc" style="max-width:36ch">An independent Customer Experience portfolio concept exploring Samyang America&rsquo;s public U.S. portfolio: 45 families, 76 formats.</p></div>
+ <div class="fcols">
+ <div class="fcol"><h4>How to read the facts</h4><div class="legend"><span>${srcBadge('official')}</span><span>${srcBadge('retail-signal')}</span><span>${srcBadge('editorial')}</span><span>${srcBadge('synthetic')}</span></div><p class="disc" style="margin-top:10px">Research snapshot: 2026-07-07. Accessibility: keyboard operable, reduced-motion aware, non-color status.</p></div>
+ <div class="fcol"><h4>Explore</h4><a href="#portfolio" data-navlink>All products</a><a href="#rankings" data-navlink>Rankings</a><a href="#brands" data-navlink>Brand universe</a><a href="#compare" data-navlink>Compare</a><a href="#heat" data-navlink>Flavor &amp; heat</a></div>
+ <div class="fcol"><h4>Consumer</h4><a href="#resolve" data-navlink>Product help</a><a href="#product" data-navlink>Allergens</a><a href="#simulate" data-navlink>Case status</a></div>
+ <div class="fcol"><h4>Vendor & CX</h4><a href="#command" data-navlink>Command Center</a><a href="#signals" data-navlink>Product signals</a><a href="#simulate" data-navlink>Deductions</a><a href="#methodology" data-navlink>Methodology</a><a href="#faq" data-navlink>Straight answers</a></div>
+ </div>
+ <p class="disc">${esc(FF.disclaimer)}</p>`}
+
+function renderSupport(){const host=document.getElementById('support');if(!host)return '';
+ host.innerHTML=`<div class="ffw">
+ <button class="fab" id="ffwFab" aria-expanded="false" aria-controls="ffwPanel" aria-label="Open FireFlow support status and hours">
+  <svg class="flame" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2c1 3-1 4.5-2.5 6C8 9.5 7 11 7 13a5 5 0 0 0 10 0c0-2-1.2-3.6-2.3-5.2C13.3 6 13.5 4 12 2Z" fill="#fff"/><path d="M12 20a2.6 2.6 0 0 1-2.6-2.6c0-1.4 1-2.2 1.7-3 .5 1 1.3 1.2 1.9 2 .5.7.6 1.3.6 1.9A2.4 2.4 0 0 1 12 20Z" fill="#f5b301"/></svg><span class="fabtxt">Support</span></button>
+ <div class="fpanel" id="ffwPanel" role="dialog" aria-modal="true" aria-labelledby="ffwTitle" inert>
+  <span class="fflourish" aria-hidden="true">火</span>
+  <div class="p-head"><div><h2 class="p-title" id="ffwTitle">Support status</h2><p class="p-sub">When to expect a reply, and how to start.</p></div><button class="p-close" id="ffwClose" aria-label="Close support status"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button></div>
+  <div class="p-body"><div class="fseg" role="group" aria-label="Choose your role">
+   <button data-frole="consumer" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 8h16l-1.2 9.2A2 2 0 0 1 16.8 19H7.2a2 2 0 0 1-2-1.8L4 8Z" stroke="currentColor" stroke-width="1.7"/></svg>Consumer</button>
+   <button data-frole="vendor" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 7h13l1 4h4v5M3 7v9h4M9 16h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Vendor</button></div>
+   <div data-fstatus="consumer"><div class="statline"><span class="sic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span><b>Consumer care.</b> Replies usually within one business day.</span></div><div class="statline"><span class="sic g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.7"/><path d="M12 7.5V12l3 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span><span>Monday to Friday, 8am to 5pm Pacific.</span></div></div>
+   <div data-fstatus="vendor" hidden><div class="statline"><span class="sic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span><b>Vendor support.</b> Order and delivery questions answered same business day.</span></div><div class="statline"><span class="sic g" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.7"/><path d="M12 7.5V12l3 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span><span>Invoice and deduction reviews within two business days.</span></div></div>
+   <a class="fact-primary" id="ffwStart" href="#resolve" data-act="mode" data-mode="consumer"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 5h16v11H7l-3 3V5Z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/></svg><span data-fcta>Start a consumer case</span></a>
+   <p class="tinynote">Example service levels for this study, not a published commitment. A reaction, injury, foreign material, or tampering goes to a specialist, and FireFlow does not give medical advice.</p>
+  </div></div></div>`;
+ wireSupport();return ''}
+function wireSupport(){const fab=document.getElementById('ffwFab'),panel=document.getElementById('ffwPanel'),closeBtn=document.getElementById('ffwClose');
+ const FOCUSABLE='a[href],button:not([disabled]),input:not([disabled]),[tabindex]:not([tabindex="-1"])';
+ function vis(){return Array.prototype.filter.call(panel.querySelectorAll(FOCUSABLE),el=>el.offsetParent!==null&&!el.closest('[hidden]'))}
+ function open(){panel.inert=false;panel.classList.add('open');fab.setAttribute('aria-expanded','true');requestAnimationFrame(()=>{const l=vis();(l[0]||closeBtn).focus()})}
+ function close(){panel.classList.remove('open');fab.setAttribute('aria-expanded','false');panel.inert=true;fab.focus()}
+ fab.addEventListener('click',()=>{fab.getAttribute('aria-expanded')==='true'?close():open()});
+ closeBtn.addEventListener('click',close);
+ panel.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();close();return}if(e.key!=='Tab')return;const f=vis();if(!f.length)return;const first=f[0],last=f[f.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}});
+ const seg=panel.querySelector('.fseg'),cta=panel.querySelector('[data-fcta]'),start=document.getElementById('ffwStart');
+ seg.addEventListener('click',e=>{const b=e.target.closest('[data-frole]');if(!b)return;const role=b.getAttribute('data-frole');seg.querySelectorAll('[data-frole]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));panel.querySelectorAll('[data-fstatus]').forEach(s=>{s.hidden=s.getAttribute('data-fstatus')!==role});cta.textContent=role==='vendor'?'Start a vendor case':'Start a consumer case';start.setAttribute('data-mode',role);start.setAttribute('href',role==='vendor'?'#vendor':'#resolve')});
+ start.addEventListener('click',close);
+}
+function render(){
+ document.getElementById('app').innerHTML=renderHero()+renderPortfolio()+renderRankings()+renderHeat()+renderCompare()+renderDossier()+renderPaths()+renderSim()+renderCommand()+renderSignals()+renderBrands()+renderMethodology()+renderFaq();
+ renderRail();
+ enhance();
+}
+
+function enhance(){
+ requestAnimationFrame(()=>{document.querySelectorAll('.bar>span[data-w]').forEach(el=>{el.style.width=el.dataset.w+'%'});
+  document.querySelectorAll('[data-heatarc]').forEach(el=>{el.style.strokeDashoffset=el.dataset.heatarc});
+  document.querySelectorAll('[data-fillbar]').forEach(el=>{el.style.width=el.dataset.fillbar});});
+ if(RM){document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in'));animated=true;}
+ else if(!animated){const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12});document.querySelectorAll('.reveal:not(.in)').forEach(el=>io.observe(el));animated=true;}
+ else document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in'));
+ if(!RM){document.querySelectorAll('[data-tilt]').forEach(card=>{const wrap=card.parentElement;
+  wrap.addEventListener('pointermove',e=>{const r=card.getBoundingClientRect(),px=(e.clientX-r.left)/r.width,py=(e.clientY-r.top)/r.height;card.style.transform=`rotateY(${(px-.5)*6}deg) rotateX(${(.5-py)*6}deg)`;card.style.setProperty('--gx',px*100+'%');card.style.setProperty('--gy',py*100+'%')});
+  wrap.addEventListener('pointerleave',()=>{card.style.transform=''})});
+  document.querySelectorAll('[data-glow]').forEach(card=>{card.addEventListener('pointermove',e=>{const r=card.getBoundingClientRect();card.style.setProperty('--mx',((e.clientX-r.left)/r.width*100)+'%');card.style.setProperty('--my',((e.clientY-r.top)/r.height*100)+'%')})});
+  const hero=document.querySelector('[data-spotlight]');if(hero){hero.addEventListener('pointermove',e=>{const r=hero.getBoundingClientRect();hero.style.setProperty('--mx',(e.clientX-r.left)/r.width*100+'%');hero.style.setProperty('--my',(e.clientY-r.top)/r.height*100+'%')})}}
+}
+
+document.addEventListener('click',e=>{
+ const a=e.target.closest('[data-act]');if(!a)return;
+ const d=a.dataset,act=d.act,anchor=a.getAttribute&&a.getAttribute('href');
+ if(act==='noop'){}
+ else if(act==='pick'){selFamily(d.fid)}
+ else if(act==='pickvar'){selFamily(d.fid);st.variantId=d.vid;render()}
+ else if(act==='mode'){st.mode=d.mode;FFSound.tick();render()}
+ else if(act==='hbrand'){st.brand=d.brand;render()}
+ else if(act==='pfbrand'){st.pfBrand=d.brand;st.pfCat='all';render()}
+ else if(act==='pfcat'){st.pfCat=d.cat;render()}
+ else if(act==='pfview'){st.pfView=d.view;render()}
+ else if(act==='rank'){st.rankingMode=d.rank;render()}
+ else if(act==='add'){if(!st.compareIds.includes(d.fid)&&st.compareIds.length<4){st.compareIds.push(d.fid);FFSound.tick()}render()}
+ else if(act==='rm'){st.compareIds=st.compareIds.filter(x=>x!==d.fid);render()}
+ else if(act==='clearcmp'){st.compareIds=[];render()}
+ else if(act==='preset'){st.compareIds=d.ids.split(',');render()}
+ else if(act==='cmpswap'){const slot=+d.slot,cur=st.compareIds[slot],used=new Set(st.compareIds);const pool=FF.families.filter(f=>!used.has(f.id)||f.id===cur);let idx=pool.findIndex(f=>f.id===cur);const nx=pool[(idx+1)%pool.length];if(nx){st.compareIds=st.compareIds.slice();st.compareIds[slot]=nx.id}render()}
+ else if(act==='pickmode'){selFamily(d.fid);st.mode=d.mode;render()}
+ else if(act==='setfmt'){st.variantId=d.vid;render()}
+ else if(act==='issue'){if(d.channel==='consumer')st.cIssue=d.iid;else st.vIssue=d.iid;render()}
+ else if(act==='startcase'){st.mode=d.ch;if(d.sid)st.scenarioId=d.sid;st.stage=0;render()}
+ else if(act==='scen'){st.scenarioId=d.sid;st.stage=0;render()}
+ else if(act==='cmdfilter'){st.commandFilter=d.filter;render()}
+ else if(act==='signal'){st.signalId=d.sid;render()}
+ else if(act==='stage'){st.stage=+d.i;render()}
+ else if(act==='stageprev'){st.stage=Math.max(0,st.stage-1);render()}
+ else if(act==='stagenext'){const s=scenById[st.scenarioId]||FF.scenarios[0];const was=st.stage;st.stage=Math.min(s.stages.length-1,st.stage+1);if(st.stage!==was&&st.stage===s.stages.length-1)FFSound.chime();render()}
+ else if(act==='heat'){st.heat=+d.i;FFSound.sizzle((HEATN[HEAT_LADDER[st.heat][0]]-1)/4);render()}
+ else if(act==='heatup'){st.heat=Math.min(HEAT_LADDER.length-1,st.heat+1);FFSound.sizzle((HEATN[HEAT_LADDER[st.heat][0]]-1)/4);render()}
+ else if(act==='heatdown'){st.heat=Math.max(0,st.heat-1);FFSound.tick();render()}
+ else if(act==='reset'){st.familyId=null;st.variantId=null;st.brand='featured';st.mode='explore';st.compareIds=[];render()}
+ if(anchor&&anchor.startsWith('#')){const el=document.querySelector(anchor);if(el){setTimeout(()=>el.scrollIntoView({behavior:RM?'auto':'smooth',block:'start'}),0)}}
+});
+
+renderNav();renderFooter();renderSupport();render();
+if(RM)document.getElementById('foottop').classList.add('in');
+else new IntersectionObserver((es,o)=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');o.disconnect()}})).observe(document.getElementById('foottop'));
+</script>
+</body>
+</html>

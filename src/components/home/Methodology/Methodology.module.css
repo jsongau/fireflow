@@ -1,0 +1,74 @@
+.section {
+  background: var(--surface-0);
+  border-top: 1px solid var(--line);
+  scroll-margin-top: 72px;
+}
+.inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-4);
+}
+
+.head { max-width: 62ch; margin-bottom: var(--space-6); }
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: var(--step--1);
+  color: var(--gold);
+  margin: 0 0 var(--space-2);
+}
+.h2 { font-size: var(--step-5); color: var(--text-0); margin: 0 0 var(--space-2); }
+.lede { color: var(--text-1); font-size: var(--step-1); margin: 0; }
+
+.sources {
+  list-style: none;
+  margin: 0 0 var(--space-6);
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+.source {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  background: var(--surface-1);
+  padding: var(--space-4);
+  display: grid;
+  gap: var(--space-2);
+}
+.sourceHead { display: flex; align-items: center; gap: var(--space-2); }
+.dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+.sourceLabel { font-weight: 700; color: var(--text-0); }
+.sourceDesc { margin: 0; color: var(--text-1); font-size: var(--step--1); }
+
+.principles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+  border-top: 1px solid var(--line);
+  padding-top: var(--space-5);
+}
+.principle { display: grid; gap: var(--space-2); align-content: start; }
+.principleTitle {
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  color: var(--text-0);
+  margin: 0;
+}
+.principleBody { margin: 0; color: var(--text-1); font-size: var(--step--1); }
+
+.reminder {
+  margin: var(--space-6) 0 0;
+  padding: var(--space-3) var(--space-4);
+  border-left: 3px solid var(--gold);
+  background: var(--surface-1);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  font-size: var(--step--1);
+}
+
+@media (max-width: 860px) {
+  .sources { grid-template-columns: 1fr; }
+  .principles { grid-template-columns: 1fr; }
+  .h2 { font-size: var(--step-4); }
+}
