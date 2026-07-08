@@ -1,0 +1,36 @@
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  font-weight: 600;
+  color: var(--text-1);
+  background: var(--surface-2);
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  padding: 0.4em 0.8em;
+  min-height: 38px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.toggle:hover {
+  color: var(--text-0);
+  border-color: var(--text-2);
+}
+.toggle:focus-visible {
+  outline: 2px solid var(--ember);
+  outline-offset: 2px;
+}
+.toggle[aria-pressed="true"] {
+  border-color: var(--ember);
+  color: var(--text-0);
+}
+.dot {
+  color: var(--text-2);
+  font-size: 0.8em;
+  line-height: 1;
+}
+.dot[data-on="true"] {
+  color: var(--ember);
+}

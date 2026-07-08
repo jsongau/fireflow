@@ -29,6 +29,10 @@ export interface HomeState {
   selectedSignalId: string | null;
   savedProductIds: string[];
   returningUser: boolean;
+  /** Employer layer: show Nathan's "Operator Notes" narration. */
+  operatorNotesEnabled: boolean;
+  /** Whether the visitor has chosen an entrance, so we don't re-show the cover. */
+  introDismissed: boolean;
 }
 
 export const INITIAL_STATE: HomeState = {
@@ -43,9 +47,11 @@ export const INITIAL_STATE: HomeState = {
   selectedSignalId: null,
   savedProductIds: [],
   returningUser: false,
+  operatorNotesEnabled: false,
+  introDismissed: false,
 };
 
-const MAX_COMPARE = 4;
+const MAX_COMPARE = 2;
 
 export type HomeAction =
   | { type: "SELECT_FAMILY"; familyId: string }
@@ -60,6 +66,10 @@ export type HomeAction =
   | { type: "SELECT_SCENARIO"; scenarioId: string | null }
   | { type: "SELECT_SIGNAL"; signalId: string | null }
   | { type: "TOGGLE_SAVE"; familyId: string }
+  | { type: "SET_OPERATOR_NOTES"; enabled: boolean }
+  | { type: "TOGGLE_OPERATOR_NOTES" }
+  | { type: "DISMISS_INTRO" }
+  | { type: "OPEN_INTRO" }
   | { type: "HYDRATE"; patch: Partial<HomeState> }
   | { type: "RESET" };
 
@@ -108,10 +118,25 @@ export function homeReducer(state: HomeState, action: HomeAction): HomeState {
           : [...state.savedProductIds, action.familyId],
       };
     }
+    case "SET_OPERATOR_NOTES":
+      return { ...state, operatorNotesEnabled: action.enabled, introDismissed: true };
+    case "TOGGLE_OPERATOR_NOTES":
+      return { ...state, operatorNotesEnabled: !state.operatorNotesEnabled };
+    case "DISMISS_INTRO":
+      return { ...state, introDismissed: true };
+    case "OPEN_INTRO":
+      return { ...state, introDismissed: false };
     case "HYDRATE":
       return { ...state, ...action.patch };
     case "RESET":
-      return { ...INITIAL_STATE, returningUser: state.returningUser };
+      // Reset the selected product and workflow, but keep the visitor's
+      // narration preference and the fact that they've seen the intro.
+      return {
+        ...INITIAL_STATE,
+        returningUser: state.returningUser,
+        operatorNotesEnabled: state.operatorNotesEnabled,
+        introDismissed: state.introDismissed,
+      };
     default:
       return state;
   }
@@ -136,6 +161,8 @@ function loadPersisted(): Partial<HomeState> {
       compareIds: Array.isArray(parsed.compareIds) ? parsed.compareIds : [],
       savedProductIds: Array.isArray(parsed.savedProductIds) ? parsed.savedProductIds : [],
       returningUser: true,
+      operatorNotesEnabled: parsed.operatorNotesEnabled === true,
+      introDismissed: parsed.introDismissed === true,
     };
   } catch {
     return {};
@@ -151,6 +178,8 @@ function persist(state: HomeState) {
       userMode: state.userMode,
       compareIds: state.compareIds,
       savedProductIds: state.savedProductIds,
+      operatorNotesEnabled: state.operatorNotesEnabled,
+      introDismissed: state.introDismissed,
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
   } catch {

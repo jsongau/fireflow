@@ -1,4 +1,4 @@
-.section { background: var(--surface-0); color: var(--text-1); scroll-margin-top: 64px; }
+.section { background: var(--surface-0); color: var(--text-1); scroll-margin-top: var(--sticky-h); }
 .inner { max-width: 1200px; margin: 0 auto; padding: var(--space-8) var(--space-4); }
 
 .head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-5); flex-wrap: wrap; margin-bottom: var(--space-6); }

@@ -3,7 +3,7 @@
     radial-gradient(120% 90% at 100% 0%, var(--surface-2), transparent 55%),
     var(--surface-0);
   color: var(--text-1);
-  scroll-margin-top: 64px;
+  scroll-margin-top: var(--sticky-h);
 }
 .inner { max-width: 1100px; margin: 0 auto; padding: var(--space-8) var(--space-4); }
 .eyebrow { text-transform: uppercase; letter-spacing: 0.14em; font-size: var(--step--1); color: var(--gold); margin: 0 0 var(--space-2); }

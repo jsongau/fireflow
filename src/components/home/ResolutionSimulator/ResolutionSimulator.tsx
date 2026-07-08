@@ -3,6 +3,7 @@ import { useHome } from "@/state/homeStore";
 import { SCENARIOS, SCENARIO_BY_ID, CONSUMER_SCENARIOS, VENDOR_SCENARIOS } from "@/data/scenarios";
 import { FAMILY_BY_ID } from "@/data/families";
 import { SyntheticBadge, Button } from "@/components/primitives";
+import { playSound } from "@/lib/sound/sound";
 import type { Severity } from "@/types/domain";
 import styles from "./ResolutionSimulator.module.css";
 
@@ -29,7 +30,7 @@ export function ResolutionSimulator() {
         <p className={styles.eyebrow}>Resolve</p>
         <h2 id="simulate-h" className={styles.h2}>Resolution Simulator</h2>
         <p className={styles.lede}>
-          How a reported issue becomes a governed case — verified facts separated from assumptions, one
+          How a reported issue becomes a governed case: verified facts separated from assumptions, one
           accountable owner, a visible next update, and approvals required before any commitment.
         </p>
 
@@ -109,7 +110,16 @@ export function ResolutionSimulator() {
               <Button variant="secondary" size="sm" disabled={stageIndex === 0} onClick={() => setStageIndex((i) => Math.max(0, i - 1))}>
                 Previous
               </Button>
-              <Button variant="primary" size="sm" disabled={atEnd} onClick={() => setStageIndex((i) => Math.min(scenario.stages.length - 1, i + 1))}>
+              <Button
+                variant="primary"
+                size="sm"
+                disabled={atEnd}
+                onClick={() => setStageIndex((i) => {
+                  const next = Math.min(scenario.stages.length - 1, i + 1);
+                  playSound(next === scenario.stages.length - 1 ? "resolve" : "stageAdvance");
+                  return next;
+                })}
+              >
                 {atEnd ? "Complete" : "Advance"}
               </Button>
             </div>

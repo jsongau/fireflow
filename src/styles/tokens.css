@@ -83,6 +83,14 @@
   --z-rail: 20;
   --z-nav: 30;
   --z-modal: 50;
+  --z-dialog: 60;
+
+  /* Sticky-header heights — single source of truth for the sticky nav +
+     selected-product rail. Used to offset the rail's sticky top and to set
+     scroll-padding so in-page anchors never land hidden under the headers. */
+  --nav-h: 64px;
+  --rail-h: 56px;
+  --sticky-h: calc(var(--nav-h) + var(--rail-h));
 
   /* =========================================================
      COMPATIBILITY ALIASES — legacy names → dark values.

@@ -162,6 +162,18 @@ section.sec{scroll-margin-top:104px}
 .cardC .cbtns .btn{flex:1;justify-content:center;padding:.5em .6em;font-size:12.5px;min-height:38px}
 .cardC .atag{font-size:.62rem;font-weight:800;color:var(--gold);border:1px solid #f5b30155;background:#f5b30115;border-radius:999px;padding:.15em .5em;text-transform:uppercase;letter-spacing:.04em}
 
+/* ===== spiciness peppers (shared) ===== */
+.peppers{display:inline-flex;gap:2px}
+.pep{width:13px;height:16px;color:var(--accent);opacity:.2;filter:grayscale(1)}
+.pep.on{opacity:1;filter:none}
+.lvl{font-size:.76rem;font-weight:700;color:var(--text-1,var(--ink-700))}
+.lvl.none{color:var(--text-2,var(--muted));font-weight:600}
+.cardC .spicerow{align-items:center;gap:8px}
+.typetag{font-size:.62rem;font-weight:800;color:var(--muted);border:1px solid var(--line-strong);border-radius:999px;padding:.15em .55em;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.spicechip{gap:6px}
+.spicechip .peppers .pep{width:11px;height:13px}
+.spicenote{font-size:.72rem;color:var(--dim);margin:2px 0 4px}
+
 /* ===== heat pips (shared) ===== */
 .heatpips{display:inline-flex;gap:3px;align-items:center}
 .heatpips i{width:7px;height:7px;border-radius:50%;background:#ffffff1f;display:inline-block}
@@ -469,6 +481,7 @@ footer.foot{background:#0c080a;color:var(--text);border-top:1px solid var(--line
 </head>
 <body>
 <div class="previewbanner">Static preview of the FireFlow React build — real product photos, real data, faithful interactions. Production app runs on React + Vite + TypeScript.</div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="chili" viewBox="0 0 24 24"><path fill="currentColor" d="M16.5 2.2c-.5.9-.3 1.9.4 2.5-2.1.2-3.9 1.3-3.9 3.9 0 .8-.4 1.1-1.2 1.4C8.6 11 5 13.4 5 17.7c0 2.4 1.9 4.1 4.4 4.1 5.6 0 10.6-5.3 10.6-11.6 0-2.1-.6-3.9-1.7-5.2.9-.2 1.7-1 1.7-2 0-1.2-1-2.1-2.2-2.1-.6 0-1.1.5-1.3 1.1z"/></symbol></svg>
 
 <nav class="mnav" id="mnav" aria-label="Primary"></nav>
 <div class="rail"><div class="wrap" id="rail"></div></div>
@@ -492,9 +505,14 @@ const SERV={'stir-fry':'Stir-fry',soup:'Soup',sauce:'Condiment',snack:'Snack','f
 const SEV={standard:'Standard',elevated:'Elevated',priority:'Priority',specialist:'Specialist escalation'};
 const STORE={'refrigerate-after-opening':'Refrigerate after opening',frozen:'Keep frozen',ambient:'Ambient'};
 const imgFor=(vid,fid)=>(vid&&FF.images.variant[vid])||(fid&&FF.images.family[fid])||null;
+const SPICE={"buldak-original":4,"buldak-2x-spicy":5,"buldak-carbonara":2,"buldak-cream-carbonara":2,"buldak-cheese":2,"buldak-quattro-cheese":2,"buldak-rose":2,"buldak-swicy":2,"buldak-taco":3,"buldak-yakisoba":3,"buldak-habanero-lime":3,"buldak-birria":3,"buldak-korean-chicken":3,"buldak-original-hot-sauce":4,"buldak-2x-spicy-hot-sauce":5,"buldak-carbonara-hot-sauce":2,"buldak-potato-chips-original":3,"buldak-potato-chips-habanero-lime":3,"buldak-potato-chips-quattro-cheese":2,"buldak-carbonara-dumpling":2,"buldak-dumpling":3,"buldak-carbo-glass-noodles":2,"buldak-wide-glass-noodle-rose":2,"buldak-mac-and-cheese-carbo":2,"buldak-mac-and-cheese-sweet-corn":1,"buldak-carbonara-fried-rice":2,"buldak-fried-rice":3,"buldak-carbo-frozen-topokki":2,"buldak-frozen-tteokbokki":3,"samyang-ramen":3,"samyang-ramen-extra-spicy":4,"samyang-kimchi-ramen":3,"samyang-jjajang-ramen":1,"samyang-potato-ramen":2,"samyang-vegetasty-noodle-soup":1,"samyang-changgu":1,"samyang-sattobap":1,"samyang-wang-changgu":1,"mep-black-pepper-beef":2,"mep-garlic-clam":1,"mep-red-pepper-chicken-cilantro":3,"tangle-bulgogi-alfredo":0,"tangle-chunky-tomato":0,"tangle-creamy-mushroom":0,"tangle-garlic-oil":0};
+const SPICE_NAMES=["Not spicy","Mild Spicy","Medium Spicy","Hot Spicy","Very Spicy","Extreme Spicy"];
+const spiceLevel=id=>SPICE[id]??0;
+function typesFor(f){ if(f.category==="hot-sauce")return["Sauces"]; if(f.category==="potato-chips"||f.category==="snack")return["Snacks"]; const t=[]; if(f.formats.includes("cup")||f.formats.includes("four-cup"))t.push("Cup Noodles"); if(f.formats.some(x=>["multi","big-bowl","bowl","pack","box","frozen","shelf-stable"].includes(x)))t.push("Pouch Noodles"); return t.length?t:["Pouch Noodles"]; }
+function pepperHTML(n){let s='<span class="peppers" role="img" aria-label="Spiciness: '+esc(SPICE_NAMES[n])+'">';for(let i=0;i<5;i++)s+='<svg class="pep '+(i<n?'on':'')+'" aria-hidden="true"><use href="#chili"/></svg>';return s+'</span>';}
 let animated=false;
 
-const st={familyId:null,variantId:null,brand:'featured',mode:'explore',rankingMode:'portfolio-priority',compareIds:[],scenarioId:FF.scenarios[0].id,pfBrand:'all',pfCat:'all',pfView:'family',stage:0,cIssue:null,vIssue:null,heat:1,commandFilter:'all',signalId:null};
+const st={familyId:null,variantId:null,brand:'featured',mode:'explore',rankingMode:'portfolio-priority',compareIds:[],scenarioId:FF.scenarios[0].id,pfBrand:'all',pfCat:'all',pfView:'family',pfSpice:null,pfType:null,stage:0,cIssue:null,vIssue:null,heat:1,commandFilter:'all',signalId:null};
 
 function selFamily(fid){const f=famById[fid];if(!f)return;st.familyId=fid;st.variantId=(defVar(fid)||{}).id||null;st.brand=f.brand;FFSound.tick();render()}
 
@@ -607,7 +625,7 @@ function renderRail(){const el=document.getElementById('rail');const f=st.family
   <button class="railact ghost" data-act="add" data-fid="${f.id}"${inc?' disabled':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="7" height="16" rx="1.5"/><rect x="14" y="4" width="7" height="16" rx="1.5"/><path d="M12 9v6M9 12h6"/></svg><span>${inc?'In compare':'Add to compare'}<span class="sub">Up to four side by side</span></span></button>
   <button class="railreset" data-act="reset">Reset</button>
  </div>`}
-function pcardHTML(f){const b=brandById[f.brand],v=defVar(f.id),src=imgFor(v?v.id:null,f.id),on=f.id===st.familyId,inc=st.compareIds.includes(f.id);
+function pcardHTML(f){const b=brandById[f.brand],v=defVar(f.id),src=imgFor(v?v.id:null,f.id),on=f.id===st.familyId,inc=st.compareIds.includes(f.id),sn=spiceLevel(f.id),ty=typesFor(f)[0];
  const fb=`<span class="imgfallback" style="display:${src?'none':'grid'};place-items:center;font-family:var(--font-display);color:var(--muted);text-transform:uppercase;font-size:13px;text-align:center;padding:10px">${esc(f.name)}</span>`;
  const photo=(src?`<img loading="lazy" src="${esc(src)}" alt="${esc(f.name)} package" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">`:'')+fb;
  return `<article class="cardC reveal ${animated?'in':''}${on?' on':''}" data-glow style="--accent:var(${b.accentToken})">
@@ -617,13 +635,14 @@ function pcardHTML(f){const b=brandById[f.brand],v=defVar(f.id),src=imgFor(v?v.i
   <button class="cn" data-act="pick" data-fid="${f.id}">${esc(f.name)}</button>
   <div class="cmeta">
    <div class="row">${f.heatPositioning?heatPips(f.heatPositioning):'<span class="formats">Heat n/a</span>'}${f.isAnchor?'<span class="atag">Anchor</span>':''}</div>
-   <div class="row"><span class="formats">${esc(catById[f.category].label)} · ${f.formats.length} format${f.formats.length>1?'s':''}</span></div>
+   <div class="row spicerow">${sn>0?pepperHTML(sn)+' <span class="lvl">'+esc(SPICE_NAMES[sn])+'</span>':'<span class="lvl none">Not spicy</span>'}</div>
+   <div class="row"><span class="formats">${esc(catById[f.category].label)} · ${f.formats.length} format${f.formats.length>1?'s':''}</span><span class="typetag">${esc(ty)}</span></div>
    ${st.pfView==='format'?`<div class="row" style="gap:6px">${varsFor(f.id).map(x=>`<button class="add" data-act="pickvar" data-fid="${f.id}" data-vid="${x.id}"${x.id===st.variantId?' style="background:var(--red);color:#fff;border-color:var(--red)"':''}>${esc(x.formatLabel)}</button>`).join('')}</div>`:''}
    <div class="cbtns"><button class="btn primary" data-act="pick" data-fid="${f.id}">View</button><button class="btn secondary" data-act="add" data-fid="${f.id}"${inc?' disabled':''}>${inc?'Added':'Compare'}</button></div>
   </div>
  </div></article>`}
 function renderPortfolio(){
- const fam=FF.families.filter(f=>(st.pfBrand==='all'||f.brand===st.pfBrand)&&(st.pfCat==='all'||f.category===st.pfCat));
+ const fam=FF.families.filter(f=>(st.pfBrand==='all'||f.brand===st.pfBrand)&&(st.pfCat==='all'||f.category===st.pfCat)&&(st.pfSpice==null||spiceLevel(f.id)===st.pfSpice)&&(st.pfType==null||typesFor(f).includes(st.pfType)));
  const totV=fam.reduce((n,f)=>n+f.formats.length,0);
  const cats=[...new Set(FF.families.filter(f=>st.pfBrand==='all'||f.brand===st.pfBrand).map(f=>f.category))].map(id=>catById[id]);
  return `<section class="sec light" id="portfolio"><div class="wrap">
@@ -632,6 +651,9 @@ function renderPortfolio(){
  <div class="seg">${[['family','Family view'],['format','Format view']].map(([v,l])=>`<button data-act="pfview" data-view="${v}" aria-pressed="${st.pfView===v}">${l}</button>`).join('')}</div></div>
  <div class="row-filters">${[['all','All brands'],...FF.brands.map(b=>[b.id,b.name])].map(([id,l])=>`<button class="chip" data-act="pfbrand" data-brand="${id}" aria-pressed="${st.pfBrand===id}">${id!=='all'?`<span class="chipdot" style="background:var(${brandById[id].accentToken})"></span>`:''}${l}</button>`).join('')}</div>
  <div class="row-filters">${[['all','All categories'],...cats.map(c=>[c.id,c.label])].map(([id,l])=>`<button class="chip" data-act="pfcat" data-cat="${id}" aria-pressed="${st.pfCat===id}">${l}</button>`).join('')}</div>
+ <div class="row-filters" aria-label="Filter by type">${['Pouch Noodles','Cup Noodles','Sauces','Snacks'].map(t=>`<button class="chip" data-act="pftype" data-type="${esc(t)}" aria-pressed="${st.pfType===t}">${t}</button>`).join('')}</div>
+ <div class="row-filters spicefacet" aria-label="Filter by spiciness">${[5,4,3,2,1].map(l=>`<button class="chip spicechip" data-act="pfspice" data-lvl="${l}" aria-pressed="${st.pfSpice===l}">${pepperHTML(l)}<span class="lvl">${esc(SPICE_NAMES[l])}</span></button>`).join('')}</div>
+ <p class="spicenote">Spiciness is an editorial mapping aligned to Buldak&rsquo;s public five-level scale.</p>
  ${fam.length?`<div class="showcase"><ul class="grid-C">${fam.map(f=>`<li>${pcardHTML(f)}</li>`).join('')}</ul></div>`:`<p class="cmp-empty" style="margin-top:16px">No families match these filters. Try clearing the category.</p>`}
  </div></section>`}
 function renderRankings(){
@@ -679,7 +701,7 @@ function cmpSideHTML(f,slot,side){const v=defVar(f.id),src=imgFor(v?v.id:null,f.
  <div class="bswap"><button class="add" data-act="cmpswap" data-slot="${slot}">Swap this side ▸</button></div>
  <div class="bstat"><div class="bstat__top"><span>Heat positioning</span><span class="bstat__val">${f.heatPositioning?esc(HEAT[f.heatPositioning]):'—'} (${heatN} of 5)</span></div><div class="bstat__track"><div class="bstat__fill fill-heat" data-fillbar="${heatPct}%" style="width:0"></div></div></div>
  <div class="bstat"><div class="bstat__top"><span>Creaminess <span class="tag-ed">editorial</span></span><span class="bstat__val">${cream!=null?cream+' of 5':'—'}</span></div><div class="bstat__track"><div class="bstat__fill fill-cream" data-fillbar="${creamPct}%" style="width:0"></div></div></div>
- <dl class="bfacts"><dt>Brand · Category</dt><dd>${esc(b.name)} · ${esc(catById[f.category].label)}</dd><dt>Formats</dt><dd>${esc(f.formats.map(x=>fmtById[x].label).join(', '))}</dd><dt>Allergens, default format</dt><dd>${cmpAllergen(f)}</dd><dt>First-time fit <span class="tag-ed">editorial</span></dt><dd>${ftv!=null?ftv+' / 100':'—'}</dd></dl>
+ <dl class="bfacts"><dt>Brand · Category</dt><dd>${esc(b.name)} · ${esc(catById[f.category].label)}</dd><dt>Spiciness <span class="tag-ed">editorial</span></dt><dd style="display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap">${pepperHTML(spiceLevel(f.id))}<span>${esc(SPICE_NAMES[spiceLevel(f.id)])}</span></dd><dt>Formats</dt><dd>${esc(f.formats.map(x=>fmtById[x].label).join(', '))}</dd><dt>Allergens, default format</dt><dd>${cmpAllergen(f)}</dd><dt>First-time fit <span class="tag-ed">editorial</span></dt><dd>${ftv!=null?ftv+' / 100':'—'}</dd></dl>
  <div class="bactions"><a class="add" href="#resolve" data-act="pickmode" data-fid="${f.id}" data-mode="consumer">Consumer</a><a class="add" href="#vendor" data-act="pickmode" data-fid="${f.id}" data-mode="vendor">Vendor</a><button class="add" data-act="rm" data-fid="${f.id}">Remove</button></div>
  </div>`}
 function renderCompare(){
@@ -701,7 +723,7 @@ function renderDossier(){
  <div class="dgrid"><div class="dleft"><div class="dframe" style="--card-accent:var(${b.accentToken})"><div class="inner">${stageHTML(f,v,'dossier')}</div></div>
  <div style="display:grid;gap:8px;justify-items:center"><span class="flabel">Format</span><div class="seg" style="background:#00000010;border-color:var(--line)">${vs.map(x=>`<button data-act="setfmt" data-vid="${x.id}" aria-pressed="${x.id===v.id}" style="color:var(--ink-800)">${esc(x.formatLabel)}</button>`).join('')}</div></div></div>
  <div><p class="pcbrand">${esc(b.name)} · ${esc(catById[f.category].label)}</p><h3 class="name">${esc(f.name)}</h3>${f.flavorStory?`<p class="story">${esc(f.flavorStory)}</p>`:''}
- <dl class="attrs">${f.heatPositioning?`<div><dt>Heat</dt><dd>${HEAT[f.heatPositioning]}</dd></div>`:''}${f.servingStyle?`<div><dt>Style</dt><dd>${SERV[f.servingStyle]}</dd></div>`:''}${typeof f.creaminess==='number'?`<div><dt>Creaminess <span style="font-weight:400;color:var(--slate-400)">(editorial)</span></dt><dd>${f.creaminess}/5</dd></div>`:''}<div><dt>Formats</dt><dd>${vs.map(x=>x.formatLabel).join(', ')}</dd></div></dl>
+ <dl class="attrs">${f.heatPositioning?`<div><dt>Heat</dt><dd>${HEAT[f.heatPositioning]}</dd></div>`:''}<div><dt>Spiciness <span style="font-weight:400;color:var(--slate-400)">(editorial)</span></dt><dd style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">${pepperHTML(spiceLevel(f.id))}<span>${esc(SPICE_NAMES[spiceLevel(f.id)])}</span></dd></div>${f.servingStyle?`<div><dt>Style</dt><dd>${SERV[f.servingStyle]}</dd></div>`:''}${typeof f.creaminess==='number'?`<div><dt>Creaminess <span style="font-weight:400;color:var(--slate-400)">(editorial)</span></dt><dd>${f.creaminess}/5</dd></div>`:''}<div><dt>Formats</dt><dd>${vs.map(x=>x.formatLabel).join(', ')}</dd></div></dl>
  <div class="factcard"><div class="facthead"><h4 style="margin:0;font-size:1.2rem">For ${esc(v.formatLabel)}</h4>${confBadge(v.dataConfidence)}</div>
  <div class="fact"><span class="fl">Allergens</span>${v.allergens&&v.allergens.length?`<span class="fv">${v.allergens.join(', ')}${v.allergenSource?srcBadge(v.allergenSource.type):''}</span>`:`<span class="unknown">Not in our public data for this exact format. Verify the current package.</span>`}</div>
  <div class="fact"><span class="fl">Preparation</span>${v.preparation?`<span class="fv">${esc(v.preparation)}</span>`:`<span class="unknown">Format-specific preparation not in public data — verify the package.</span>`}</div>
@@ -956,6 +978,8 @@ document.addEventListener('click',e=>{
  else if(act==='pfbrand'){st.pfBrand=d.brand;st.pfCat='all';render()}
  else if(act==='pfcat'){st.pfCat=d.cat;render()}
  else if(act==='pfview'){st.pfView=d.view;render()}
+ else if(act==='pfspice'){st.pfSpice=st.pfSpice===+d.lvl?null:+d.lvl;render()}
+ else if(act==='pftype'){st.pfType=st.pfType===d.type?null:d.type;render()}
  else if(act==='rank'){st.rankingMode=d.rank;render()}
  else if(act==='add'){if(!st.compareIds.includes(d.fid)&&st.compareIds.length<4){st.compareIds.push(d.fid);FFSound.tick()}render()}
  else if(act==='rm'){st.compareIds=st.compareIds.filter(x=>x!==d.fid);render()}
@@ -975,7 +999,7 @@ document.addEventListener('click',e=>{
  else if(act==='heat'){st.heat=+d.i;FFSound.sizzle((HEATN[HEAT_LADDER[st.heat][0]]-1)/4);render()}
  else if(act==='heatup'){st.heat=Math.min(HEAT_LADDER.length-1,st.heat+1);FFSound.sizzle((HEATN[HEAT_LADDER[st.heat][0]]-1)/4);render()}
  else if(act==='heatdown'){st.heat=Math.max(0,st.heat-1);FFSound.tick();render()}
- else if(act==='reset'){st.familyId=null;st.variantId=null;st.brand='featured';st.mode='explore';st.compareIds=[];render()}
+ else if(act==='reset'){st.familyId=null;st.variantId=null;st.brand='featured';st.mode='explore';st.compareIds=[];st.pfSpice=null;st.pfType=null;render()}
  if(anchor&&anchor.startsWith('#')){const el=document.querySelector(anchor);if(el){setTimeout(()=>el.scrollIntoView({behavior:RM?'auto':'smooth',block:'start'}),0)}}
 });
 

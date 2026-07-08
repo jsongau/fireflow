@@ -6,6 +6,7 @@ import { imageForVariant } from "@/data/images";
 import { BRAND_BY_ID } from "@/data/brands";
 import { CATEGORY_BY_ID, FORMAT_BY_ID } from "@/data/categories";
 import { computeRanking } from "@/data/rankings";
+import { spiceLevel, spiceName } from "@/data/spiciness";
 import type { ProductFamily, ProductVariant, HeatPositioning } from "@/types/domain";
 import styles from "./ComparisonLab.module.css";
 
@@ -38,6 +39,7 @@ export function ComparisonLab() {
     { key: "category", label: "Category", get: (f) => CATEGORY_BY_ID[f.category]?.label ?? f.category },
     { key: "formats", label: "Formats", get: (f) => f.formats.map((x) => FORMAT_BY_ID[x]?.label ?? x).join(", ") },
     { key: "heat", label: "Heat", get: (f) => (f.heatPositioning ? HEAT_LABEL[f.heatPositioning] : "—") },
+    { key: "spiciness", label: "Spiciness (editorial)", get: (f) => spiceName(spiceLevel(f.id)) },
     { key: "cream", label: "Creaminess (editorial)", get: (f) => (typeof f.creaminess === "number" ? `${f.creaminess}/5` : "—") },
     { key: "allergens", label: "Allergens (default format)", get: (_f, v) => (v?.allergens?.length ? `${v.allergens.join(", ")} (${v.formatLabel})` : "Verify package") },
     { key: "components", label: "In the package", get: (_f, v) => (v?.components?.length ? v.components.join(" · ") : "—") },
@@ -55,8 +57,8 @@ export function ComparisonLab() {
         <p className={styles.eyebrow}>Explore</p>
         <h2 id="compare-h" className={styles.h2}>Comparison Lab</h2>
         <p className={styles.lede}>
-          Compare up to four products. Allergens and preparation reflect each product&rsquo;s default format —
-          switch formats in a product&rsquo;s dossier to compare a different one.
+          Compare two products, side by side. Allergens and preparation reflect each product&rsquo;s default format.
+          Switch formats in a product&rsquo;s dossier to compare a different one.
         </p>
 
         <div className={styles.presets}>
@@ -110,7 +112,7 @@ export function ComparisonLab() {
                         </span>
                         <span className={styles.colActions}>
                           <a href="#resolve" onClick={() => { dispatch({ type: "SELECT_FAMILY", familyId: f.id }); dispatch({ type: "SET_MODE", mode: "consumer" }); }}>Consumer</a>
-                          <a href="#vendor" onClick={() => { dispatch({ type: "SELECT_FAMILY", familyId: f.id }); dispatch({ type: "SET_MODE", mode: "vendor" }); }}>Vendor</a>
+                          <a href="#resolve" onClick={() => { dispatch({ type: "SELECT_FAMILY", familyId: f.id }); dispatch({ type: "SET_MODE", mode: "vendor" }); }}>Vendor</a>
                           <button onClick={() => dispatch({ type: "REMOVE_COMPARE", familyId: f.id })} aria-label={`Remove ${f.name}`}>Remove</button>
                         </span>
                       </th>

@@ -61,7 +61,7 @@
   color: var(--text-1);
   text-decoration: none;
 }
-.footerLink:hover { color: var(--text-0); text-decoration: underline; }
+.footerLink:hover { color: var(--text-0); }
 
 .disclaimer {
   font-size: var(--step--1);

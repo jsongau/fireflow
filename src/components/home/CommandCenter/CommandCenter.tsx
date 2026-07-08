@@ -3,6 +3,7 @@ import { useHome } from "@/state/homeStore";
 import { SCENARIOS } from "@/data/scenarios";
 import { FAMILY_BY_ID } from "@/data/families";
 import { SyntheticBadge } from "@/components/primitives";
+import { OperatorNote } from "@/components/employer/OperatorNote/OperatorNote";
 import type { ResolutionScenario, Severity, InquiryChannel } from "@/types/domain";
 import styles from "./CommandCenter.module.css";
 
@@ -33,7 +34,7 @@ const TILES: Tile[] = [
   {
     id: "sla",
     label: "SLA exposure",
-    hint: "Priority / specialist — tightest clocks",
+    hint: "Priority / specialist: tightest clocks",
     match: (s) => s.severity === "priority" || s.severity === "specialist",
   },
   {
@@ -87,7 +88,7 @@ export function CommandCenter() {
             <h2 id="command-h" className={styles.h2}>CX Command Center</h2>
             <p className={styles.lede}>
               A manager&rsquo;s triage cockpit: SLA exposure, overdue updates, open deductions and product
-              concerns at a glance. Every tile drills into the cases behind the number — pick one and the
+              concerns at a glance. Every tile drills into the cases behind the number. Pick one and the
               queue below filters to match.
             </p>
           </div>
@@ -96,6 +97,17 @@ export function CommandCenter() {
             <span className={styles.headNote}>All counts, owners and commitments are invented for demonstration.</span>
           </div>
         </div>
+
+        <OperatorNote
+          title="A queue is only useful if it shows risk"
+          role="Service levels, accountability, and team coaching."
+        >
+          <p>
+            A queue is only useful if it shows risk. I designed this view around ownership, severity,
+            service timing, and the next promised update, because those are the things that prevent silent
+            drift.
+          </p>
+        </OperatorNote>
 
         <div className={styles.tiles} role="group" aria-label="Case-queue filters">
           {TILES.map((t) => {
@@ -155,7 +167,7 @@ export function CommandCenter() {
                       <span className={styles.owner}>Owner: {s.owner}</span>
                       <span className={styles.commit}>Next update: {s.customerUpdateCommitment}</span>
                     </span>
-                    <span className={styles.cta} aria-hidden="true">Open in simulator &rarr;</span>
+                    <span className={styles.cta} aria-hidden="true">Open in simulator</span>
                   </a>
                 </li>
               );

@@ -181,9 +181,14 @@
 .drawerLinkLabel { font-weight: 700; color: var(--text-0); }
 .drawerLinkBlurb { font-size: var(--step--1); color: var(--text-2); }
 
+/* Operator Notes toggle sits at the far right of the bar on desktop. */
+.navToggle { margin-left: var(--space-2); }
+.drawerControls { display: flex; flex-wrap: wrap; gap: var(--space-2); justify-content: flex-end; margin-bottom: var(--space-2); }
+
 @media (max-width: 860px) {
   .menubar { display: none; }
   .drawerToggle { display: inline-block; }
+  .navToggle { display: none; }
   .bar { gap: var(--space-3); }
 }
 

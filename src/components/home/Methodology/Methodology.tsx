@@ -6,7 +6,7 @@ const SOURCE_ORDER = ["official", "retail-signal", "editorial", "synthetic"] as 
 const PRINCIPLES: { title: string; body: string }[] = [
   {
     title: "Format-bound allergens",
-    body: "Allergen and preparation facts attach only to the exact format we have an official source for. Other formats carry none rather than inherit another format's — always verify the physical package.",
+    body: "Allergen and preparation facts attach only to the exact format we have an official source for. Other formats carry none rather than inherit another format's. Always verify the physical package.",
   },
   {
     title: "Multi-axis rankings",
@@ -14,7 +14,7 @@ const PRINCIPLES: { title: string; body: string }[] = [
   },
   {
     title: "Unknowns stay unknown",
-    body: "Where a fact isn't verified, FireFlow says so. A family moves out of 'unknown' only when an approved sell sheet or official source supplies the detail — not when a plausible guess is available.",
+    body: "Where a fact isn't verified, FireFlow says so. A family moves out of 'unknown' only when an approved sell sheet or official source supplies the detail, not when a plausible guess is available.",
   },
 ];
 
@@ -27,7 +27,7 @@ export function Methodology() {
           <h2 id="methodology-h" className={styles.h2}>Methodology &amp; trust</h2>
           <p className={styles.lede}>
             Every claim on this site carries its origin. Four source labels tell you exactly how much weight
-            a fact should hold — and where the line between official record and editorial interpretation sits.
+            a fact should hold, and where the line between official record and editorial interpretation sits.
           </p>
         </header>
 

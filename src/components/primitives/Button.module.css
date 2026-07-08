@@ -15,6 +15,8 @@
 .btn:active {
   transform: translate(2px, 2px);
 }
+/* Anchor rendered as a button: remove the default underline, keep one element. */
+.asLink { text-decoration: none; justify-content: center; }
 
 .md {
   font-size: var(--step-0);

@@ -1,6 +1,9 @@
 .rail {
   position: sticky;
-  top: 0;
+  /* Stick directly beneath the sticky nav (was top:0, which put it at the
+     same position as the nav — the higher-z nav then painted over it and the
+     rail disappeared on scroll). */
+  top: var(--nav-h);
   z-index: var(--z-rail);
   background: color-mix(in srgb, var(--surface-1) 92%, transparent);
   backdrop-filter: blur(8px);
@@ -88,7 +91,7 @@
   text-decoration: none;
   white-space: nowrap;
 }
-.compare:hover { text-decoration: underline; }
+.compare:hover { color: var(--text-0); }
 
 .spacer { flex: 1; }
 
@@ -139,4 +142,99 @@
   .inner { gap: var(--space-2); padding: var(--space-2) var(--space-3); }
   .heat { display: none; }
   .meta { display: none; }
+}
+
+/* Mobile compact rail — hidden on desktop; the rich .inner stays untouched. */
+.compact { display: none; }
+
+@media (max-width: 640px) {
+  /* Swap the rich inline control set for the compact summary + panel. */
+  .innerHasProduct { display: none; }
+
+  .compact {
+    display: block;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .compactRow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  /* Shortened product name: single line, ellipsis if it overflows. */
+  .compactName {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-weight: 700;
+    color: var(--text-0);
+    font-size: var(--step-0);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Current mode as a word (never color alone). */
+  .compactMode {
+    flex: none;
+    font-size: var(--step--1);
+    color: var(--text-1);
+    border: 1px solid var(--line-2);
+    border-radius: 999px;
+    padding: 0.2em 0.6em;
+    text-transform: capitalize;
+    white-space: nowrap;
+  }
+
+  .expand {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    background: var(--surface-2);
+    border: 1px solid var(--line-2);
+    color: var(--text-1);
+    cursor: pointer;
+  }
+  .expand:hover { border-color: var(--accent); color: var(--text-0); }
+
+  .expandGlyph {
+    font-size: var(--step-0);
+    line-height: 1;
+    transition: transform var(--dur-1) var(--ease-out);
+  }
+  .expand[aria-expanded="true"] .expandGlyph { transform: rotate(180deg); }
+
+  .panel {
+    margin-top: var(--space-2);
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .panelMeta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--step--1);
+    color: var(--text-1);
+  }
+  /* Re-enable the heat chip inside the panel (the 760px rule hides .heat). */
+  .panelMeta .heat { display: inline-flex; }
+  .panelActions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .expandGlyph { transition: none; }
 }

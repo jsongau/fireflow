@@ -1,7 +1,7 @@
 .section {
   background: var(--surface-0);
   border-top: 1px solid var(--line);
-  scroll-margin-top: 72px;
+  scroll-margin-top: var(--sticky-h);
 }
 .inner {
   max-width: 1000px;

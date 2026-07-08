@@ -7,12 +7,17 @@ import { ComparisonLab } from "@/components/home/ComparisonLab/ComparisonLab";
 import { ProductDossier } from "@/components/home/ProductDossier/ProductDossier";
 import { InquiryPaths } from "@/components/home/InquiryPaths/InquiryPaths";
 import { ResolutionSimulator } from "@/components/home/ResolutionSimulator/ResolutionSimulator";
+import { SapProcessIntelligence } from "@/components/home/SapProcessIntelligence/SapProcessIntelligence";
 import { CommandCenter } from "@/components/home/CommandCenter/CommandCenter";
 import { ProductSignals } from "@/components/home/ProductSignals/ProductSignals";
 import { BrandUniverse } from "@/components/home/BrandUniverse/BrandUniverse";
 import { Methodology } from "@/components/home/Methodology/Methodology";
 import { HomepageFAQ } from "@/components/home/HomepageFAQ/HomepageFAQ";
 import { SupportBar } from "@/components/home/SupportBar/SupportBar";
+import { CompareRail } from "@/components/home/CompareRail/CompareRail";
+import { EmployerIntro } from "@/components/employer/EmployerIntro/EmployerIntro";
+import { EmployerEvidence } from "@/components/employer/EmployerEvidence/EmployerEvidence";
+import { EmployerClose } from "@/components/employer/EmployerClose/EmployerClose";
 import { INDEPENDENCE_DISCLAIMER } from "@/data/sources";
 import { DATA_SUMMARY } from "@/data";
 import styles from "./HomePage.module.css";
@@ -32,6 +37,7 @@ const FOOTER_COLUMNS: { title: string; links: { label: string; href: string }[] 
     links: [
       { label: "Two Paths", href: "#resolve" },
       { label: "Resolution Simulator", href: "#simulate" },
+      { label: "SAP SD / Order-to-Cash", href: "#o2c" },
     ],
   },
   {
@@ -44,6 +50,8 @@ const FOOTER_COLUMNS: { title: string; links: { label: string; href: string }[] 
   {
     title: "About",
     links: [
+      { label: "What this demonstrates", href: "#fit" },
+      { label: "Why I built FireFlow", href: "#why" },
       { label: "Brand Universe", href: "#brands" },
       { label: "Methodology", href: "#methodology" },
       { label: "FAQ", href: "#faq" },
@@ -56,6 +64,7 @@ export function HomePage() {
     <>
       <a className="skip-link" href="#main">Skip to content</a>
 
+      <EmployerIntro />
       <MegaNav />
       <SelectedProductRail />
 
@@ -71,12 +80,16 @@ export function HomePage() {
         <ProductDossier />
         <InquiryPaths />
         <ResolutionSimulator />
+        <SapProcessIntelligence />
         <CommandCenter />
         <ProductSignals />
         <BrandUniverse />
         <Methodology />
         <HomepageFAQ />
       </main>
+
+      <EmployerEvidence />
+      <EmployerClose />
 
       <footer className={styles.footer}>
         <div className={styles.footerInner}>
@@ -85,7 +98,7 @@ export function HomePage() {
               <span className={styles.footerLogo}>FireFlow</span>
               <p className={styles.footerLead}>
                 An independent Customer Experience portfolio concept exploring Samyang America&rsquo;s public
-                U.S. portfolio — {DATA_SUMMARY.families} families across {DATA_SUMMARY.variants} formats.
+                U.S. portfolio, {DATA_SUMMARY.families} families across {DATA_SUMMARY.variants} formats.
               </p>
             </div>
             <nav className={styles.footerNav} aria-label="Footer">
@@ -109,6 +122,7 @@ export function HomePage() {
         </div>
       </footer>
 
+      <CompareRail />
       <SupportBar />
     </>
   );

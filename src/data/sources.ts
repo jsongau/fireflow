@@ -24,7 +24,7 @@ export const SOURCE_TYPES: Record<SourceType, { label: string; short: string; to
     label: "Synthetic demonstration data",
     short: "Synthetic",
     token: "--src-synthetic",
-    description: "Invented for demonstration — cases, metrics, owners, timelines. Not real.",
+    description: "Invented for demonstration: cases, metrics, owners, timelines. Not real.",
   },
 };
 

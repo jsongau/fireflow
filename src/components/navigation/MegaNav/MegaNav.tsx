@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "re
 import { useHome } from "@/state/homeStore";
 import { imageForVariant } from "@/data/images";
 import type { UserMode } from "@/types/domain";
+import { OperatorNotesToggle } from "@/components/employer/OperatorNotesToggle/OperatorNotesToggle";
+import { SoundToggle } from "@/components/home/SoundToggle/SoundToggle";
 import styles from "./MegaNav.module.css";
 
 /* ------------------------------------------------------------------ */
@@ -32,7 +34,7 @@ const GROUPS: NavGroup[] = [
       {
         label: "Portfolio Pulse",
         href: "#portfolio",
-        blurb: "Browse 45 families across 76 formats — flavors, not repetition.",
+        blurb: "Browse 45 families across 76 formats. Flavors, not repetition.",
         familyId: "buldak-carbonara",
       },
       {
@@ -50,7 +52,7 @@ const GROUPS: NavGroup[] = [
       {
         label: "Product Dossier",
         href: "#product",
-        blurb: "One product, fully sourced — allergens bound to the exact format.",
+        blurb: "One product, fully sourced. Allergens bound to the exact format.",
         familyId: "buldak-habanero-lime",
       },
     ],
@@ -62,7 +64,7 @@ const GROUPS: NavGroup[] = [
       {
         label: "Start a consumer case",
         href: "#resolve",
-        blurb: "Missing packet, damaged bottle, a heat question — routed with the evidence it needs.",
+        blurb: "Missing packet, damaged bottle, a heat question. Routed with the evidence it needs.",
         mode: "consumer",
       },
       {
@@ -79,7 +81,7 @@ const GROUPS: NavGroup[] = [
       {
         label: "Start a vendor case",
         href: "#resolve",
-        blurb: "PO issues, deductions, lead times — structured for the retail relationship.",
+        blurb: "PO issues, deductions, lead times. Structured for the retail relationship.",
         mode: "vendor",
       },
       {
@@ -94,9 +96,14 @@ const GROUPS: NavGroup[] = [
     label: "CX Intelligence",
     items: [
       {
+        label: "SAP SD / Order-to-Cash",
+        href: "#o2c",
+        blurb: "Follow one synthetic order from PO to cash, with the failure points CX owns at each step.",
+      },
+      {
         label: "Command Center",
         href: "#command",
-        blurb: "A manager's synthetic queue — SLA exposure, overdue updates, open deductions.",
+        blurb: "A manager's synthetic queue: SLA exposure, overdue updates, open deductions.",
       },
       {
         label: "Product Signals",
@@ -110,14 +117,24 @@ const GROUPS: NavGroup[] = [
     label: "About",
     items: [
       {
+        label: "What this demonstrates",
+        href: "#fit",
+        blurb: "Each target capability tied to a working part of FireFlow.",
+      },
+      {
+        label: "Why I built FireFlow",
+        href: "#why",
+        blurb: "The thinking a résumé can't show, in Nathan's words.",
+      },
+      {
         label: "Brand Universe",
         href: "#brands",
-        blurb: "Four brands, four positions — Buldak's breadth to MEP's soup focus.",
+        blurb: "Four brands, four positions, from Buldak's breadth to MEP's soup focus.",
       },
       {
         label: "Methodology",
         href: "#methodology",
-        blurb: "What's official, editorial, or synthetic — and what we leave unknown.",
+        blurb: "What's official, editorial, or synthetic, and what we leave unknown.",
       },
       {
         label: "FAQ",
@@ -216,14 +233,20 @@ export function MegaNav() {
   const previewImage = preview?.familyId ? imageForVariant("", preview.familyId) : null;
 
   return (
-    <nav className={styles.nav} aria-label="Primary" ref={navRef}>
+    <nav
+      className={styles.nav}
+      aria-label="Primary"
+      ref={navRef}
+      onMouseLeave={() => { setOpenId(null); setPreview(null); }}
+    >
       <div className={styles.bar}>
         <a href="#hero" className={styles.brand} onClick={() => closePanel()}>
           <span className={styles.brandMark}>FireFlow</span>
           <span className={styles.brandTag}>Product Intelligence</span>
         </a>
 
-        {/* Desktop menubar */}
+        {/* Desktop menubar. Opens on hover and on click, closes when the
+            pointer leaves the whole menubar+panel area. */}
         <div className={styles.menubar} role="menubar" aria-label="Sections">
           {GROUPS.map((group, i) => {
             const isOpen = openId === group.id;
@@ -238,6 +261,7 @@ export function MegaNav() {
                 tabIndex={i === 0 ? 0 : -1}
                 className={isOpen ? `${styles.groupBtn} ${styles.groupBtnOn}` : styles.groupBtn}
                 onClick={() => toggleGroup(group.id)}
+                onMouseEnter={() => { setOpenId(group.id); setPreview(group.items[0] ?? null); }}
                 onKeyDown={(e) => onBtnKeyDown(e, i)}
               >
                 {group.label}
@@ -245,6 +269,10 @@ export function MegaNav() {
             );
           })}
         </div>
+
+        {/* Quiet global controls (desktop). */}
+        <OperatorNotesToggle className={styles.navToggle} />
+        <SoundToggle className={styles.navToggle} />
 
         {/* Mobile disclosure toggle */}
         <button
@@ -298,6 +326,10 @@ export function MegaNav() {
       {/* Mobile drawer */}
       {drawerOpen && (
         <div className={styles.drawer} id="meganav-drawer">
+          <div className={styles.drawerControls}>
+            <OperatorNotesToggle />
+            <SoundToggle />
+          </div>
           {GROUPS.map((group) => (
             <section key={group.id} className={styles.drawerGroup}>
               <p className={styles.drawerLabel}>{group.label}</p>

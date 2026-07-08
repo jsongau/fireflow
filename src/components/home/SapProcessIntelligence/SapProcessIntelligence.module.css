@@ -1,0 +1,179 @@
+.section {
+  background:
+    radial-gradient(130% 100% at 0% 0%, var(--surface-2), transparent 55%),
+    var(--surface-0);
+  color: var(--text-1);
+  scroll-margin-top: var(--sticky-h);
+}
+.inner { max-width: 1100px; margin: 0 auto; padding: var(--space-8) var(--space-4); }
+
+.eyebrow {
+  text-transform: uppercase; letter-spacing: 0.14em; font-size: var(--step--1);
+  color: var(--gold); font-weight: 700; margin: 0 0 var(--space-2);
+}
+.h2 { font-family: var(--font-display); font-size: var(--step-4); color: var(--text-0); margin: 0 0 var(--space-2); }
+.lede { color: var(--text-1); max-width: 68ch; margin: 0 0 var(--space-5); }
+
+/* Synthetic scenario banner */
+.scenario {
+  border: 1px solid var(--line-2); border-radius: var(--radius-m);
+  background: var(--surface-1); padding: var(--space-4); margin-bottom: var(--space-6);
+}
+.synthTag {
+  display: inline-block; font-size: var(--step--1); font-weight: 700;
+  color: var(--src-synthetic, #a78bfa); border: 1px solid currentColor;
+  border-radius: 999px; padding: 0.1em 0.6em; margin-bottom: var(--space-2);
+}
+.scenarioLine { margin: 0 0 var(--space-1); color: var(--text-0); }
+.scenarioSummary { margin: 0; color: var(--text-1); font-size: var(--step--1); max-width: 80ch; }
+
+/* --- Document-flow spine --- */
+.flowWrap { margin-bottom: var(--space-6); }
+.flow {
+  list-style: none; margin: 0; padding: 0; counter-reset: stage;
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(150px, 1fr);
+  gap: var(--space-2); overflow-x: auto; scroll-snap-type: x proximity;
+  padding-bottom: var(--space-2);
+}
+.flowItem { counter-increment: stage; scroll-snap-align: start; }
+.node {
+  width: 100%; height: 100%; text-align: left; cursor: pointer;
+  display: grid; gap: 2px; align-content: start;
+  background: var(--surface-1); border: var(--bw) solid var(--line-2);
+  border-radius: var(--radius-m); padding: var(--space-3);
+  transition: border-color var(--dur-1) var(--ease-out), background var(--dur-1) var(--ease-out);
+}
+.node:hover { border-color: var(--line-2); background: var(--surface-2); }
+.nodeGlyph { font-size: var(--step-2); color: var(--text-2); line-height: 1; }
+.nodeLabel { font-family: var(--font-display); font-size: var(--step-0); color: var(--text-0); }
+.nodeLabel::before { content: counter(stage) ". "; color: var(--text-2); font-family: var(--font-ui); }
+.nodeDoc { font-size: var(--step--1); color: var(--text-2); }
+.nodeState { font-size: var(--step--1); font-weight: 700; color: var(--accent); }
+/* States communicated by glyph colour + border + weight + the word "current"/"completed". */
+.node[data-state="done"] { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 8%, var(--surface-1)); }
+.node[data-state="done"] .nodeGlyph { color: var(--ok); }
+.node[data-state="current"] {
+  border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--surface-1));
+  box-shadow: 0 0 0 2px var(--accent-600);
+}
+.node[data-state="current"] .nodeGlyph { color: var(--ember); }
+
+/* --- Stage detail --- */
+.detail {
+  background: var(--surface-1); border: 1px solid var(--line-2);
+  border-radius: var(--radius-l); padding: var(--space-6); box-shadow: var(--shadow-2);
+  margin-bottom: var(--space-6);
+}
+.detailHead { display: flex; align-items: flex-start; gap: var(--space-3); flex-wrap: wrap; }
+.detailGlyph { font-size: var(--step-4); color: var(--ember); line-height: 1; }
+.detailTitle { font-family: var(--font-display); font-size: var(--step-3); color: var(--text-0); margin: 0; }
+.detailDoc { font-size: var(--step--1); color: var(--text-2); margin: 2px 0 0; }
+.metric {
+  margin-left: auto; font-size: var(--step--1); font-weight: 700; color: var(--gold);
+  border: 1px solid var(--line-2); border-radius: 999px; padding: 0.25em 0.7em; white-space: nowrap;
+}
+.represents { color: var(--text-1); margin: var(--space-4) 0; max-width: 72ch; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-4); }
+.cell { background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-m); padding: var(--space-4); }
+.cell h4, .cellH { margin: 0 0 var(--space-2); font-size: var(--step--1); text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-2); font-weight: 700; }
+.cell p { margin: 0; color: var(--text-1); font-size: var(--step--1); }
+.failList { margin: 0; padding-left: 1.1em; color: var(--text-1); font-size: var(--step--1); display: grid; gap: 4px; }
+
+/* --- Glossary term tooltip --- */
+.termRow { margin: var(--space-4) 0 0; font-size: var(--step--1); color: var(--text-2); display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+.termRowLabel { font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+.termWrap { position: relative; display: inline-block; }
+.term {
+  font: inherit; font-weight: 600; color: var(--info); cursor: help;
+  background: none; border: none; border-bottom: 1px dashed currentColor; padding: 0 1px;
+}
+.term:hover, .term:focus-visible { color: var(--text-0); }
+.tip {
+  position: absolute; bottom: calc(100% + 8px); left: 0; z-index: 5;
+  width: max-content; max-width: 280px;
+  background: var(--surface-3); color: var(--text-0);
+  border: 1px solid var(--line-2); border-radius: var(--radius-s);
+  padding: var(--space-2) var(--space-3); font-size: var(--step--1); font-weight: 400;
+  box-shadow: var(--shadow-2);
+  opacity: 0; visibility: hidden; transform: translateY(4px);
+  transition: opacity var(--dur-1) var(--ease-out), transform var(--dur-1) var(--ease-out), visibility var(--dur-1);
+  pointer-events: none;
+}
+.termWrap:hover .tip,
+.term:focus-visible + .tip,
+.tip[data-pinned="true"] { opacity: 1; visibility: visible; transform: translateY(0); }
+
+/* --- Nathan fourth-wall callout --- */
+.nathan {
+  margin-top: var(--space-5);
+  border-left: 3px solid var(--ember);
+  background: color-mix(in srgb, var(--ember) 7%, var(--surface-2));
+  border-radius: 0 var(--radius-m) var(--radius-m) 0;
+  padding: var(--space-4) var(--space-5);
+}
+.nathanTag { display: inline-flex; align-items: center; gap: var(--space-2); font-size: var(--step--1); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ember); margin-bottom: var(--space-2); }
+.nathanAvatar {
+  display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%;
+  background: var(--ember); color: var(--surface-0); font-family: var(--font-display); font-size: 0.7rem; letter-spacing: 0;
+}
+.nathanText { margin: 0; color: var(--text-0); font-size: var(--step-0); line-height: 1.6; max-width: 74ch; }
+
+.stageNav { display: flex; gap: var(--space-2); margin-top: var(--space-5); }
+.stepBtn {
+  font-size: var(--step--1); font-weight: 600; color: var(--text-1);
+  background: var(--surface-2); border: 1px solid var(--line-2); border-radius: 999px;
+  padding: 0.45em 0.9em; min-height: 38px; cursor: pointer;
+}
+.stepBtn:hover:not(:disabled) { border-color: var(--accent); color: var(--text-0); }
+.stepBtn:disabled { opacity: 0.4; cursor: default; }
+
+/* --- Exception explorer --- */
+.exceptions { margin-bottom: var(--space-6); }
+.exH { font-family: var(--font-display); font-size: var(--step-2); color: var(--text-0); margin: 0 0 var(--space-2); }
+.exLede { color: var(--text-1); font-size: var(--step--1); max-width: 74ch; margin: 0 0 var(--space-4); }
+.exChips { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-4); }
+.exChip {
+  font-size: var(--step--1); font-weight: 600; color: var(--text-1);
+  background: var(--surface-2); border: 1px solid var(--line-2); border-radius: 999px;
+  padding: 0.4em 0.85em; min-height: 38px; cursor: pointer;
+}
+.exChip:hover { background: var(--surface-3); color: var(--text-0); }
+.exChip[data-on="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
+.exHere { color: var(--ember); }
+.exChip[data-on="true"] .exHere { color: #fff; }
+
+.exDetail { background: var(--surface-1); border: 1px solid var(--line-2); border-radius: var(--radius-m); padding: var(--space-5); }
+.exDetailTitle { font-family: var(--font-display); font-size: var(--step-1); color: var(--text-0); margin: 0 0 var(--space-3); }
+.exGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: var(--space-3); margin: 0; }
+.exGrid > div { background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-s); padding: var(--space-3); }
+.exGrid dt { font-size: var(--step--1); text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-2); font-weight: 700; margin-bottom: 2px; }
+.exGrid dd { margin: 0; color: var(--text-1); font-size: var(--step--1); }
+.exEmpty { color: var(--text-2); font-style: italic; padding: var(--space-4); border: 1px dashed var(--line-2); border-radius: var(--radius-m); }
+
+/* --- Glossary index --- */
+.glossary { border: 1px solid var(--line-2); border-radius: var(--radius-m); background: var(--surface-1); padding: var(--space-3) var(--space-4); margin-bottom: var(--space-5); }
+.glossarySummary { cursor: pointer; font-weight: 700; color: var(--text-0); }
+.glossaryList { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--space-3); margin: var(--space-4) 0 0; }
+.glossaryItem dt { font-weight: 700; color: var(--text-0); }
+.glossaryItem dd { margin: 2px 0 0; color: var(--text-2); font-size: var(--step--1); }
+
+.disclosure {
+  font-size: var(--step--1); color: var(--text-2); background: var(--surface-2);
+  border: 1px solid var(--line); border-radius: var(--radius-s); padding: var(--space-3) var(--space-4);
+  max-width: 90ch; margin: 0 0 var(--space-4);
+}
+.disclosureTag { color: var(--info); font-weight: 700; }
+.next { margin: 0; }
+.nextLink { font-weight: 700; color: var(--accent); text-decoration: none; }
+.nextLink:hover { color: var(--ember); }
+
+.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+@media (max-width: 760px) {
+  .flow { grid-auto-flow: row; grid-auto-columns: auto; }
+  .metric { margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .node, .stepBtn, .tip { transition: none; }
+}

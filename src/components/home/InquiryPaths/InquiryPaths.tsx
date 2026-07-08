@@ -1,13 +1,21 @@
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 import { useHome } from "@/state/homeStore";
 import { FAMILY_BY_ID } from "@/data/families";
 import { VARIANT_BY_ID } from "@/data/variants";
 import { CATEGORY_BY_ID } from "@/data/categories";
 import { CONSUMER_ISSUES, VENDOR_ISSUES } from "@/data/issues";
 import { SCENARIOS } from "@/data/scenarios";
-import { Button } from "@/components/primitives";
+import { ButtonLink, Button } from "@/components/primitives";
+import { InquiryDialog } from "@/components/home/InquiryDialog/InquiryDialog";
+import { OperatorNote } from "@/components/employer/OperatorNote/OperatorNote";
 import type { InquiryIssue, InquiryChannel, Severity } from "@/types/domain";
 import styles from "./InquiryPaths.module.css";
+
+interface DialogState {
+  channel: InquiryChannel;
+  issue: InquiryIssue;
+  trigger: HTMLElement | null;
+}
 
 const VERIFY_STEPS = ["Identify", "Verify", "Gather evidence", "Route", "Resolve", "Update"];
 const SEVERITY_LABEL: Record<Severity, string> = {
@@ -20,6 +28,7 @@ export function InquiryPaths() {
   const variant = state.selectedVariantId ? VARIANT_BY_ID[state.selectedVariantId] ?? null : null;
   const [consumerIssueId, setConsumerIssueId] = useState<string | null>(null);
   const [vendorIssueId, setVendorIssueId] = useState<string | null>(null);
+  const [dialog, setDialog] = useState<DialogState | null>(null);
 
   if (!family) {
     return (
@@ -27,7 +36,7 @@ export function InquiryPaths() {
         <div className={styles.inner}>
           <p className={styles.eyebrow}>Resolve</p>
           <h2 id="resolve-h" className={styles.h2}>Two Paths: Consumer &amp; Vendor</h2>
-          <p className={styles.prompt}>Select a product first — an inquiry always starts from the exact product, so you never re-enter what the system already knows.</p>
+          <p className={styles.prompt}>Select a product first. An inquiry always starts from the exact product, so you never re-enter what the system already knows.</p>
         </div>
       </section>
     );
@@ -84,7 +93,7 @@ export function InquiryPaths() {
             {active.requiresSpecialistEscalation && (
               <p className={styles.escalation}>
                 This is routed to specialist escalation. FireFlow does not diagnose, minimize, or provide
-                medical advice — it captures the facts and hands the case to the right team.
+                medical advice. It captures the facts and hands the case to the right team.
               </p>
             )}
 
@@ -99,17 +108,28 @@ export function InquiryPaths() {
               </div>
             )}
 
-            <a
+            <ButtonLink
               href="#simulate"
+              variant="primary"
+              size="sm"
               onClick={() => {
                 dispatch({ type: "SET_MODE", mode: channel });
                 if (matchingScenario) dispatch({ type: "SELECT_SCENARIO", scenarioId: matchingScenario.id });
               }}
             >
-              <Button variant="primary" size="sm">
-                {matchingScenario ? "See this resolved" : "Start a case"}
-              </Button>
-            </a>
+              {matchingScenario ? "See this resolved" : "Start a case"}
+            </ButtonLink>
+
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={(e: MouseEvent<HTMLButtonElement>) =>
+                setDialog({ channel, issue: active, trigger: e.currentTarget })
+              }
+            >
+              Submit demonstration inquiry
+            </Button>
           </div>
         )}
       </div>
@@ -125,11 +145,35 @@ export function InquiryPaths() {
           Every inquiry starts from the exact product and asks only what changes the routing or resolution.
           The system already knows the family, format, category, components, and public allergen information.
         </p>
+
+        <OperatorNote
+          title="The customer should not have to know the org chart"
+          role="Complex issue resolution and cross-functional coordination."
+        >
+          <p>
+            A customer should not have to know whether their issue belongs to Consumer Care, Quality,
+            Logistics, or Finance. The system should capture the facts, route the work, and keep the
+            customer updated.
+          </p>
+        </OperatorNote>
+
         <div className={styles.grid}>
           {renderPath("consumer", relevant(CONSUMER_ISSUES), consumerIssueId, setConsumerIssueId)}
           {renderPath("vendor", relevant(VENDOR_ISSUES), vendorIssueId, setVendorIssueId)}
         </div>
       </div>
+
+      {dialog && (
+        <InquiryDialog
+          channel={dialog.channel}
+          issue={dialog.issue}
+          familyId={family.id}
+          variantId={state.selectedVariantId}
+          mode={state.userMode}
+          returnFocusTo={dialog.trigger}
+          onClose={() => setDialog(null)}
+        />
+      )}
     </section>
   );
 }

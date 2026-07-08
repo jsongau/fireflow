@@ -91,7 +91,7 @@ export const FAMILIES: ProductFamily[] = [
     isAnchor: true,
     blurb: "The high-visibility creamy sauce extension of the Carbonara family.",
     flavorStory:
-      "Creamy carbonara flavor in a pourable sauce — the condiment form of the portfolio's most recognized flavor.",
+      "Creamy carbonara flavor in a pourable sauce, the condiment form of the portfolio's most recognized flavor.",
     heatPositioning: "sauce-dependent",
     servingStyle: "sauce",
     creaminess: 4,
@@ -128,7 +128,7 @@ export const FAMILIES: ProductFamily[] = [
     priorityLabel: "Launch Anchor",
     aliases: ["buldak sauce", "original sauce", "hot chicken sauce", "buldak bottle"],
     isAnchor: true,
-    blurb: "The flagship bottled sauce — a Walmart 'Overall Pick' in research snapshots.",
+    blurb: "The flagship bottled sauce, a Walmart 'Overall Pick' in research snapshots.",
     flavorStory:
       "The original spicy-chicken flavor as a versatile bottled sauce for cooking and finishing.",
     heatPositioning: "sauce-dependent",
@@ -192,7 +192,7 @@ export const FAMILIES: ProductFamily[] = [
     priorityLabel: "Launch Anchor",
     aliases: ["2x spicy", "double spicy", "2x", "nuclear", "2x spicy ramen"],
     isAnchor: true,
-    blurb: "The extreme-heat challenge anchor — twice the spice of the Original.",
+    blurb: "The extreme-heat challenge anchor, twice the spice of the Original.",
     flavorStory:
       "The Original spicy-chicken profile intensified to roughly double the heat; the portfolio's challenge product.",
     heatPositioning: "extreme",
@@ -204,7 +204,7 @@ export const FAMILIES: ProductFamily[] = [
       "How hot is 2X compared to the Original?",
       "Can I use only part of the sauce to reduce heat?",
       "What is the difference from the Original?",
-      "I'm not feeling well after eating it — what should I do?",
+      "I'm not feeling well after eating it. What should I do?",
     ],
     vendorQuestions: [
       "Which formats are available (Multi, Big Bowl, Cup)?",
@@ -243,7 +243,7 @@ export const FAMILIES: ProductFamily[] = [
     priorityLabel: "Launch Anchor",
     aliases: ["carbonara", "carbo", "buldak carbo", "carbonara ramen", "pink buldak"],
     isAnchor: true,
-    blurb: "The highest public retail-engagement signal in the portfolio — creamy carbonara plus Buldak heat.",
+    blurb: "The highest public retail-engagement signal in the portfolio, creamy carbonara plus Buldak heat.",
     flavorStory:
       "A creamy, cheese-forward carbonara sauce softens the Buldak heat into the portfolio's most approachable and most recognized flavor.",
     heatPositioning: "moderate",
@@ -255,7 +255,7 @@ export const FAMILIES: ProductFamily[] = [
       "Is Carbonara mild?",
       "How is it different from Cream Carbonara?",
       "My sauce or cheese powder packet is missing.",
-      "It came out too watery — how much water should I keep?",
+      "It came out too watery. How much water should I keep?",
       "Does it contain milk?",
       "Which formats are available?",
     ],
@@ -310,7 +310,7 @@ export const FAMILIES: ProductFamily[] = [
     isAnchor: true,
     blurb: "A U.S.-localized flavor pairing bright lime with habanero heat.",
     flavorStory:
-      "Habanero heat lifted by bright lime — a U.S.-relevant flavor localization in the Buldak stir-fry line.",
+      "Habanero heat lifted by bright lime, a U.S.-relevant flavor localization in the Buldak stir-fry line.",
     heatPositioning: "hot",
     servingStyle: "stir-fry",
     creaminess: 0,
@@ -360,7 +360,7 @@ export const FAMILIES: ProductFamily[] = [
     priorityLabel: "Launch Anchor",
     aliases: ["original", "buldak", "hot chicken", "hek buldak", "original ramen", "spicy chicken"],
     isAnchor: true,
-    blurb: "The flagship baseline — the reference point for heat and flavor across the portfolio.",
+    blurb: "The flagship baseline, the reference point for heat and flavor across the portfolio.",
     flavorStory:
       "The original spicy-chicken (buldak) stir-fry noodle; the baseline every other flavor is measured against.",
     heatPositioning: "very-hot",
@@ -656,7 +656,7 @@ export const FAMILIES: ProductFamily[] = [
     priorityLabel: "Heritage Anchor",
     aliases: ["samyang ramen", "original samyang", "heritage ramen"],
     isAnchor: false,
-    blurb: "The heritage soup ramen that established the house — soup, not stir-fry.",
+    blurb: "The heritage soup ramen that established the house. Soup, not stir-fry.",
   },
   {
     id: "samyang-ramen-extra-spicy",

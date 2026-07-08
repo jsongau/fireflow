@@ -65,7 +65,7 @@ export function RankingsLab() {
           {view.caveat && <p className={styles.caveat}>{view.caveat}</p>}
           <p className={styles.count}>
             {ranked.length} of {FAMILY_BY_ID ? Object.keys(FAMILY_BY_ID).length : 45} families scored
-            {ranked.length < 45 && " — others are not scored here rather than guessed."}
+            {ranked.length < 45 && ". Others are not scored here rather than guessed."}
           </p>
         </div>
 
@@ -93,7 +93,7 @@ export function RankingsLab() {
                 </span>
                 <button className={styles.rowName} onClick={() => dispatch({ type: "SELECT_FAMILY", familyId: family.id })}>
                   {family.name}
-                  {entry.hasMissingInputs && <abbr className={styles.missing} title="Some inputs derived or missing — lower confidence">*</abbr>}
+                  {entry.hasMissingInputs && <abbr className={styles.missing} title="Some inputs derived or missing, lower confidence">*</abbr>}
                 </button>
                 <span className={styles.barWrap} aria-hidden="true">
                   <span className={styles.bar} style={{ width: `${entry.score}%` }} />
@@ -124,7 +124,7 @@ export function RankingsLab() {
           </ul>
           <p className={styles.methodNote}>
             Scores normalize 0–100. An asterisk marks families whose inputs are derived from tier and category
-            rather than authored — shown at lower confidence, never presented as fact.
+            rather than authored. They are shown at lower confidence, never presented as fact.
           </p>
         </details>
       </div>

@@ -3,5 +3,12 @@
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
-  ]
+  ],
+  "//": "baseUrl+paths here let `tsx` resolve the @/ alias when running scripts/verify-data.ts. The referenced build configs (tsconfig.app/node) carry their own paths; these are ignored by `tsc -b`.",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  }
 }

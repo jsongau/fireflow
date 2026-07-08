@@ -18,7 +18,7 @@ const ANGLES: Record<BrandId, BrandAngle> = {
     id: "buldak",
     flagshipId: "buldak-carbonara",
     consumer: "Heat questions, missing sauce packets, and “which one is milder?” dominate the queue.",
-    vendor: "The volume line — format availability, sell sheets, and shelf heat-communication.",
+    vendor: "The volume line: format availability, sell sheets, and shelf heat-communication.",
   },
   samyang: {
     id: "samyang",
@@ -29,13 +29,13 @@ const ANGLES: Record<BrandId, BrandAngle> = {
   tangle: {
     id: "tangle",
     flagshipId: "tangle-bulgogi-alfredo",
-    consumer: "Protein and fiber claims drive the questions — nutrition, not spice.",
+    consumer: "Protein and fiber claims drive the questions. Nutrition, not spice.",
     vendor: "A better-for-you story for buyers building a health-forward set.",
   },
   mep: {
     id: "mep",
     flagshipId: "mep-black-pepper-beef",
-    consumer: "Broth expectations and flavor-pairing curiosity — the calmest path.",
+    consumer: "Broth expectations and flavor-pairing curiosity make this the calmest path.",
     vendor: "A focused soup range for accounts that want depth over breadth.",
   },
 };
@@ -94,7 +94,7 @@ export function BrandUniverse() {
           <p className={styles.eyebrow}>About</p>
           <h2 id="brands-h" className={styles.h2}>The Brand Universe</h2>
           <p className={styles.lede}>
-            One house, four distinct positions. FireFlow treats each brand on its own terms — because the
+            One house, four distinct positions. FireFlow treats each brand on its own terms, because the
             questions consumers and vendors bring differ as much as the flavors do.
           </p>
         </header>
@@ -126,7 +126,7 @@ export function BrandUniverse() {
               <span className={styles.heritageTag}>Heritage</span>
               <span className={styles.brandName}>{samyang.name}</span>
               <p className={styles.heritageQuote}>{samyang.positioning}</p>
-              <p className={styles.count}><strong>{countFor("samyang")}</strong> heritage families — soup, not stir-fry.</p>
+              <p className={styles.count}><strong>{countFor("samyang")}</strong> heritage families. Soup, not stir-fry.</p>
               <dl className={styles.angles}>
                 <div><dt>Consumer</dt><dd>{ANGLES.samyang.consumer}</dd></div>
                 <div><dt>Vendor</dt><dd>{ANGLES.samyang.vendor}</dd></div>

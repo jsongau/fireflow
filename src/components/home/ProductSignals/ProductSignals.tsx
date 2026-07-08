@@ -1,6 +1,7 @@
 import { useHome } from "@/state/homeStore";
 import { FAMILY_BY_ID } from "@/data/families";
 import { SyntheticBadge, ConfidenceBadge } from "@/components/primitives";
+import { OperatorNote } from "@/components/employer/OperatorNote/OperatorNote";
 import type { Confidence } from "@/types/domain";
 import styles from "./ProductSignals.module.css";
 
@@ -37,7 +38,7 @@ const SIGNALS: Signal[] = [
     action: "Add a plain-language heat-level cue and an FAQ line to creamy-variant product pages.",
     measure: "Heat-expectation contacts per 1,000 units on creamy variants, tracked month over month.",
     owner: "CX Insights + Brand/PDP",
-    impact: "Concentrated on the portfolio's highest-visibility flavor family — small copy change, broad reach.",
+    impact: "Concentrated on the portfolio's highest-visibility flavor family. Small copy change, broad reach.",
     evidence: [
       "Repeated “expected mild” comments clustered on creamy variants",
       "Questions arrive pre-purchase and post-purchase, suggesting a labelling gap",
@@ -50,7 +51,7 @@ const SIGNALS: Signal[] = [
     title: "Chip shipping damage by carrier",
     inquiry: "“My chips arrived crushed.”",
     pattern: "Crushed-bag claims concentrate on direct-to-home parcels, not on shelf-purchased bags.",
-    rootCause: "Transit handling on a fragile snack format — a shipping problem, not a product defect.",
+    rootCause: "Transit handling on a fragile snack format. A shipping problem, not a product defect.",
     action: "Review protective packaging with Logistics and aggregate claims by carrier and route.",
     measure: "Crushed-chip claims per 1,000 shipments, segmented by carrier.",
     owner: "CX + Logistics",
@@ -91,7 +92,7 @@ const SIGNALS: Signal[] = [
     impact: "Clear allergen answers are a safety and trust priority; better labelling deflects avoidable contacts.",
     evidence: [
       "Milk questions concentrate on carbonara / cheese / mac variants",
-      "Answers rely on approved statements — no ad-hoc medical guidance",
+      "Answers rely on approved statements, no ad-hoc medical guidance",
     ],
     affectedFamilyIds: ["buldak-carbonara", "buldak-cream-carbonara", "buldak-quattro-cheese", "buldak-mac-and-cheese-carbo"],
     confidence: "high",
@@ -152,8 +153,8 @@ export function ProductSignals() {
             <p className={styles.eyebrow}>Improve</p>
             <h2 id="signals-h" className={styles.h2}>Product Signals &amp; Continuous Improvement</h2>
             <p className={styles.lede}>
-              Individual cases are noise until they cluster. Each signal follows one loop —
-              inquiry &rarr; pattern &rarr; root cause &rarr; action &rarr; measure — grounded in real products.
+              Individual cases are noise until they cluster. Each signal follows one loop, from inquiry
+              to pattern to root cause to action to measure, grounded in real products.
               Select a signal to see the evidence, the fix, and how it&rsquo;s measured.
             </p>
           </div>
@@ -162,6 +163,17 @@ export function ProductSignals() {
             <span className={styles.headNote}>Products are real; evidence, impact and metrics are invented for demonstration.</span>
           </div>
         </div>
+
+        <OperatorNote
+          title="Closing the case restores the customer. Reviewing the pattern protects the operation."
+          role="Continuous improvement, turning repeated issues into a corrective action."
+        >
+          <p>
+            Closing a case restores one customer. Reviewing the pattern protects the operation. I built
+            this loop to separate a single complaint from a repeated issue that deserves a root cause and
+            a permanent correction.
+          </p>
+        </OperatorNote>
 
         <ul className={styles.grid}>
           {SIGNALS.map((sig) => {

@@ -3,7 +3,7 @@ import { useHome } from "@/state/homeStore";
 import { FAMILIES, FAMILY_BY_ID } from "@/data/families";
 import { VARIANT_BY_ID } from "@/data/variants";
 import { BRAND_BY_ID } from "@/data/brands";
-import { Button, Segmented, ProductStage, SourceBadge } from "@/components/primitives";
+import { ButtonLink, Segmented, ProductStage, SourceBadge } from "@/components/primitives";
 import { FORMAT_BY_ID, CATEGORY_BY_ID } from "@/data/categories";
 import styles from "./ProductSignalHero.module.css";
 
@@ -108,18 +108,31 @@ export function ProductSignalHero() {
                 </p>
                 {family.source && <SourceBadge type={family.source.type} />}
                 <div className={styles.actions}>
-                  <a href="#product">
-                    <Button variant="primary" size="sm">Explore product</Button>
-                  </a>
-                  <a href="#compare" onClick={() => dispatch({ type: "ADD_COMPARE", familyId: family.id })}>
-                    <Button variant="secondary" size="sm">Compare</Button>
-                  </a>
-                  <a href="#resolve" onClick={() => dispatch({ type: "SET_MODE", mode: "consumer" })}>
-                    <Button variant="secondary" size="sm">Ask as a consumer</Button>
-                  </a>
-                  <a href="#resolve" onClick={() => dispatch({ type: "SET_MODE", mode: "vendor" })}>
-                    <Button variant="secondary" size="sm">Ask as a vendor</Button>
-                  </a>
+                  <ButtonLink href="#product" variant="primary" size="sm">Explore product</ButtonLink>
+                  <ButtonLink
+                    href="#compare"
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => dispatch({ type: "ADD_COMPARE", familyId: family.id })}
+                  >
+                    Compare
+                  </ButtonLink>
+                  <ButtonLink
+                    href="#resolve"
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => dispatch({ type: "SET_MODE", mode: "consumer" })}
+                  >
+                    Ask as a consumer
+                  </ButtonLink>
+                  <ButtonLink
+                    href="#resolve"
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => dispatch({ type: "SET_MODE", mode: "vendor" })}
+                  >
+                    Ask as a vendor
+                  </ButtonLink>
                 </div>
               </div>
             </>

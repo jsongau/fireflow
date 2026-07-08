@@ -9,7 +9,7 @@ export const BRANDS: Brand[] = [
     id: "buldak",
     name: "Buldak",
     accentToken: "--chili-600",
-    positioning: "The spicy-chicken flagship — the widest range of flavors and formats in the portfolio.",
+    positioning: "The spicy-chicken flagship, the widest range of flavors and formats in the portfolio.",
     role: "Portfolio center of gravity (29 families across noodles, sauces, snacks, frozen).",
   },
   {
@@ -17,7 +17,7 @@ export const BRANDS: Brand[] = [
     name: "Samyang",
     accentToken: "--samyang-accent",
     positioning: "Heritage soup noodles and snacks that established the house.",
-    role: "Heritage line — soup-forward ramen and legacy snacks.",
+    role: "Heritage line. Soup-forward ramen and legacy snacks.",
   },
   {
     id: "tangle",

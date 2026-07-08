@@ -41,7 +41,7 @@ export function ProductStage({
         className={[styles.package, styles[archetype]].filter(Boolean).join(" ")}
         style={{ "--accent": `var(${accentToken})` } as CSSProperties}
         role="img"
-        aria-label={`${brandName} ${name}${formatLabel ? `, ${formatLabel}` : ""} — staged placeholder`}
+        aria-label={`${brandName} ${name}${formatLabel ? `, ${formatLabel}` : ""}, staged placeholder`}
       >
         <span className={styles.brandStrip}>{brandName}</span>
         <span className={styles.name}>{name}</span>

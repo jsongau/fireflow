@@ -94,7 +94,7 @@ export const RANKING_VIEWS: RankingView[] = [
   {
     id: "retail-visibility",
     label: "Retail Visibility",
-    purpose: "Public retail engagement snapshot — single-listing, date-stamped. Not sales.",
+    purpose: "Public retail engagement snapshot, single-listing and date-stamped. Not sales.",
     sourceType: "retail-signal",
     weights: { retailVisibility: 1 },
     caveat: "Public retail engagement only. Not total sales, unique customers, or market share.",

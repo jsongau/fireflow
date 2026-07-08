@@ -85,7 +85,7 @@ export function SupportBar() {
           </div>
 
           <p className={styles.panelBody}>
-            Tell us who you are and we&rsquo;ll open the right path — with the evidence each case needs.
+            Tell us who you are and we&rsquo;ll open the right path, with the evidence each case needs.
           </p>
 
           <div className={styles.toggle} role="group" aria-label="I am a">

@@ -35,7 +35,7 @@ Each case names its collaborating teams; the vendor path routes to the right fun
 The Command Center includes a team workload / coaching view (synthetic, labeled).
 
 **Oversee SAP / ERP process compliance and data integrity.**
-This is framed honestly: FireFlow demonstrates *conceptual command* of order entry, pricing, delivery, billing, customer master, order status, and EDI, and rigorous source/confidence labeling as a data-integrity habit — it is **integration-ready / system-agnostic** and does **not** claim extensive hands-on SAP SD tenure.
+This is framed honestly: FireFlow demonstrates *conceptual command* of order entry, pricing, delivery, billing, customer master, order status, and EDI, and rigorous source/confidence labeling as a data-integrity habit — it is **integration-ready / system-agnostic** and does **not** claim extensive hands-on SAP SD tenure. The **SAP SD Process Intelligence** chapter makes this concrete: one synthetic B2B order walked through the full order-to-cash document flow (PO → sales order → delivery → goods issue → invoice → deduction → credit memo → prevention), a 23-term SAP SD glossary in plain language, and 11 order exceptions worked end to end — with a stated disclosure that it is a process demonstration, not an SAP replica or a claim of system access.
 
 ## Product and measurement judgment
 

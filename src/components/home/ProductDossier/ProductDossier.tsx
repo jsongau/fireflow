@@ -5,7 +5,8 @@ import { BRAND_BY_ID } from "@/data/brands";
 import { CATEGORY_BY_ID, FORMAT_BY_ID } from "@/data/categories";
 import { VERIFY_PACKAGE_REMINDER } from "@/data/sources";
 import { imageForVariant } from "@/data/images";
-import { Button, Segmented, ProductStage, SourceBadge, ConfidenceBadge } from "@/components/primitives";
+import { Button, ButtonLink, Segmented, ProductStage, SourceBadge, ConfidenceBadge, PepperScale } from "@/components/primitives";
+import { spiceLevel } from "@/data/spiciness";
 import type { HeatPositioning, ServingStyle } from "@/types/domain";
 import styles from "./ProductDossier.module.css";
 
@@ -85,6 +86,10 @@ export function ProductDossier() {
               {family.servingStyle && (
                 <div><dt>Style</dt><dd>{SERVING_LABEL[family.servingStyle]}</dd></div>
               )}
+              <div>
+                <dt>Spiciness <span className={styles.ed}>(editorial)</span></dt>
+                <dd><PepperScale level={spiceLevel(family.id)} /></dd>
+              </div>
               {typeof family.creaminess === "number" && (
                 <div><dt>Creaminess <span className={styles.ed}>(editorial)</span></dt><dd>{family.creaminess}/5</dd></div>
               )}
@@ -116,7 +121,7 @@ export function ProductDossier() {
                 {variant.preparation ? (
                   <span className={styles.factValue}>{variant.preparation}</span>
                 ) : (
-                  <span className={styles.factUnknown}>Format-specific preparation not in public data — verify the package.</span>
+                  <span className={styles.factUnknown}>Format-specific preparation not in public data. Verify the package.</span>
                 )}
               </div>
 
@@ -193,15 +198,30 @@ export function ProductDossier() {
             ) : null}
 
             <div className={styles.dossierActions}>
-              <a href="#resolve" onClick={() => dispatch({ type: "SET_MODE", mode: "consumer" })}>
-                <Button variant="primary" size="sm">Ask as a consumer</Button>
-              </a>
-              <a href="#vendor" onClick={() => dispatch({ type: "SET_MODE", mode: "vendor" })}>
-                <Button variant="secondary" size="sm">Ask as a vendor</Button>
-              </a>
-              <a href="#compare" onClick={() => dispatch({ type: "ADD_COMPARE", familyId: family.id })}>
-                <Button variant="ghost" size="sm">Add to compare</Button>
-              </a>
+              <ButtonLink
+                href="#resolve"
+                variant="primary"
+                size="sm"
+                onClick={() => dispatch({ type: "SET_MODE", mode: "consumer" })}
+              >
+                Ask as a consumer
+              </ButtonLink>
+              <ButtonLink
+                href="#resolve"
+                variant="secondary"
+                size="sm"
+                onClick={() => dispatch({ type: "SET_MODE", mode: "vendor" })}
+              >
+                Ask as a vendor
+              </ButtonLink>
+              <ButtonLink
+                href="#compare"
+                variant="ghost"
+                size="sm"
+                onClick={() => dispatch({ type: "ADD_COMPARE", familyId: family.id })}
+              >
+                Add to compare
+              </ButtonLink>
             </div>
 
             {family.source && (

@@ -5,16 +5,31 @@ import { variantsForFamily, defaultVariantForFamily } from "@/data/variants";
 import { imageForVariant } from "@/data/images";
 import { BRAND_BY_ID, BRANDS } from "@/data/brands";
 import { CATEGORIES, CATEGORY_BY_ID, FORMAT_BY_ID } from "@/data/categories";
-import { Segmented } from "@/components/primitives";
+import { Segmented, PepperScale } from "@/components/primitives";
+import { OperatorNote } from "@/components/employer/OperatorNote/OperatorNote";
+import { playSound } from "@/lib/sound/sound";
+import {
+  ALL_PRODUCT_TYPES,
+  SPICE_SOURCE_NOTE,
+  spiceLevel,
+  spiceName,
+  typesForFamily,
+  type ProductType,
+} from "@/data/spiciness";
 import type { BrandId, CategoryId } from "@/types/domain";
 import styles from "./PortfolioPulse.module.css";
 
 type ViewMode = "family" | "format";
 
+/** Spiciness facet buttons, hottest first. */
+const SPICE_FACET_LEVELS = [5, 4, 3, 2, 1] as const;
+
 export function PortfolioPulse() {
   const { state, dispatch } = useHome();
   const [brandFilter, setBrandFilter] = useState<BrandId | "all">("all");
   const [categoryFilter, setCategoryFilter] = useState<CategoryId | "all">("all");
+  const [spiceFilter, setSpiceFilter] = useState<number | null>(null);
+  const [typeFilter, setTypeFilter] = useState<ProductType | null>(null);
   const [view, setView] = useState<ViewMode>("family");
 
   const filtered = useMemo(
@@ -22,9 +37,11 @@ export function PortfolioPulse() {
       FAMILIES.filter(
         (f) =>
           (brandFilter === "all" || f.brand === brandFilter) &&
-          (categoryFilter === "all" || f.category === categoryFilter),
+          (categoryFilter === "all" || f.category === categoryFilter) &&
+          (spiceFilter === null || spiceLevel(f.id) === spiceFilter) &&
+          (typeFilter === null || typesForFamily(f).includes(typeFilter)),
       ),
-    [brandFilter, categoryFilter],
+    [brandFilter, categoryFilter, spiceFilter, typeFilter],
   );
 
   const totalVariants = useMemo(
@@ -64,6 +81,17 @@ export function PortfolioPulse() {
             size="sm"
           />
         </header>
+
+        <OperatorNote
+          title="One flavor, several records"
+          role="Product and portfolio organization, so allergens and preparation stay tied to the exact format."
+        >
+          <p>
+            A customer sees one flavor. The operation may see several formats, packages, preparation
+            methods, and data records. I normalized the portfolio so the interface stays simple without
+            erasing the differences that matter.
+          </p>
+        </OperatorNote>
 
         <div className={styles.filters}>
           <div className={styles.filterRow} role="group" aria-label="Filter by brand">
@@ -105,6 +133,46 @@ export function PortfolioPulse() {
               </button>
             ))}
           </div>
+
+          <div className={styles.facet}>
+            <span className={styles.facetLabel} id="pp-spice-label">Spiciness</span>
+            <div className={styles.filterRow} role="group" aria-labelledby="pp-spice-label">
+              {SPICE_FACET_LEVELS.map((lvl) => {
+                const on = spiceFilter === lvl;
+                return (
+                  <button
+                    key={lvl}
+                    className={on ? `${styles.spiceChip} ${styles.spiceChipOn}` : styles.spiceChip}
+                    aria-pressed={on}
+                    aria-label={`${spiceName(lvl)}${on ? " (selected)" : ""}`}
+                    onClick={() => setSpiceFilter(on ? null : lvl)}
+                  >
+                    <PepperScale level={lvl} size="sm" />
+                  </button>
+                );
+              })}
+            </div>
+            <p className={styles.sourceNote}>{SPICE_SOURCE_NOTE}</p>
+          </div>
+
+          <div className={styles.facet}>
+            <span className={styles.facetLabel} id="pp-type-label">Type</span>
+            <div className={styles.filterRow} role="group" aria-labelledby="pp-type-label">
+              {ALL_PRODUCT_TYPES.map((t) => {
+                const on = typeFilter === t;
+                return (
+                  <button
+                    key={t}
+                    className={on ? `${styles.facetChip} ${styles.facetChipOn}` : styles.facetChip}
+                    aria-pressed={on}
+                    onClick={() => setTypeFilter(on ? null : t)}
+                  >
+                    {t}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
         {filtered.length === 0 ? (
@@ -124,7 +192,11 @@ export function PortfolioPulse() {
                     <button
                       className={styles.cardMain}
                       aria-pressed={selected}
-                      onClick={() => dispatch({ type: "SELECT_FAMILY", familyId: f.id })}
+                      onClick={() => {
+                        dispatch({ type: "SELECT_FAMILY", familyId: f.id });
+                        playSound("select");
+                        document.getElementById("product")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                      }}
                     >
                       <span className={styles.cardMedia}>
                         <span className={styles.cardMediaText} aria-hidden="true">{f.name}</span>
@@ -144,6 +216,9 @@ export function PortfolioPulse() {
                       <span className={styles.cardMeta}>
                         {CATEGORY_BY_ID[f.category]?.label} · {f.formats.length} format{f.formats.length > 1 ? "s" : ""}
                         {f.isAnchor && <span className={styles.anchorTag}>Anchor</span>}
+                      </span>
+                      <span className={styles.cardSpice}>
+                        <PepperScale level={spiceLevel(f.id)} size="sm" />
                       </span>
                     </button>
                     {view === "format" && (
