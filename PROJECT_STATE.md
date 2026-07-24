@@ -1,6 +1,6 @@
 # PROJECT_STATE — FireFlow Product Intelligence
 
-**Last updated:** 2026-07-07
+**Last updated:** 2026-07-10
 
 ## Where we are — TWO TRACKS
 
@@ -12,6 +12,10 @@ Files: `preview.html` + `preview-data.js` + `public/products/` (keep together; o
 Static verification passed (this environment blocks npm, so no tsc/vite run was possible): all `@/` imports resolve, every named import has a matching export, 0 unused imports, all 91 CSS tokens resolve, and the one real build-breaker found — `UserMode` missing from `domain.ts` — was fixed. `npm install && npm run build` on a machine with npm is the final gate; expect at most minor type nits only tsc can surface.
 
 **Design decisions locked (2026-07-07):** theme = Buldak Night; product listing = immersive glow (C); comparison = versus/battle (B); mega nav = split panel (B); side rail = rich context (B); support bar = compact status (C).
+
+**2026-07-08 update:** the Order-to-Cash Process Intelligence chapter (`SapProcessIntelligence`, `#o2c`) moved from one fixed synthetic scenario to a filterable/sortable 7-order Order Queue, per site-owner feedback that the single-scenario version read as a teaching walkthrough rather than a working tool. The flow-stage and exception-detail panels are reused, not rebuilt; adds one `OperatorNote`. Site-wide the count is now 8 (6 on the homepage, 2 in the Ops Dashboard), above the old documented cap of 6. That cap is superseded by the guided-tour rule: one note per section, collapsed to a teaser by default. See `CLAUDE.md`, `docs/restructure/05-OPERATOR-NOTES-RIDE-GUIDE.md`, CHANGELOG, and D-009.
+
+**2026-07-10 update:** the Order Queue gained a featured **Retailer Order Lifecycle** order (99 Ranch Market, PO 4500382711): a reducer-driven X12 workflow study (`src/data/ediLifecycle.ts` + `OrderLifecycle.tsx`) covering 850/997/855/856/810/820, split-pane raw-vs-translated document viewer with two-way highlighting and Explain mode, structural-vs-business validation, gated advance actions with visible reasons, a short-shipment deduction reconciled checkpoint by checkpoint, handoff to the case board as FF-2231, and a corrective-action close. Entry link from ComparisonLab ("Trace in retailer order"). Labeled a workflow study, synthetic, simplified X12; see CHANGELOG and KNOWN_LIMITATIONS 7a.
 
 ## Confirmed decisions (2026-07-07)
 - **Stack:** React + Vite + TypeScript, custom CSS + design tokens.

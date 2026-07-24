@@ -27,9 +27,6 @@ export function SoundToggle({ className }: { className?: string }) {
       aria-pressed={on}
       onClick={handleClick}
     >
-      <span className={styles.dot} data-on={on ? "true" : undefined} aria-hidden="true">
-        {on ? "●" : "○"}
-      </span>
       Sound: {on ? "On" : "Off"}
     </button>
   );

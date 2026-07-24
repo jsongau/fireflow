@@ -6,13 +6,17 @@
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
 }
+
+/* Full bleed. The bar is the one band on the page that runs edge to edge:
+   it is chrome, not content, and giving it the whole width is what buys the
+   room for every group label to stay on one line. Content below still lives
+   inside the narrower --shell-max column. */
 .bar {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: var(--space-3) var(--space-4);
+  width: 100%;
+  padding: var(--space-3) var(--nav-pad);
   display: flex;
   align-items: center;
-  gap: var(--space-5);
+  gap: var(--space-4);
 }
 
 .brand {
@@ -26,12 +30,18 @@
   font-family: var(--font-display);
   font-size: var(--step-2);
   color: var(--text-0);
+  white-space: nowrap;
 }
 .brandTag {
   font-size: var(--step--1);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--gold);
+  white-space: nowrap;
+}
+/* Below a laptop the tagline is the first thing to go: the wordmark carries it. */
+@media (max-width: 1120px) {
+  .brandTag { display: none; }
 }
 
 .menubar {
@@ -48,7 +58,10 @@
   background: none;
   border: 1px solid transparent;
   border-radius: var(--radius-s);
-  padding: 0.5em 0.9em;
+  /* The wrap was the bug: "Account Support" broke across two lines and made the
+     bar taller than its siblings. A nav label is a name, and a name never wraps. */
+  white-space: nowrap;
+  padding: 0.5em 0.85em;
   min-height: 40px;
   cursor: pointer;
   transition: color var(--dur-1) var(--ease-out), background var(--dur-1) var(--ease-out);
@@ -58,6 +71,98 @@
   color: var(--text-0);
   background: var(--surface-2);
   border-color: var(--line-2);
+}
+
+/* The promoted destination: one pill, outside the menubar. /ops is the
+   destination the whole site funnels into, so it gets the bar's single loud
+   treatment (gradient fill, gold border, ember glow) while the group buttons
+   stay quiet text. */
+.opsCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  flex: none;
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  font-weight: 800;
+  white-space: nowrap;
+  color: var(--surface-0);
+  background: linear-gradient(135deg, var(--ember), var(--gold));
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  padding: 0.5em 1.1em;
+  text-decoration: none;
+  box-shadow: 0 0 14px rgba(255, 106, 43, 0.35);
+  /* Gentle ember pulse. This is nav chrome, so the amplitude stays small;
+     the reduced-motion block at the bottom stops it and keeps the static
+     glow above as the resting state. */
+  animation: opsGlow 2.6s ease-in-out infinite;
+}
+.opsCtaGlyph { font-size: 0.72em; line-height: 1; }
+.opsCta:hover,
+.opsCta:focus-visible {
+  filter: brightness(1.08);
+  animation: none;
+  box-shadow: 0 0 22px rgba(255, 106, 43, 0.5);
+}
+.opsCta:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.opsCtaShort { display: none; }
+/* On /ops itself the pill is marked current with a dark inset keyline under
+   the text, a shape cue on top of the pill's existing 800 weight, never
+   color alone. Declared after :hover so the keyline survives hovering. */
+.opsCta[aria-current="page"] {
+  animation: none;
+  box-shadow: inset 0 -2px 0 0 var(--surface-0), 0 0 14px rgba(255, 106, 43, 0.35);
+}
+@keyframes opsGlow {
+  0%, 100% { box-shadow: 0 0 10px rgba(255, 106, 43, 0.28); }
+  50% { box-shadow: 0 0 18px rgba(255, 106, 43, 0.45); }
+}
+
+/* The promoted Ops pill bought real width, so the first tightening now starts
+   at wide-laptop sizes: shave button and pill padding and the brand tag before
+   anything can push the sound toggle past the right edge (seen at 1440). */
+@media (max-width: 1560px) {
+  .groupBtn { padding: 0.5em 0.62em; }
+  .menubar { gap: 0; }
+  .opsCta { padding: 0.5em 0.85em; }
+  .bar { gap: var(--space-3); }
+}
+
+/* One tier tighter: the brand tag is the cheapest width on the bar, so it goes
+   before any label does. Group buttons drop to the small step here too. */
+@media (max-width: 1400px) {
+  .brandTag { display: none; }
+  .groupBtn { font-size: var(--step--1); padding: 0.5em 0.55em; }
+  .opsCta { padding: 0.45em 0.75em; }
+}
+
+/* Between the drawer cutoff and a comfortable laptop the labels tighten rather
+   than wrap, so the bar keeps its single row all the way down to 860px. */
+@media (max-width: 1240px) {
+  .groupBtn { font-size: var(--step--1); padding: 0.5em 0.6em; }
+  .opsCta { padding: 0.5em 0.8em; }
+  .bar { gap: var(--space-3); }
+}
+
+/* Small-laptop band above the 860px drawer cutoff. Everything shaves once
+   more, and below 920px the pill steps aside entirely: six group labels plus
+   a pill cannot share ~900px, and the ops door stays one tap away in the
+   Account Support footer column and the drawer at 860. */
+@media (max-width: 1000px) {
+  .groupBtn { padding: 0.5em 0.4em; letter-spacing: 0; }
+  .opsCta { padding: 0.4em 0.6em; }
+  .opsCtaLong { display: none; }
+  .opsCtaShort { display: inline; }
+  .bar { gap: var(--space-2); }
+}
+/* In the last sliver before the pill retires, its glyph goes first. */
+@media (max-width: 945px) {
+  .opsCtaGlyph { display: none; }
+  .opsCta { padding: 0.4em 0.5em; }
+}
+@media (max-width: 920px) {
+  .opsCta { display: none; }
 }
 
 .drawerToggle {
@@ -77,8 +182,19 @@
   cursor: pointer;
 }
 
-/* --- Desktop split panel --- */
+/* --- Desktop split panel ---
+   Absolute overlay dropping from the bottom of the bar, not an in-flow child.
+   In-flow, it resized the sticky nav and collided with the separately-sticky
+   SelectedProductRail below (both use backdrop-filter), so the submenu appeared
+   to hide behind the header. As an absolute overlay inside the nav's own
+   stacking context (z-nav, above the rail's z-rail), the opaque panel cleanly
+   covers the rail. */
 .panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1;
   border-top: 1px solid var(--line);
   background: var(--surface-1);
   box-shadow: var(--shadow-2);
@@ -88,66 +204,170 @@
   from { opacity: 0; transform: translateY(-6px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* Full bleed like the bar, inset by the same --nav-pad so the group list lines
+   up under the brand and the preview card ends where the sound toggle ends. */
 .panelInner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: var(--space-5) var(--space-4);
+  width: 100%;
+  padding: var(--space-4) var(--nav-pad) var(--space-5);
   display: grid;
-  grid-template-columns: 1fr 1.1fr;
-  gap: var(--space-6);
+  grid-template-columns: minmax(300px, 0.9fr) minmax(0, 1.35fr);
+  gap: clamp(24px, 4vw, 64px);
+  align-items: start;
 }
+
+
+/* ---- Left column: the link list, scannable without hovering anything ---- */
 .catList {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: var(--space-1);
+  gap: 2px;
   align-content: start;
 }
 .catLink {
-  display: block;
-  font-weight: 600;
+  display: grid;
+  gap: 1px;
   color: var(--text-1);
   text-decoration: none;
   border: 1px solid transparent;
   border-radius: var(--radius-s);
-  padding: 0.6em 0.8em;
+  padding: 0.55em 0.7em;
   transition: color var(--dur-1) var(--ease-out), background var(--dur-1) var(--ease-out);
+}
+.catLabel {
+  font-weight: 700;
+  color: var(--text-0);
+  line-height: 1.3;
+}
+.catSub {
+  font-size: var(--step--1);
+  color: var(--text-2);
+  line-height: 1.35;
 }
 .catLink:hover,
 .catLink:focus-visible {
-  color: var(--text-0);
   background: var(--surface-2);
   border-color: var(--line-2);
 }
+.catLink:hover .catSub,
+.catLink:focus-visible .catSub { color: var(--text-1); }
 
+/* The item currently previewed on the right. Marked with a left bar and weight,
+   never by color alone, so the pairing survives a colorblind read. */
+.catLinkActive {
+  background: var(--surface-2);
+  border-color: var(--line-2);
+  box-shadow: inset 3px 0 0 0 var(--accent);
+}
+
+/* ---- Right column: the preview card ---- */
 .previewPane {
   border-left: 1px solid var(--line);
-  padding-left: var(--space-6);
+  padding-left: clamp(24px, 3vw, 48px);
   display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: var(--space-5);
+  row-gap: var(--space-3);
   align-content: start;
-  gap: var(--space-2);
-  min-height: 120px;
+  min-height: 168px;
 }
+/* Most destinations are not products, so most previews have no photo. The
+   modifier is set in TSX rather than with :has() so the layout does not depend
+   on a selector some browsers still ship behind a flag. */
+.previewPaneNoImg { grid-template-columns: minmax(0, 1fr); }
+
 .previewImg {
-  width: 120px;
-  height: 120px;
+  grid-row: 1 / span 2;
+  width: 128px;
+  height: 128px;
   object-fit: contain;
   border-radius: var(--radius-m);
   background: var(--surface-3);
   border: 1px solid var(--line);
   padding: var(--space-2);
+  align-self: start;
+}
+
+.previewHead { display: grid; gap: var(--space-1); align-content: start; }
+.previewKicker {
+  font-size: var(--step--1);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--gold);
+  margin: 0;
 }
 .previewTitle {
   font-family: var(--font-display);
-  font-size: var(--step-2);
+  font-size: var(--step-3);
   color: var(--text-0);
+  line-height: 1.05;
   margin: 0;
 }
 .previewBlurb {
   color: var(--text-1);
   margin: 0;
-  max-width: 44ch;
+  max-width: 52ch;
+  line-height: 1.45;
+}
+
+.previewBody {
+  grid-column: 2;
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+}
+.previewPaneNoImg .previewBody { grid-column: 1; }
+
+/* Proof list. The marker is a square glyph, not an arrow: arrows are banned in
+   visible copy, and a square reads as a bullet at any zoom. */
+.proofList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+  max-width: 60ch;
+}
+.proofItem {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr);
+  gap: var(--space-2);
+  font-size: var(--step--1);
+  color: var(--text-1);
+  line-height: 1.45;
+}
+.proofItem::before {
+  content: "▪";
+  color: var(--accent);
+  line-height: 1.35;
+}
+
+.previewCta {
+  justify-self: start;
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: var(--step--1);
+  letter-spacing: 0.02em;
+  color: var(--surface-0);
+  background: var(--gold);
+  border: 1px solid var(--gold);
+  border-radius: var(--radius-s);
+  padding: 0.65em 1.1em;
+  text-decoration: none;
+  transition: background var(--dur-1) var(--ease-out), transform var(--dur-1) var(--ease-out);
+}
+.previewCta:hover { background: var(--ember); border-color: var(--ember); color: var(--text-0); }
+.previewCta:focus-visible { outline: 2px solid var(--text-0); outline-offset: 2px; }
+
+.previewEmpty { color: var(--text-2); margin: 0; }
+
+/* Below this the two columns would each be too narrow to read, so the preview
+   pane drops and the list stands alone with its sub-lines doing the work. */
+@media (max-width: 1080px) {
+  .panelInner { grid-template-columns: minmax(0, 1fr); }
+  .previewPane { display: none; }
 }
 
 /* --- Mobile drawer --- */
@@ -181,17 +401,37 @@
 .drawerLinkLabel { font-weight: 700; color: var(--text-0); }
 .drawerLinkBlurb { font-size: var(--step--1); color: var(--text-2); }
 
+/* The same promoted destination, first thing in the drawer: a full-width
+   block the thumb cannot miss. Static on mobile; only the desktop pill
+   carries the pulse. */
+.drawerOpsCta {
+  display: block;
+  font-family: var(--font-ui);
+  font-weight: 800;
+  color: var(--surface-0);
+  background: linear-gradient(135deg, var(--ember), var(--gold));
+  border-radius: var(--radius-m);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-3);
+  text-decoration: none;
+}
+.drawerOpsCta:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
 /* Operator Notes toggle sits at the far right of the bar on desktop. */
-.navToggle { margin-left: var(--space-2); }
+.navToggle { margin-left: var(--space-2); flex: none; }
 .drawerControls { display: flex; flex-wrap: wrap; gap: var(--space-2); justify-content: flex-end; margin-bottom: var(--space-2); }
 
 @media (max-width: 860px) {
   .menubar { display: none; }
   .drawerToggle { display: inline-block; }
   .navToggle { display: none; }
+  /* The drawer's full-width CTA takes over; the pill would crowd a phone bar. */
+  .opsCta { display: none; }
   .bar { gap: var(--space-3); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .panel { animation: none; }
+  /* The pulse stops; .opsCta's static resting glow remains. */
+  .opsCta { animation: none; }
 }

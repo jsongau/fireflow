@@ -1,0 +1,221 @@
+.section { background: var(--surface-0); color: var(--text-1); scroll-margin-top: var(--sticky-h); }
+.inner { max-width: var(--shell-max); margin: 0 auto; padding: var(--space-8) var(--shell-pad); }
+
+.head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-5); flex-wrap: wrap; margin-bottom: var(--space-5); }
+.eyebrow { text-transform: uppercase; letter-spacing: 0.14em; font-size: var(--step--1); color: var(--accent); margin: 0 0 var(--space-2); }
+.h2 { font-family: var(--font-display); font-size: var(--step-4); color: var(--text-0); margin: 0 0 var(--space-2); }
+.lede { color: var(--text-1); max-width: 62ch; margin: 0; }
+.headBadge { display: grid; gap: var(--space-2); justify-items: end; max-width: 260px; text-align: right; }
+.headNote { font-size: var(--step--1); color: var(--text-2); }
+
+/* Account-type lane toggle */
+.accountRow {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap;
+  background: var(--surface-1); border: 1px solid var(--line); border-radius: var(--radius-m);
+  padding: var(--space-4); margin-bottom: var(--space-3);
+}
+.accountLabel { display: grid; gap: var(--space-1); }
+.accountTitle { font-weight: 700; font-size: var(--step-0); color: var(--text-0); }
+.accountHint { font-size: var(--step--1); color: var(--text-2); max-width: 52ch; }
+
+/* Nathan's note on the pricing lane. Cool slate + indigo rule, editorial serif
+   voice, so it reads as his commentary against the warm Buldak Night UI. */
+.laneNote {
+  margin: 0 0 var(--space-6);
+  background: var(--op-surface);
+  border: 1px solid var(--op-line-2);
+  border-left: 3px solid var(--op-accent);
+  border-radius: 0 var(--radius-m) var(--radius-m) 0;
+  padding: var(--space-4) var(--space-5);
+  display: grid; gap: var(--space-2);
+}
+.laneNoteTag {
+  display: inline-flex; align-items: center; gap: var(--space-2); margin: 0;
+  font-family: var(--font-operator-tag); font-size: var(--step--1); font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.16em; color: var(--op-accent);
+}
+.laneNoteAvatar {
+  display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%;
+  background: var(--op-accent); color: var(--op-bg);
+  font-family: var(--font-operator-tag); font-weight: 700; font-size: 0.68rem; letter-spacing: 0.02em;
+}
+.laneNoteBody {
+  margin: 0; max-width: 78ch;
+  font-family: var(--font-operator); font-size: var(--step-0); line-height: 1.6; color: var(--op-text-1);
+}
+
+/* Two-column layout: catalog + sticky summary */
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: var(--space-5); align-items: start; }
+
+.catalogCol { display: grid; gap: var(--space-4); align-content: start; min-width: 0; }
+.catalog { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-3); }
+.card {
+  display: grid; grid-template-columns: 76px minmax(0, 1fr) auto; gap: var(--space-4); align-items: center;
+  background: var(--surface-1); border: 1px solid var(--line); border-radius: var(--radius-m);
+  padding: var(--space-4); box-shadow: var(--shadow-1);
+  transition: border-color var(--dur-1) var(--ease-out), transform var(--dur-1) var(--ease-out);
+}
+.card:hover { border-color: var(--accent); transform: translateY(-1px); }
+
+/* Product thumbnail on each card */
+.cardThumb {
+  width: 76px; height: 76px; object-fit: contain; border-radius: var(--radius-m);
+  background: var(--surface-2); padding: var(--space-1);
+}
+.cardThumbFallback {
+  width: 76px; height: 76px; display: inline-flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-m); background: var(--surface-2); color: var(--text-2);
+  font-family: var(--font-display); font-size: var(--step-3);
+}
+
+/* Browse-more control + product gallery */
+.browseWrap { display: grid; gap: var(--space-4); }
+.browseMore {
+  justify-self: start; background: none; color: var(--text-0); font: inherit; font-weight: 700;
+  border: 1px solid var(--line-2); border-radius: 999px; padding: 0.6em 1.2em; cursor: pointer;
+  transition: background var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out);
+}
+.browseMore:hover { background: var(--surface-2); border-color: var(--accent); }
+
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: var(--space-3); }
+.tile {
+  display: grid; gap: var(--space-3); background: var(--surface-1); border: 1px solid var(--line);
+  border-radius: var(--radius-m); padding: var(--space-3); align-content: start;
+  transition: border-color var(--dur-1) var(--ease-out), transform var(--dur-1) var(--ease-out);
+}
+.tile:hover { border-color: var(--accent); transform: translateY(-2px); }
+.tileImgWrap {
+  position: relative; aspect-ratio: 1 / 1; border-radius: var(--radius-m); background: var(--surface-2);
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.tileImg { width: 100%; height: 100%; object-fit: contain; padding: var(--space-3); }
+.tileFallback { font-family: var(--font-display); font-size: var(--step-5); color: var(--text-2); }
+.tileLead {
+  position: absolute; left: var(--space-1); bottom: var(--space-1);
+  display: inline-flex; align-items: center; gap: 0.35em; font-size: var(--step--2); font-weight: 700;
+  background: var(--surface-0); border: 1px solid var(--line-2); border-radius: 999px; padding: 0.2em 0.6em;
+}
+.tileLead[data-lead="in-stock"] { color: var(--ok); }
+.tileLead[data-lead="short"] { color: var(--info); }
+.tileLead[data-lead="standard"] { color: var(--gold); }
+.tileLead[data-lead="made-to-order"] { color: var(--ember); }
+.tileInfo { display: grid; gap: 2px; }
+.tileName { font-weight: 700; color: var(--text-0); }
+.tileFmt { font-size: var(--step--1); color: var(--text-2); }
+.tilePrice { font-family: var(--font-display); font-size: var(--step-1); color: var(--text-0); margin-top: 2px; }
+.tilePriceUnit { font-family: var(--font-ui); font-size: var(--step--1); font-weight: 400; color: var(--text-2); }
+
+.cardMain { display: grid; gap: var(--space-3); }
+.cardHead { display: grid; gap: 2px; }
+.cardName { font-weight: 700; font-size: var(--step-1); color: var(--text-0); }
+.cardFmt { font-size: var(--step--1); color: var(--text-1); }
+.cardCat { color: var(--text-2); }
+.cardSku { font-size: var(--step--1); color: var(--text-2); font-variant-numeric: tabular-nums; letter-spacing: 0.03em; }
+
+.specs { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); margin: 0; }
+.spec { display: grid; gap: 2px; }
+.spec dt { font-size: var(--step--1); color: var(--text-2); text-transform: uppercase; letter-spacing: 0.08em; margin: 0; }
+.spec dd { margin: 0; font-size: var(--step--1); font-weight: 600; color: var(--text-1); }
+
+/* Lead-time chip — glyph + word, never color alone */
+.lead { display: inline-flex; align-items: center; gap: 0.4em; font-weight: 600; }
+.leadGlyph { font-size: 0.9em; line-height: 1; }
+.lead[data-lead="in-stock"] { color: var(--ok); }
+.lead[data-lead="short"] { color: var(--info); }
+.lead[data-lead="standard"] { color: var(--gold); }
+.lead[data-lead="made-to-order"] { color: var(--ember); }
+
+.cardBuy { display: grid; gap: var(--space-3); justify-items: end; align-content: center; min-width: 168px; }
+.price { display: grid; justify-items: end; gap: 0; }
+.priceValue { font-family: var(--font-display); font-size: var(--step-3); line-height: 1; color: var(--text-0); }
+.priceUnit { font-size: var(--step--1); color: var(--text-2); }
+
+/* Case stepper */
+.stepper { display: inline-flex; align-items: stretch; border: 1px solid var(--line-2); border-radius: 999px; overflow: hidden; background: var(--surface-2); }
+.stepBtn {
+  border: none; background: none; color: var(--text-0); font: inherit; font-size: var(--step-1); font-weight: 700;
+  width: 2.2em; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+  transition: background var(--dur-1) var(--ease-out);
+}
+.stepBtn:hover { background: var(--surface-3); }
+.stepField { display: inline-flex; align-items: center; gap: 0.3em; padding: 0 var(--space-2); border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
+.stepInput {
+  width: 3.2em; background: none; border: none; color: var(--text-0); font: inherit; font-weight: 700;
+  text-align: right; -moz-appearance: textfield; appearance: textfield;
+}
+.stepInput::-webkit-outer-spin-button, .stepInput::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.stepUnit { font-size: var(--step--1); color: var(--text-2); }
+
+/* Order summary panel. Sticky, but capped to the viewport and scrollable inline
+   so the entire itemized invoice AND the CTAs below it are always reachable,
+   however long the cart gets. */
+.summary {
+  position: sticky; top: calc(var(--sticky-h) + var(--space-4));
+  background: var(--surface-1); border: 1px solid var(--line-2); border-radius: var(--radius-l);
+  padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-4);
+  box-shadow: var(--shadow-2);
+  max-height: calc(100dvh - var(--sticky-h) - var(--space-6));
+  overflow-y: auto; overscroll-behavior: contain;
+}
+/* Children keep their natural height; the panel itself scrolls. */
+.summary > * { flex: 0 0 auto; }
+.summaryTitle { font-family: var(--font-display); font-size: var(--step-2); color: var(--text-0); margin: 0; }
+
+.empty { padding: var(--space-5); text-align: center; color: var(--text-2); border: 1px dashed var(--line-2); border-radius: var(--radius-m); margin: 0; }
+
+.lines { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--space-3); }
+.line { display: grid; grid-template-columns: 1fr auto; gap: var(--space-3); padding-bottom: var(--space-3); border-bottom: 1px solid var(--line); }
+.lineMain { display: grid; gap: 2px; }
+.lineName { font-weight: 700; color: var(--text-0); }
+.lineFmt { font-size: var(--step--1); color: var(--text-2); }
+.lineQty { font-size: var(--step--1); color: var(--text-1); }
+.belowMoq { display: inline-flex; align-items: center; gap: 0.4em; font-size: var(--step--1); font-weight: 700; color: var(--ember); margin-top: 2px; }
+.belowGlyph { font-size: 0.85em; line-height: 1; }
+/* Pallet efficiency: freight cost, surfaced where the buyer can act on it. */
+.palletHint { display: inline-flex; align-items: center; gap: 0.4em; font-size: var(--step--1); font-weight: 600; color: var(--gold); margin-top: 2px; }
+.palletGlyph { font-size: 0.85em; line-height: 1; }
+.orderMinWarn {
+  display: flex; align-items: baseline; gap: 0.5em; margin: 0;
+  font-size: var(--step--1); font-weight: 700; color: var(--ember);
+  border: 1px solid var(--ember); border-radius: var(--radius-m); padding: var(--space-2) var(--space-3);
+}
+.tierNudge { margin: 0; font-size: var(--step--1); font-weight: 600; color: var(--info); }
+.lineSide { display: grid; justify-items: end; gap: var(--space-1); align-content: start; }
+.lineTotal { font-weight: 700; color: var(--text-0); font-variant-numeric: tabular-nums; }
+.remove { background: none; border: none; color: var(--text-2); font: inherit; font-size: var(--step--1); font-weight: 600; text-decoration: none; cursor: pointer; padding: 0; }
+.remove:hover { color: var(--accent); }
+
+.totals { margin: 0; display: grid; gap: var(--space-2); }
+.totalRow { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); }
+.totalRow dt { color: var(--text-2); font-size: var(--step--1); margin: 0; }
+.totalRow dd { margin: 0; font-weight: 600; color: var(--text-1); font-variant-numeric: tabular-nums; }
+.subtotal { padding-top: var(--space-2); border-top: 1px solid var(--line-2); }
+.subtotal dt { color: var(--text-0); font-size: var(--step-0); font-weight: 700; }
+.subtotal dd { font-family: var(--font-display); font-size: var(--step-2); color: var(--text-0); }
+
+.estimateNote { font-size: var(--step--1); color: var(--text-2); margin: 0; }
+
+.actions { display: grid; gap: var(--space-2); }
+
+.srOnly {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+@media (max-width: 960px) {
+  .layout { grid-template-columns: 1fr; }
+  /* Below the two-column breakpoint the panel flows with the page, so drop the
+     viewport cap and inline scroll; the full list and CTAs render in the flow. */
+  .summary { position: static; max-height: none; overflow-y: visible; }
+}
+@media (max-width: 640px) {
+  .card { grid-template-columns: 56px minmax(0, 1fr); }
+  .cardThumb, .cardThumbFallback { width: 56px; height: 56px; }
+  .cardBuy { grid-column: 1 / -1; justify-items: start; }
+  .price { justify-items: start; }
+  .headBadge { justify-items: start; text-align: left; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card, .stepBtn { transition: none; }
+  .card:hover { transform: none; }
+}

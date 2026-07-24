@@ -1,0 +1,155 @@
+/* CatalogPager — page controls under the product grid.
+
+   The current page is marked with aria-current AND a filled surface AND a heavier
+   weight AND an underline rule. A colorblind reader loses only the fill. */
+
+.pager {
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: var(--space-4);
+  justify-items: center;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.step {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--surface-1);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  font-weight: 700;
+  /* 44px minimum tap target. Anything smaller on a phone is a miss. */
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  cursor: pointer;
+}
+.step:hover:not(:disabled) { border-color: var(--gold); color: var(--text-0); }
+.step:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.step:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.numbers {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.gap {
+  padding: 0 var(--space-1);
+  color: var(--text-2);
+  user-select: none;
+}
+
+.number {
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 var(--space-2);
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+.number:hover { border-color: var(--line-2); color: var(--text-0); }
+.number:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+/* Current page: fill, weight, and a rule. Three signals, one of them color. */
+.number[aria-current="page"] {
+  background: var(--gold);
+  color: var(--surface-0);
+  font-weight: 800;
+  border-color: var(--gold);
+  box-shadow: inset 0 -3px 0 rgb(0 0 0 / 0.28);
+}
+
+.readout {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.status {
+  margin: 0;
+  font-size: var(--step--1);
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.jump {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.jumpLabel {
+  font-size: var(--step--1);
+  color: var(--text-2);
+}
+.jumpInput {
+  width: 5.5ch;
+  min-height: 40px;
+  text-align: center;
+  background: var(--surface-0);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-s);
+  color: var(--text-0);
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+}
+.jumpInput:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+.jumpOf { font-size: var(--step--1); color: var(--text-2); }
+.jumpGo {
+  min-height: 40px;
+  padding: 0 var(--space-3);
+  background: var(--surface-2);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-s);
+  color: var(--text-0);
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  font-weight: 700;
+  cursor: pointer;
+}
+.jumpGo:hover { border-color: var(--gold); }
+.jumpGo:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+/* ---- Phone -------------------------------------------------------------
+   Numbered buttons come out. Twelve 44px targets do not fit across a 360px
+   viewport, and cramming them below 44px trades one problem for a worse one.
+   Previous and Next carry the navigation; the jump field carries the reach. */
+@media (max-width: 600px) {
+  .numbers { display: none; }
+  .controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .step { flex: 1 1 auto; justify-content: center; }
+  .readout {
+    width: 100%;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+}

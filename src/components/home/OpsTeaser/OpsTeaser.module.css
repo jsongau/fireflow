@@ -1,0 +1,497 @@
+/* OpsTeaser — the handoff from "you built an order" to "here is what catches it
+   when the order goes wrong."
+
+   Three effects, each with a rule attached:
+
+   1. Pointer spotlight. A radial highlight follows the cursor across the case
+      card. Gated behind (hover: hover) and (pointer: fine): on touch, pointermove
+      only fires during a drag and the highlight would strand itself under the
+      last finger position. pointer-events: none, or it eats the clicks.
+
+   2. Conic border glow. Registered via @property so the angle can interpolate;
+      an unregistered custom property has no defined interpolation and the
+      animation pops at 50% instead of rotating. It is PAUSED until hover or
+      focus-within, because eight simultaneous conic animations on one page is
+      where this technique gets expensive.
+
+   3. Trace lumination. Stages brighten as the light walks the pipeline. The
+      brightness is the atmosphere. The MEANING is carried by the glyph and the
+      word next to it, because Nathan is colorblind and a light is not a label. */
+
+@property --angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.section {
+  background: var(--surface-0);
+  color: var(--text-1);
+  scroll-margin-top: var(--sticky-h);
+  border-top: 1px solid var(--line);
+}
+.inner {
+  max-width: var(--shell-max);
+  margin: 0 auto;
+  padding: var(--space-8) var(--shell-pad);
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-6);
+}
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: var(--step--1);
+  color: var(--accent);
+  margin: 0 0 var(--space-2);
+}
+.h2 {
+  font-family: var(--font-display);
+  font-size: var(--step-4);
+  color: var(--text-0);
+  margin: 0 0 var(--space-3);
+}
+.lede {
+  color: var(--text-1);
+  max-width: 64ch;
+  margin: 0;
+}
+.synthetic {
+  max-width: 260px;
+  font-size: var(--step--1);
+  color: var(--text-2);
+  line-height: 1.5;
+  margin: 0;
+  padding-left: var(--space-3);
+  border-left: 2px solid var(--line);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+}
+
+/* ---- The featured case card ------------------------------------------ */
+
+.card {
+  position: relative;
+  isolation: isolate;
+  --mx: 50%;
+  --my: 0%;
+  padding: var(--space-6);
+  border-radius: var(--radius-l, 16px);
+  background: var(--surface-1);
+  border: 1px solid var(--line);
+  /* Depth in the dark comes from a lightness step plus a 1px specular top edge,
+     not from a large shadow that cannot be seen against a dark page. */
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.4),
+    0 10px 30px rgb(0 0 0 / 0.32),
+    inset 0 1px 0 rgb(255 255 255 / 0.05);
+}
+
+/* The spotlight layer. */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity var(--dur-3) var(--ease-out);
+  background: radial-gradient(
+    280px circle at var(--mx) var(--my),
+    rgb(255 255 255 / 0.07),
+    transparent 68%
+  );
+}
+@media (hover: hover) and (pointer: fine) {
+  .card:hover::before,
+  .card:focus-within::before {
+    opacity: 1;
+  }
+}
+
+/* The rotating border. A 1px ring, masked so only the perimeter paints. */
+.card::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity var(--dur-3) var(--ease-out);
+  background: conic-gradient(
+    from var(--angle),
+    transparent 0deg,
+    var(--accent) 40deg,
+    transparent 130deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: rotateRing 4.5s linear infinite;
+  animation-play-state: paused;
+}
+.card:hover::after,
+.card:focus-within::after {
+  opacity: 1;
+  animation-play-state: running;
+}
+@keyframes rotateRing {
+  to {
+    --angle: 360deg;
+  }
+}
+
+.card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.cardHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+/* Matches .cardRef on the ops board: the same case, styled the same way, so the
+   card you clicked and the card you land on read as one object. */
+.caseId {
+  font-size: var(--step--1);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-2);
+}
+/* Priority reads as a word and a glyph. The color is decoration on top. */
+.priority {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--step--1);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 4px var(--space-3);
+}
+
+.account {
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  color: var(--text-0);
+  margin: 0 0 4px;
+}
+.product {
+  font-size: var(--step--1);
+  color: var(--text-2);
+  margin: 0 0 var(--space-4);
+}
+
+.quote {
+  margin: 0 0 var(--space-5);
+  padding: var(--space-4) var(--space-4) var(--space-4) var(--space-5);
+  border-left: 3px solid var(--accent);
+  background: var(--surface-2);
+  border-radius: 0 var(--radius-m) var(--radius-m) 0;
+}
+.quote p {
+  margin: 0;
+  color: var(--text-1);
+  line-height: 1.6;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin: 0 0 var(--space-5);
+}
+.facts dt {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-2);
+  margin-bottom: 2px;
+}
+.facts dd {
+  margin: 0;
+  color: var(--text-0);
+  font-weight: 600;
+  font-size: var(--step--1);
+}
+
+.commitment {
+  margin: 0;
+  font-size: var(--step--1);
+  line-height: 1.6;
+  color: var(--text-1);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line);
+}
+
+/* ---- The pipeline ----------------------------------------------------- */
+
+.pipeline {
+  padding: var(--space-6);
+  border-radius: var(--radius-l, 16px);
+  background: var(--surface-1);
+  border: 1px solid var(--line);
+}
+.pipeHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-5);
+}
+.pipeTitle {
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  color: var(--text-0);
+  margin: 0;
+}
+
+/* The switch. role="switch" + aria-checked carries the semantics; the light and
+   the sound are reinforcement. */
+.trace {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px var(--space-4) 6px 6px;
+  cursor: pointer;
+  font-size: var(--step--1);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-1);
+  transition:
+    border-color var(--dur-2) var(--ease-out),
+    color var(--dur-2) var(--ease-out);
+}
+.trace:hover {
+  border-color: var(--accent);
+  color: var(--text-0);
+}
+.trace:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.traceTrack {
+  position: relative;
+  width: 34px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--surface-3, var(--surface-2));
+  border: 1px solid var(--line);
+  flex: none;
+  transition: background var(--dur-2) var(--ease-out);
+}
+.traceThumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--text-2);
+  transition:
+    transform var(--dur-3) var(--ease-out),
+    background var(--dur-2) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out);
+}
+.trace[aria-checked="true"] .traceThumb {
+  transform: translateX(14px);
+  background: var(--accent);
+  box-shadow: 0 0 10px 2px var(--accent);
+}
+
+.stages {
+  list-style: none;
+  margin: 0 0 var(--space-5);
+  padding: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.stage {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-m);
+  /* The luminance ramp. 0 is unlit, 1 is fully lit. Brightness, never hue,
+     because a hue swap is invisible to a colorblind reader. */
+  --lit: 0;
+  background: rgb(255 255 255 / calc(var(--lit) * 0.045));
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / calc(var(--lit) * 0.06));
+  transition:
+    background var(--dur-3) var(--ease-out),
+    box-shadow var(--dur-3) var(--ease-out);
+}
+.stage[data-lit="on"] {
+  --lit: 1;
+}
+
+/* The vertical rule joining the stages. */
+.stage:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: calc(var(--space-3) + 9px);
+  top: 30px;
+  bottom: -2px;
+  width: 1px;
+  background: var(--line);
+}
+
+.tick {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--surface-0);
+  font-size: 0.66rem;
+  line-height: 1;
+  color: var(--text-2);
+  z-index: 1;
+  transition:
+    color var(--dur-2) var(--ease-out),
+    border-color var(--dur-2) var(--ease-out),
+    box-shadow var(--dur-3) var(--ease-out);
+}
+.stage[data-state="done"] .tick,
+.stage[data-state="now"] .tick {
+  color: var(--text-0);
+  border-color: var(--text-2);
+}
+.stage[data-lit="on"] .tick {
+  color: var(--text-0);
+  border-color: var(--accent);
+  box-shadow: 0 0 12px 1px rgb(255 255 255 / 0.14);
+}
+/* The stage the case actually reached: a ring, so it reads without the light. */
+.stage[data-state="now"] .tick {
+  box-shadow: 0 0 0 3px var(--surface-1), 0 0 0 4px var(--accent);
+}
+.stage[data-state="now"][data-lit="on"] .tick {
+  box-shadow:
+    0 0 0 3px var(--surface-1),
+    0 0 0 4px var(--accent),
+    0 0 16px 3px rgb(255 255 255 / 0.2);
+}
+
+.stageText {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+.stageLabel {
+  font-size: var(--step--1);
+  font-weight: 600;
+  color: var(--text-1);
+}
+.stage[data-state="now"] .stageLabel {
+  color: var(--text-0);
+}
+.stageState {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.62rem;
+  color: var(--text-2);
+}
+.stage[data-state="now"] .stageState {
+  color: var(--accent);
+}
+.stageMeans {
+  font-size: 0.78rem;
+  color: var(--text-2);
+  line-height: 1.4;
+}
+
+.pipeFoot {
+  margin: 0 0 var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line);
+  font-size: var(--step--1);
+  color: var(--text-2);
+  line-height: 1.6;
+}
+
+.cta {
+  width: 100%;
+  justify-content: center;
+}
+
+/* ---- Responsive -------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .synthetic {
+    max-width: none;
+  }
+}
+@media (max-width: 520px) {
+  .facts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .cardHead {
+    flex-wrap: wrap;
+  }
+}
+
+/* ---- Reduced motion ----------------------------------------------------
+   The spotlight and the rotating ring are removed outright. The trace still
+   works: it lands on the current stage with no walk, because the information it
+   carries (where the case sits) is not motion, and every stage keeps its glyph
+   and its word regardless. */
+@media (prefers-reduced-motion: reduce) {
+  .card::before {
+    display: none;
+  }
+  .card::after {
+    animation: none;
+  }
+  .card:hover::after,
+  .card:focus-within::after {
+    animation: none;
+    opacity: 1;
+    background: none;
+  }
+  .stage,
+  .tick,
+  .traceThumb,
+  .traceTrack,
+  .trace {
+    transition: none;
+  }
+}

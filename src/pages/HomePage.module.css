@@ -1,7 +1,7 @@
 .trail {
-  max-width: 1200px;
+  max-width: var(--shell-max);
   margin: 0 auto;
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-3) var(--shell-pad);
   font-size: var(--step--1);
   color: var(--text-2);
 }
@@ -10,74 +10,98 @@
   color: var(--text-2);
 }
 
+/* --- Footer ---
+   Compact by construction. The old footer ran 64px of padding, a two-up top
+   block, and then stacked the disclaimer and the review date as two separate
+   full-width paragraphs, so the last screen of every page was mostly air. Now:
+   the brand column sits inline with all five link columns, the five columns are
+   declared as five (they were declared as four and silently wrapped to a second
+   row), and the legal line and the snapshot date share one meta row. */
 .footer {
   background: var(--surface-0);
   color: var(--text-1);
   border-top: 1px solid var(--line);
-  margin-top: var(--space-8);
+  margin-top: var(--space-7);
 }
 .footerInner {
-  max-width: 1200px;
+  max-width: var(--shell-max);
   margin: 0 auto;
-  padding: var(--space-8) var(--space-4);
+  padding: var(--space-6) var(--shell-pad) var(--space-4);
   display: grid;
-  gap: var(--space-5);
+  gap: var(--space-4);
 }
 .footerTop {
   display: grid;
-  grid-template-columns: 1.3fr 2fr;
-  gap: var(--space-6);
+  grid-template-columns: minmax(200px, 0.9fr) minmax(0, 3fr);
+  gap: clamp(24px, 3vw, 48px);
   align-items: start;
 }
-.footerBrand { display: grid; gap: var(--space-3); align-content: start; }
+.footerBrand { display: grid; gap: var(--space-2); align-content: start; }
 .footerLogo {
   font-family: var(--font-display);
-  font-size: var(--step-3);
+  font-size: var(--step-2);
   color: var(--text-0);
+  line-height: 1;
 }
 .footerLead {
   font-size: var(--step--1);
-  color: var(--text-1);
+  color: var(--text-2);
   margin: 0;
-  max-width: 42ch;
+  max-width: 36ch;
+  line-height: 1.4;
 }
 
 .footerNav {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-4);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-4) var(--space-3);
 }
-.footerCol { display: grid; gap: var(--space-2); align-content: start; }
+.footerCol { display: grid; gap: 6px; align-content: start; }
 .footerColTitle {
-  font-size: var(--step--1);
+  font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--gold);
   margin: 0;
 }
-.footerLinks { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-1); }
+.footerLinks { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
 .footerLink {
   font-size: var(--step--1);
+  line-height: 1.35;
   color: var(--text-1);
   text-decoration: none;
 }
 .footerLink:hover { color: var(--text-0); }
 
-.disclaimer {
-  font-size: var(--step--1);
-  color: var(--text-2);
-  max-width: 90ch;
-  margin: 0;
+/* One meta row: the independence disclaimer carries the weight, the snapshot
+   date rides at the end of it and never earns a line of its own. */
+.footerMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-5);
   border-top: 1px solid var(--line);
-  padding-top: var(--space-4);
+  padding-top: var(--space-3);
+}
+.disclaimer {
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: var(--text-2);
+  max-width: 96ch;
+  margin: 0;
 }
 .reviewed {
-  font-size: var(--step--1);
+  font-size: 0.76rem;
   color: var(--text-2);
+  white-space: nowrap;
   margin: 0;
 }
 
+@media (max-width: 1080px) {
+  .footerNav { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
 @media (max-width: 860px) {
   .footerTop { grid-template-columns: 1fr; }
-  .footerNav { grid-template-columns: repeat(2, 1fr); }
+  .footerNav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

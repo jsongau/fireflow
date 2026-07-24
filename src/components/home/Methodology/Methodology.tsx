@@ -1,4 +1,5 @@
 import { SOURCE_TYPES, VERIFY_PACKAGE_REMINDER } from "@/data/sources";
+import { SectionNote } from "@/components/employer/SectionNote/SectionNote";
 import styles from "./Methodology.module.css";
 
 const SOURCE_ORDER = ["official", "retail-signal", "editorial", "synthetic"] as const;
@@ -37,7 +38,6 @@ export function Methodology() {
             return (
               <li key={type} className={styles.source}>
                 <span className={styles.sourceHead}>
-                  <span className={styles.dot} style={{ background: `var(${meta.token})` }} aria-hidden="true" />
                   <span className={styles.sourceLabel}>{meta.short}</span>
                 </span>
                 <p className={styles.sourceDesc}>{meta.description}</p>
@@ -56,6 +56,8 @@ export function Methodology() {
         </div>
 
         <p className={styles.reminder}>{VERIFY_PACKAGE_REMINDER}</p>
+
+        <SectionNote sectionId="methodology" />
       </div>
     </section>
   );

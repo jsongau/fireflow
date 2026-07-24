@@ -38,6 +38,18 @@
 .colActions a { color: var(--accent); text-decoration: none; font-weight: 600; }
 .colActions button { background: none; border: none; color: var(--text-2); cursor: pointer; font-weight: 600; font-size: var(--step--1); padding: 0; }
 .cell { padding: var(--space-3); border-bottom: 1px solid var(--line); border-left: 1px solid var(--line); color: var(--text-0); vertical-align: top; }
+/* A differing row is marked by a tint AND a solid left rule AND a glyph before the
+   row label, so the emphasis never rests on color alone. */
 .diffRow .cell, .diffRow .rowHead { background: rgba(232, 51, 28, 0.10); }
+.diffRow .rowHead {
+  border-left: 3px solid var(--accent);
+  font-weight: 700;
+}
+.diffRow .rowHead::before {
+  content: "\25C6"; /* diamond */
+  margin-right: 0.5em;
+  color: var(--accent);
+  font-size: 0.72em;
+}
 
 @media (prefers-reduced-motion: reduce) { .preset { transition: none; } }

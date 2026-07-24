@@ -1,21 +1,27 @@
 import { useEffect, useState } from "react";
 import { useHome } from "@/state/homeStore";
-import { SCENARIOS, SCENARIO_BY_ID, CONSUMER_SCENARIOS, VENDOR_SCENARIOS } from "@/data/scenarios";
+import { SCENARIOS, SCENARIO_BY_ID, ACCOUNT_SCENARIOS } from "@/data/scenarios";
 import { FAMILY_BY_ID } from "@/data/families";
-import { SyntheticBadge, Button } from "@/components/primitives";
+import { Button } from "@/components/primitives";
+import { CaseBoard } from "@/components/home/CaseBoard/CaseBoard";
+import { SectionNote } from "@/components/employer/SectionNote/SectionNote";
 import { playSound } from "@/lib/sound/sound";
-import type { Severity } from "@/types/domain";
+import type { Severity, InquiryChannel } from "@/types/domain";
 import styles from "./ResolutionSimulator.module.css";
 
 const SEVERITY_LABEL: Record<Severity, string> = {
   standard: "Standard", elevated: "Elevated", priority: "Priority", specialist: "Specialist escalation",
 };
 
+const CHANNEL_LABEL: Record<InquiryChannel, string> = {
+  order: "Order", quote: "Quote", "standing-order": "Standing order", "account-issue": "Account",
+};
+
 export function ResolutionSimulator() {
   const { state, dispatch } = useHome();
   const scenario =
     (state.selectedScenarioId ? SCENARIO_BY_ID[state.selectedScenarioId] : undefined) ??
-    CONSUMER_SCENARIOS[0]!;
+    ACCOUNT_SCENARIOS[0]!;
   const [stageIndex, setStageIndex] = useState(0);
 
   useEffect(() => { setStageIndex(0); }, [scenario.id]);
@@ -34,26 +40,14 @@ export function ResolutionSimulator() {
           accountable owner, a visible next update, and approvals required before any commitment.
         </p>
 
+        {/* Live cases routed from the support intake. */}
+        <CaseBoard />
+
         <div className={styles.pickerWrap}>
           <div className={styles.pickerGroup}>
-            <span className={styles.pickerLabel}>Consumer</span>
-            <div className={styles.picker} role="group" aria-label="Consumer scenarios">
-              {CONSUMER_SCENARIOS.map((s) => (
-                <button
-                  key={s.id}
-                  className={s.id === scenario.id ? `${styles.pick} ${styles.pickOn}` : styles.pick}
-                  aria-pressed={s.id === scenario.id}
-                  onClick={() => dispatch({ type: "SELECT_SCENARIO", scenarioId: s.id })}
-                >
-                  {s.title}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className={styles.pickerGroup}>
-            <span className={styles.pickerLabel}>Vendor</span>
-            <div className={styles.picker} role="group" aria-label="Vendor scenarios">
-              {VENDOR_SCENARIOS.map((s) => (
+            <span className={styles.pickerLabel}>Reference scenarios</span>
+            <div className={styles.picker} role="group" aria-label="Account scenarios">
+              {ACCOUNT_SCENARIOS.map((s) => (
                 <button
                   key={s.id}
                   className={s.id === scenario.id ? `${styles.pick} ${styles.pickOn}` : styles.pick}
@@ -72,12 +66,11 @@ export function ResolutionSimulator() {
             <div>
               <h3 className={styles.caseTitle}>{scenario.title}</h3>
               <p className={styles.caseSub}>
-                {family?.name ?? scenario.familyId} · {scenario.channel === "consumer" ? "Consumer" : "Vendor"} case
+                {family?.name ?? scenario.familyId} · {CHANNEL_LABEL[scenario.channel]} case
               </p>
             </div>
             <div className={styles.caseTags}>
               <span className={styles.severity} data-sev={scenario.severity}>{SEVERITY_LABEL[scenario.severity]}</span>
-              <SyntheticBadge />
             </div>
           </div>
 
@@ -163,10 +156,11 @@ export function ResolutionSimulator() {
           </div>
 
           <p className={styles.note}>
-            All names, cases, owners, and outcomes here are fictional, created to demonstrate the workflow.
-            {" "}{SCENARIOS.length} representative scenarios are included.
+            {SCENARIOS.length} representative scenarios are included.
           </p>
         </div>
+
+        <SectionNote sectionId="simulate" />
       </div>
     </section>
   );

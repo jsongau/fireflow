@@ -1,9 +1,25 @@
+/* Left-gutter comparison tray.
+
+   Mirrors MiniNav exactly: it rests as a --spine-w spine that fits inside the
+   --gutter-reserve the page shell yields, and widens into the full tray on
+   hover, on keyboard focus, or when pinned. It used to be a 280px panel that
+   covered the left edge of the content column the moment a visitor added a
+   product to compare.
+
+   Collapsed, the spine is not a blank tab: it shows the product thumbnails it
+   is holding, stacked, with the count above them. That is the whole point of a
+   comparison tray, and it is legible at 60px.
+
+   Every control inside stays focusable while collapsed. That is safe because
+   :focus-within widens the rail, so a control can never take focus while it is
+   invisible. */
+
 .rail {
   position: fixed;
   left: var(--space-3);
   top: calc(var(--sticky-h) + var(--space-4));
   z-index: var(--z-rail);
-  width: 280px;
+  width: var(--spine-w);
   max-height: calc(100vh - var(--sticky-h) - var(--space-8));
   background: var(--surface-1);
   border: 1px solid var(--line-2);
@@ -12,8 +28,13 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  transition: width var(--dur-2) var(--ease-out);
 }
-.railCollapsed { width: auto; }
+.rail:hover,
+.rail:focus-within,
+.railPinned {
+  width: 280px;
+}
 
 .toggle {
   display: flex;
@@ -28,35 +49,70 @@
   font-family: var(--font-ui);
   font-weight: 700;
   font-size: var(--step--1);
-  padding: var(--space-3);
+  padding: var(--space-2) 10px;
+  min-height: 38px;
   cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
 }
-.railCollapsed .toggle { border-bottom: none; border-radius: var(--radius-l); }
-.toggleGlyph { color: var(--accent); font-size: var(--step-1); line-height: 1; }
-.toggleLabel { white-space: nowrap; }
+.toggle:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
 
-.body { padding: var(--space-3); overflow-y: auto; }
+/* The count is the spine's readable cue, the same job "3/5" does in MiniNav. */
+.toggleCount {
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+  font-size: var(--step-1);
+  line-height: 1;
+  flex: none;
+}
+.toggleLabel { color: var(--text-2); font-weight: 600; }
+
+/* The 32px thumbnail fits the spine with zero tolerance, so the collapsed body
+   must not be a scroll container: a classic scrollbar would eat the horizontal
+   space and clip the thumb. Collapsed content is a toggle and at most two
+   thumbnails, so it never needs to scroll. Scrolling returns on expand. */
+.body { padding: var(--space-2); overflow: hidden; }
+.rail:hover .body,
+.rail:focus-within .body,
+.railPinned .body { overflow-y: auto; }
 .title {
   font-size: var(--step--1);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--text-2);
   font-weight: 700;
-  margin: 0 0 var(--space-2);
+  /* Bottom margin is restored by the expanded-state rules below, which outrank
+     this by specificity. Declaring it here would survive into the spine. */
+  margin: 0;
 }
-.list { list-style: none; margin: 0 0 var(--space-2); padding: 0; display: grid; gap: var(--space-2); }
+/* Bottom margin only when expanded: collapsed, it is 8px of dead air under the
+   thumbnail stack with nothing beneath it to separate from. */
+.list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
+.rail:hover .list,
+.rail:focus-within .list,
+.railPinned .list { margin-bottom: var(--space-2); }
 .item {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  /* Zero, not var(--space-2): a flex gap is drawn between siblings even when
+     those siblings are clipped to zero width, so two live gaps would push the
+     32px thumbnail 16px past the edge of the spine. */
+  gap: 0;
   background: var(--surface-2);
   border: 1px solid var(--line);
   border-radius: var(--radius-s);
-  padding: var(--space-2);
+  /* Collapsed padding. 60px spine - 2px rail border - 16px body padding
+     - 2px item border - 8px item padding = a 32px thumbnail, exactly. */
+  padding: var(--space-1);
+  transition: padding var(--dur-2) var(--ease-out), gap var(--dur-2) var(--ease-out);
 }
+.rail:hover .item,
+.rail:focus-within .item,
+.railPinned .item { padding: var(--space-2); gap: var(--space-2); }
+
 .thumb {
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   flex: none;
   border-radius: var(--radius-s);
   overflow: hidden;
@@ -65,6 +121,52 @@
   display: grid;
   place-items: center;
 }
+
+/* --- Collapse mechanics -------------------------------------------------
+   Everything that is not a thumbnail or the count is clipped, never removed:
+   display:none would drop these from the accessibility tree and turn the spine
+   into a stack of unnamed images. Clipping keeps the tray fully readable to a
+   screen reader at any width. */
+.toggleLabel,
+.itemText,
+.remove {
+  opacity: 0;
+  max-width: 0;
+  overflow: hidden;
+  transition: opacity var(--dur-1) var(--ease-out), max-width var(--dur-2) var(--ease-out);
+}
+.title,
+.hint,
+.actions {
+  opacity: 0;
+  max-height: 0;
+  margin-bottom: 0;
+  overflow: hidden;
+  transition: opacity var(--dur-1) var(--ease-out), max-height var(--dur-2) var(--ease-out);
+}
+.rail:hover .toggleLabel,
+.rail:focus-within .toggleLabel,
+.railPinned .toggleLabel { opacity: 1; max-width: 180px; }
+
+.rail:hover .itemText,
+.rail:focus-within .itemText,
+.railPinned .itemText { opacity: 1; max-width: 160px; }
+
+.rail:hover .remove,
+.rail:focus-within .remove,
+.railPinned .remove { opacity: 1; max-width: 28px; }
+
+.rail:hover .title,
+.rail:focus-within .title,
+.railPinned .title { opacity: 1; max-height: 2em; margin-bottom: var(--space-2); }
+
+.rail:hover .hint,
+.rail:focus-within .hint,
+.railPinned .hint { opacity: 1; max-height: 6em; margin-bottom: var(--space-3); }
+
+.rail:hover .actions,
+.rail:focus-within .actions,
+.railPinned .actions { opacity: 1; max-height: 12em; }
 .thumbImg { width: 100%; height: 100%; object-fit: contain; }
 .thumbFallback { font-family: var(--font-display); color: var(--text-1); }
 .itemText { display: flex; flex-direction: column; min-width: 0; flex: 1; }
@@ -84,7 +186,10 @@
 }
 .remove:hover { color: var(--text-0); border-color: var(--accent); }
 
-.hint { font-size: var(--step--1); color: var(--text-2); margin: 0 0 var(--space-3); }
+/* Margins are owned by the collapse mechanics above, not set here: a
+   `margin: 0 0 var(--space-3)` declared later in the file would win the cascade
+   and leave a phantom gap under the clipped hint in the collapsed spine. */
+.hint { font-size: var(--step--1); color: var(--text-2); margin: 0; }
 .actions { display: grid; gap: var(--space-2); }
 .compareBtn {
   text-align: center;
@@ -112,3 +217,7 @@
 
 /* On tablet/mobile the compact top rail handles context; hide the left tray. */
 @media (max-width: 900px) { .rail { display: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .rail, .item, .toggleLabel, .itemText, .remove, .title, .hint, .actions { transition: none; }
+}

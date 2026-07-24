@@ -1,5 +1,5 @@
 .section { background: var(--surface-0); color: var(--text-1); scroll-margin-top: var(--sticky-h); }
-.inner { max-width: 1200px; margin: 0 auto; padding: var(--space-8) var(--space-4); }
+.inner { max-width: var(--shell-max); margin: 0 auto; padding: var(--space-8) var(--shell-pad); }
 
 .head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-5); flex-wrap: wrap; margin-bottom: var(--space-5); }
 .eyebrow { text-transform: uppercase; letter-spacing: 0.14em; font-size: var(--step--1); color: var(--accent); margin: 0 0 var(--space-2); }
@@ -66,6 +66,46 @@
   .case { grid-template-columns: 1fr; }
   .headBadge { justify-items: start; text-align: left; }
 }
+/* ---- Service & cost-to-serve scorecard -------------------------------- */
+.scorecard { margin-bottom: var(--space-6); }
+.scoreHead { margin-bottom: var(--space-3); }
+.scoreTitle { font-family: var(--font-display); font-size: var(--step-2); color: var(--text-0); margin: 0 0 var(--space-1); }
+.scoreNote { font-size: var(--step--1); color: var(--text-2); margin: 0; }
+.scoreGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-3); }
+.scoreCard {
+  background: var(--surface-1); border: 1px solid var(--line); border-radius: var(--radius-m);
+  border-left-width: 3px; padding: var(--space-4); display: grid; gap: var(--space-1); align-content: start;
+}
+/* Tint is a redundant cue; the word + glyph in .scoreStatus carry the meaning. */
+.scoreCard[data-tone="good"] { border-left-color: var(--ok); }
+.scoreCard[data-tone="watch"] { border-left-color: var(--warn); }
+.scoreCard[data-tone="risk"] { border-left-color: var(--ember); }
+.scoreTop { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-2); flex-wrap: wrap; }
+.scoreValue { font-family: var(--font-display); font-size: var(--step-4); line-height: 1; color: var(--text-0); }
+.scoreStatus {
+  display: inline-flex; align-items: center; gap: 0.35em; font-size: var(--step--1); font-weight: 700;
+  border: 1px solid var(--line-2); border-radius: 999px; padding: 0.25em 0.7em; color: var(--text-1); white-space: nowrap;
+}
+.scoreStatus[data-tone="good"] { color: var(--ok); border-color: var(--ok); }
+.scoreStatus[data-tone="watch"] { color: var(--warn); border-color: var(--warn); }
+.scoreStatus[data-tone="risk"] { color: var(--ember); border-color: var(--ember); }
+.scoreLabel { font-weight: 700; font-size: var(--step-0); color: var(--text-0); margin: var(--space-1) 0 0; }
+.scoreSub { font-size: var(--step--1); color: var(--text-2); margin: 0; }
+.scoreWhy { font-size: var(--step--1); color: var(--text-1); margin: var(--space-1) 0 0; }
+
+/* ---- Cost-to-serve driver model -------------------------------------- */
+.drivers { margin-bottom: var(--space-6); }
+.driverWrap { overflow-x: auto; }
+.driverTable { width: 100%; border-collapse: collapse; font-size: var(--step--1); min-width: 640px; }
+.driverTable th, .driverTable td { text-align: left; padding: var(--space-3); border-bottom: 1px solid var(--line); vertical-align: baseline; }
+.driverTable thead th { color: var(--text-0); font-weight: 700; border-bottom: 1px solid var(--line-2); }
+.driverTable td { color: var(--text-1); }
+.driverName { color: var(--text-0); font-weight: 700; }
+.numCol { text-align: right; white-space: nowrap; }
+.driverTotalLabel { color: var(--text-0); font-weight: 700; display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; border-bottom: none; }
+.driverTotal { font-family: var(--font-display); font-size: var(--step-2); color: var(--text-0); border-bottom: none; }
+.driverTable tfoot td, .driverTable tfoot th { border-top: 1px solid var(--line-2); }
+
 @media (prefers-reduced-motion: reduce) {
   .tile, .case { transition: none; }
   .tile:hover, .case:hover { transform: none; }

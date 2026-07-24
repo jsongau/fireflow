@@ -14,6 +14,7 @@ Every fact in the build carries a source type. This file is the registry.
 | `samyang_product_catalog_ux_all_markdown.zip` (21 md) | Official + editorial (mixed, labeled per field) | Families, variants, categories, formats, flagship facts, rankings inputs, inquiry taxonomies | The main product/UX specification. |
 | `samyang job.pdf` | Official (job posting) | Job→homepage mapping, acceptance test | Indeed posting, Manager CX, Brea CA. |
 | `SAMYANG AMERICA_files.zip` product PNGs (54) | Reference imagery | Visual reference / staging placeholders | Rights unresolved — see KNOWN_LIMITATIONS. |
+| samyangamerica.com/images/products/ (24 more, fetched directly, 2026-07-08) | Reference imagery | Fills the Tangle, MEP, and Samyang-branded gap `SAMYANG AMERICA_files.zip` didn't cover | Same official source and rights posture as the row above — see KNOWN_LIMITATIONS #1. |
 | `indexv5.html` | Structural reference | Interaction/pacing patterns to reinterpret | Do not copy code/design. |
 | `animal-template-v2.zip` | Methodology reference | Doc rigor, seven-stage, JSON architecture, honest scoring | Do not copy zodiac content. |
 

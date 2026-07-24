@@ -4,9 +4,9 @@
   scroll-margin-top: var(--sticky-h);
 }
 .inner {
-  max-width: 1200px;
+  max-width: var(--shell-max);
   margin: 0 auto;
-  padding: var(--space-8) var(--space-4);
+  padding: var(--space-8) var(--shell-pad);
 }
 
 .head { max-width: 60ch; margin-bottom: var(--space-6); }

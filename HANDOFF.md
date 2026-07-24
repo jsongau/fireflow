@@ -18,7 +18,11 @@ effort maintaining them unless explicitly asked.
 
 ## Live URL + deploy
 - Live: **https://samyang-xi.vercel.app** (Vercel, CoverCapy Hobby account, project `samyang`).
-- Deploy method: from the project folder run `npx vercel --prod`. It uploads the
+- Deploy method — HARD RULE (`skills/deploy-from-project/SKILL.md`): always the
+  chained form `cd ~/Claude/Projects/Samyang && npx vercel --prod`, never a bare
+  deploy from wherever the shell happens to be. On 2026-07-09 a bare `npx vercel
+  --prod` from `~` nearly deployed the entire home directory. Verify
+  `.vercel/project.json` names `samyang` before deploying. It uploads the
   working directory and builds on Vercel's Linux servers. When prompted, do NOT
   connect the git repo (it would deploy stale committed code instead of the
   working tree). Re-run the same command to publish updates.
@@ -35,30 +39,97 @@ effort maintaining them unless explicitly asked.
 
 ## Architecture quick map
 - State: `src/state/homeStore.tsx` — context+reducer. Notable fields:
-  `selectedFamilyId/selectedVariantId/selectedBrand`, `userMode` (explore|consumer|vendor),
-  `compareIds` (**MAX_COMPARE = 2**, head-to-head), `operatorNotesEnabled`, `introDismissed`.
-  Persists non-sensitive prefs to `localStorage`; URL-syncs selection. `RESET` preserves
-  the notes preference and intro-seen flag.
+  `selectedFamilyId/selectedVariantId/selectedBrand`, `userMode` (explore|retailer|distributor),
+  `compareIds` (**MAX_COMPARE = 2**, head-to-head), `introDismissed`, `routedCases`/
+  `selectedCaseId` (live case board; only identifiers persist via `stripCase`).
+  Persists non-sensitive prefs to `localStorage`; URL-syncs selection. Operator Notes
+  are **always on** now: no `operatorNotesEnabled` flag, no nav toggle.
 - Data: `src/data/*` — `families` (45), `variants` (76), `brands`, `categories`,
   `rankings` (8 views), `issues`, `scenarios`, `sources`, `spiciness`, `images`,
-  and `sapsd.ts` (SAP SD glossary + order-to-cash flow + exceptions + disclosure).
+  and `sapsd.ts` (SAP SD glossary + order-to-cash flow + exceptions + disclosure),
+  and `dataArch.ts` (the star-schema dimensional model + the integration map, both
+  synthetic studies, typed and labeled).
+- Home route sections (2026-07-10): ProductSignalHero, OrderTourEntry,
+  PortfolioPulse, ComparisonLab, OrderBuilder, OpsTeaser, **StudiesBand**
+  (#studies, the landing-page index of the five /intelligence studies; cards
+  derive their copy from nav.ts so band and menu never drift). The MegaNav
+  group / footer column / route label for /intelligence is now
+  **"Order-to-Cash"** (URL unchanged).
 - Home chapters: `src/components/home/*` — ProductSignalHero, PortfolioPulse,
   RankingsLab, ComparisonLab, ProductDossier, InquiryPaths, ResolutionSimulator,
-  **SapProcessIntelligence** (#o2c), CommandCenter, ProductSignals, BrandUniverse,
+  **SapProcessIntelligence** (#o2c, "Work the book of orders.": a scored Order Queue
+  workbench; `triageOrder` in `sapsd.ts` builds each score from four visible factors
+  and the UI shows the math; selecting an order drives the stage spine and exception
+  panels. The queue's first row is the **Retailer Order Lifecycle** featured order:
+  `src/data/ediLifecycle.ts` is a reducer-driven X12 study (850/997/855/856/810/820,
+  line decisions, gated document generation, shortage deduction, corrective action,
+  Reset) rendered by `OrderLifecycle.tsx` when that order is selected; its queue row
+  derives live from the same state. ComparisonLab links in via a sessionStorage
+  handoff, `O2C_OPEN_ORDER_KEY`; the deduction routes to the board as FF-2231),
+  CaseBoard (#simulate), CrossFunctionalWarRoom, CustomerMasterRecord,
+  **IntegrationArchitecture** (#integration, "One order, five systems.": selectable
+  ERP/CRM/EDI/web/warehouse systems and the flows between them, each with object,
+  pattern, cadence, failure mode, owner, and a source-of-truth governance strip),
+  **DataModelStudio** (#data-model, "The model under the questions.": a star-schema
+  study of the CX domain, fact/dimension picker with grain, columns, conformed
+  dimensions, all modeled from real FireFlow data files),
+  CommandCenter, ProductSignals, BrandUniverse,
   Methodology, HomepageFAQ, SupportBar (floating), SelectedProductRail (sticky top,
   compact on mobile), **CompareRail** (collapsible left tray, ≥900px), **InquiryDialog**,
   **SoundToggle**.
+- Ops page: `src/components/ops/OpsDashboard/*` at hash route `#/ops`
+  (`src/lib/router/useHashRoute.ts`); draggable case kanban with a keyboard-equal
+  "Move to" select, seeded from `src/data/seedCases.ts`.
+- Tour: `src/components/tour/OrderTour.tsx` + `src/lib/tour/orderTour.ts` — the
+  "Follow the order" six-stop guided path (home compare, #o2c queue, lifecycle
+  decisions, deduction, resolution, /ops board). Bar mounts in App; entry strip
+  renders below the home hero. Step persists in sessionStorage
+  (`fireflow:tour:step`); #o2c advances its lifecycle reducer on the
+  `fireflow:o2c-tour` milestone event (idempotent via reducer gates).
 - Employer layer: `src/components/employer/*` — EmployerIntro (Enter FireFlow /
-  Explore with Nathan cover), OperatorNote + OperatorNotesToggle (the "Nathan's read"
-  system, gated on `operatorNotesEnabled`), EmployerEvidence (#fit role→feature map),
+  Explore with Nathan cover), OperatorNote (the "Nathan's read" system, always on;
+  the toggle was removed), EmployerEvidence (#fit role→feature map),
   EmployerClose (#why). Config: `src/config/employer.ts` (résumé/contact actions are
   hidden until filled in — never ship a dead button).
 - Primitives: `src/components/primitives/*` — Button, **ButtonLink** (use this for a
   button-styled anchor; never nest `<Button>` inside `<a>`), Segmented, badges,
   PepperScale, ProductStage.
-- Sound: `src/lib/sound/sound.ts` — Web Audio, off by default, gesture-gated, safe no-op.
+- Sound: `src/lib/sound/sound.ts` — Web Audio, **on by default** (an explicit "off" persists in
+  localStorage), lazily created on the first user gesture so nothing autoplays, safe no-op.
 - Sticky offsets: tokens `--nav-h`/`--rail-h`/`--sticky-h` in `src/styles/tokens.css`;
   sections use `scroll-margin-top: var(--sticky-h)` so anchors clear the sticky headers.
+- **Page shell (2026-07-09):** the content column is one token. `--shell-max` and
+  `--shell-pad` in `tokens.css` are the only place a width is set; every section
+  wrapper reads them. Above 900px `--shell-max` is
+  `min(1120px, 100vw - 2 * --gutter-reserve)` so the fixed gutter trays always have
+  clear space. Never reintroduce a hardcoded `max-width: 1200px`. `--spine-w` (60px)
+  is derived from the MiniNav's own box model; if you change that component's padding
+  or marker column, recompute `--spine-w` and `--gutter-reserve` together.
+- **Full-bleed bands: MegaNav site-wide, plus one owner-approved exception.** Bar and
+  dropdown span the viewport and inset by `--nav-pad`; they do NOT use `--shell-max`.
+  Group labels must never wrap. Exception (2026-07-09, owner decision): the
+  IntegrationArchitecture flows block (`.band`) is a second `--nav-pad` full-bleed band,
+  a two-pane layout with the flow list scrolling left and a sticky reading pane right
+  (the deliberate flip of DataModelStudio's sticky-left picker), so picking a flow
+  visibly changes the detail beside it. Do not add further full-bleed bands without an
+  owner decision.
+- **Both gutter trays are hidden on /intelligence** (owner decision, 2026-07-09): the
+  Integration Map's full-bleed reading pane needs the gutters, and SubNav already
+  covers section navigation there. `showGutterRails` in `App.tsx` is the switch.
+- **Both gutter trays rest as spines.** MiniNav (right) and CompareRail (left) are
+  `--spine-w` wide at rest and widen on `:hover`, `:focus-within`, or `.railPinned`.
+  Expansion is pure CSS; React holds only the pin. Collapsed content is **clipped**
+  (`max-width: 0` / `max-height: 0` + `overflow: hidden`), never `display: none`, so
+  assistive tech keeps the full list and `:focus-within` guarantees a control can
+  never take focus while invisible. Two traps if you touch either rail: a flex `gap`
+  is drawn between zero-width siblings, so collapse the gap too; and a `margin` set
+  in a rule later in the file beats the collapse rule on source order, so let the
+  expanded-state rules own margins by specificity. MiniNav persists its pin to
+  `localStorage`; CompareRail's is session-only.
+- **MegaNav dropdown copy** lives in `src/data/nav.ts` as `NavDetail`
+  (`kicker`/`sub`/`blurb`/`proof`/`cta`). A new nav destination without `proof` and a
+  `cta` renders a thin card. Fill all five, and put the synthetic-data disclosure in
+  the last proof line, not in the blurb.
 
 ## Hard rules (do not break)
 - **Honesty:** no SAP implementation/integration/tenure claims; no "8 years of SAP";
@@ -70,8 +141,10 @@ effort maintaining them unless explicitly asked.
   CTAs name the action. Run a grep sweep after copy edits.
 - **Accessibility:** Nathan is colorblind — never signal state by color alone (add
   glyph/word/shape). Keyboard operable; respect `prefers-reduced-motion`; visible focus.
-- **Fourth wall:** break it at the threshold (intro) and in optional Operator Notes only;
-  keep ≤6 notes; never popups on every section; product stays usable with notes off.
+- **Fourth wall:** break it at the threshold (intro) and in Operator Notes only; notes
+  are always on now (no toggle); never popups on every section. **Open flag:** placements
+  have drifted to about 8 against the documented cap of 6 (War Room, Customer Master,
+  Ops Dashboard additions); needs an owner decision on which notes to keep.
 
 ## Reference packs in the repo
 - `docs/nathan-writing-style-fireflow/` — Nathan's voice + banned patterns.
@@ -92,6 +165,12 @@ effort maintaining them unless explicitly asked.
 - Optionally sync `preview.html` to the React app, or delete it and rely on the deploy.
 - More `playSound` trigger points if desired (engine + toggle already exist).
 - Work through the employer-pack QA checklist (`docs/employer-layer-pack/10-*`) on the live site.
+
+## Session briefs
+- `SESSION-2026-07-09-LAYOUT-AND-NAV.md` — the page-shell gutter, full-bleed mega nav,
+  rich dropdown previews, spine rails, compact footer. Read it before touching layout
+  or navigation: it carries the derived-token math, the three CSS collapse traps, and
+  the deploy command that does not silently fail.
 
 ## How to continue in a new session
 Point the new Claude at this folder and say: "Read HANDOFF.md and CHANGELOG.md,

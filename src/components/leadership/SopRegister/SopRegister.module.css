@@ -1,0 +1,112 @@
+/* SopRegister — the written procedures, grouped by process family. */
+
+.section {
+  background: var(--surface-0);
+  color: var(--text-1);
+  scroll-margin-top: var(--sticky-h);
+  padding: var(--space-8) var(--space-4);
+  border-top: 1px solid var(--line);
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+  max-width: var(--shell-max);
+  margin: 0 auto var(--space-6);
+}
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: var(--step--1);
+  color: var(--accent);
+  margin: 0 0 var(--space-2);
+}
+.title {
+  font-family: var(--font-display);
+  font-size: var(--step-4);
+  color: var(--text-0);
+  margin: 0 0 var(--space-3);
+}
+.lede {
+  margin: 0;
+  color: var(--text-1);
+  line-height: 1.6;
+  max-width: 70ch;
+}
+
+.family {
+  max-width: var(--shell-max);
+  margin: 0 auto var(--space-6);
+}
+.familyName {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-3);
+  font-size: var(--step-1);
+  color: var(--text-0);
+}
+.familyKey {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--text-2);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-s);
+  padding: 2px 8px;
+}
+
+.tableScroll {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--step--1);
+  min-width: 760px;
+}
+.table thead th {
+  text-align: left;
+  padding: var(--space-3);
+  background: var(--surface-1);
+  border-bottom: 1px solid var(--line);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+.table tbody tr { border-bottom: 1px solid var(--line); }
+.table tbody tr:last-child { border-bottom: none; }
+.table tbody tr:hover { background: var(--surface-1); }
+.table td,
+.table tbody th {
+  padding: var(--space-3);
+  text-align: left;
+  color: var(--text-1);
+  vertical-align: top;
+}
+.code {
+  font-weight: 700;
+  color: var(--text-0);
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+.target { color: var(--text-0); font-weight: 600; white-space: nowrap; }
+
+.foot {
+  max-width: var(--shell-max);
+  margin: var(--space-6) auto 0;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line);
+  font-size: var(--step--1);
+  line-height: 1.7;
+  color: var(--text-2);
+  max-width: 80ch;
+}

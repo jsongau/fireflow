@@ -1,0 +1,40 @@
+.section { background: var(--surface-0); color: var(--text-1); scroll-margin-top: var(--sticky-h); }
+.inner { max-width: var(--shell-max); margin: 0 auto; padding: var(--space-8) var(--shell-pad); }
+
+.head { margin-bottom: var(--space-6); }
+.eyebrow { text-transform: uppercase; letter-spacing: 0.14em; font-size: var(--step--1); color: var(--accent); margin: 0 0 var(--space-2); }
+.h2 { font-size: var(--step-4); color: var(--text-0); margin: 0 0 var(--space-3); }
+.lede { color: var(--text-1); max-width: 68ch; margin: 0; }
+
+.grid { list-style: none; padding: 0; margin: 0 0 var(--space-6); display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-4); }
+.card {
+  background: var(--surface-1); border: 1px solid var(--line); border-radius: var(--radius-l);
+  border-top: 3px solid var(--gold);
+  padding: var(--space-5); display: grid; gap: var(--space-3); align-content: start;
+  box-shadow: var(--shadow-1);
+}
+
+.numberRow { display: flex; align-items: baseline; gap: var(--space-2); flex-wrap: wrap; }
+.number { font-family: var(--font-display); font-size: var(--step-5); line-height: 1; color: var(--text-0); }
+.numberLabel { font-size: var(--step--1); font-weight: 600; color: var(--gold); text-transform: uppercase; letter-spacing: 0.06em; }
+
+.change { font-weight: 700; font-size: var(--step-1); color: var(--text-0); margin: 0; }
+
+.mechBlock { display: grid; gap: var(--space-1); }
+.mechLabel { text-transform: uppercase; letter-spacing: 0.12em; font-size: var(--step--1); color: var(--text-2); margin: 0; }
+.mech { color: var(--text-1); font-size: var(--step-0); margin: 0; }
+
+.attribution {
+  display: inline-flex; align-items: center; gap: 0.5em;
+  font-size: var(--step--1); font-weight: 700; color: var(--text-0);
+  border: 1px solid var(--line-2); border-radius: 999px; padding: 0.35em 0.8em; justify-self: start; margin: 0;
+}
+.attrGlyph { color: var(--gold); font-size: 0.85em; }
+
+.cannot {
+  display: flex; gap: var(--space-3); align-items: flex-start;
+  background: var(--surface-1); border: 1px solid var(--line-2); border-left: 3px solid var(--info);
+  border-radius: var(--radius-m); padding: var(--space-4) var(--space-5);
+  color: var(--text-1); font-size: var(--step-0); max-width: 88ch; margin: 0;
+}
+.cannotGlyph { color: var(--info); font-weight: 700; line-height: 1.5; }

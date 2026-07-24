@@ -21,10 +21,10 @@ export const SOURCE_TYPES: Record<SourceType, { label: string; short: string; to
     description: "Scores and interpretations created by this project, clearly not official Samyang ratings.",
   },
   synthetic: {
-    label: "Synthetic demonstration data",
-    short: "Synthetic",
+    label: "Modeled operational data",
+    short: "Modeled",
     token: "--src-synthetic",
-    description: "Invented for demonstration: cases, metrics, owners, timelines. Not real.",
+    description: "Cases, owners, metrics, and timelines built to show how the workflow behaves.",
   },
 };
 
@@ -32,5 +32,13 @@ export const SOURCE_TYPES: Record<SourceType, { label: string; short: string; to
 export const VERIFY_PACKAGE_REMINDER =
   "Ingredients, allergens, packaging, and preparation may change. Always verify the current physical package.";
 
+/**
+ * The site-wide independence statement, rendered in the footer on every route.
+ *
+ * It became the ONLY site-wide disclaimer when the entrance cover was removed on
+ * 2026-07-09, so it now carries what the cover used to say: no affiliation with
+ * Samyang, no access to any internal system, and, per DECISIONS.md D-010, no
+ * affiliation with the real grocery banners used as illustrative accounts.
+ */
 export const INDEPENDENCE_DISCLAIMER =
-  "FireFlow CX is an independent portfolio concept created from publicly available information. It is not affiliated with, commissioned by, or connected to Samyang America or Samyang Foods. All customers, orders, shipments, complaints, employees, metrics, financial values, lot codes, and outcomes shown are fictional.";
+  "FireFlow is an independent working study by Nathan J. Song, built for the Samyang America Customer Experience application. It is not affiliated with or endorsed by Samyang Foods. Grocery banner names appear only as sample accounts.";

@@ -1,0 +1,1309 @@
+/* OpsDashboard — an admin-style case board.
+   State always carries a glyph or word alongside color. Drag is mirrored by a
+   keyboard-operable move control on every card. */
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.page {
+  min-height: 100vh;
+  background: var(--surface-0);
+  padding: var(--space-6) var(--space-5) var(--space-8);
+  display: grid;
+  gap: var(--space-5);
+  align-content: start;
+}
+
+/* ---- Hero -------------------------------------------------------------- */
+/* The board is the product, so the board opens the page. The hero is one panel:
+   what this is, what it is measured on, and nothing else above the cards. */
+.hero {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  background:
+    radial-gradient(900px circle at 8% -30%, rgb(255 255 255 / 0.055), transparent 62%),
+    var(--surface-1);
+  padding: var(--space-6) var(--space-5);
+  display: grid;
+  gap: var(--space-5);
+}
+/* A single hairline of brand at the top edge. Decoration; nothing depends on a
+   reader seeing its color. */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: linear-gradient(90deg, var(--ember, var(--gold)), var(--gold), transparent 70%);
+}
+.heroMain { display: grid; gap: var(--space-2); max-width: 92ch; }
+.brandRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+.badgeSoft {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-2);
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  padding: 0.15em 0.7em;
+}
+.fineprint {
+  font-size: 0.74rem;
+  color: var(--text-2);
+  line-height: 1.55;
+  margin: var(--space-2) 0 0;
+  max-width: 92ch;
+}
+.back {
+  font-size: var(--step--1);
+  font-weight: 700;
+  color: var(--gold);
+  text-decoration: none;
+}
+.back:hover { color: var(--text-0); }
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: var(--step--1);
+  font-weight: 700;
+  color: var(--gold);
+  margin: 0;
+}
+.title {
+  font-family: var(--font-display);
+  font-size: var(--step-5);
+  line-height: 1.05;
+  color: var(--text-0);
+  margin: 0;
+}
+.lede {
+  font-size: var(--step--1);
+  color: var(--text-1);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ---- Stats ------------------------------------------------------------- */
+/* One instrument, five readings. The 1px grid gap over a line-colored surface
+   draws the dividers, so the strip reads as a single panel rather than five
+   floating cards. */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+}
+.stat {
+  background: var(--surface-2);
+  padding: var(--space-4);
+  display: grid;
+  gap: 4px;
+}
+.statLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-2);
+}
+.statValue {
+  font-family: var(--font-display);
+  font-size: var(--step-4);
+  color: var(--text-0);
+  line-height: 1.1;
+}
+
+/* ---- Featured case strip ----------------------------------------------- */
+/* Names the one case worth following before anyone scans fourteen cards, and
+   marks the card on the board with the same ◎ glyph and the same word. The
+   thick left edge is shape, the tag is a word: the color is the third signal,
+   never the only one. */
+.featStrip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+  border: 1px solid var(--gold);
+  border-left-width: 4px;
+  border-radius: var(--radius-m);
+  background: var(--surface-1);
+  padding: var(--space-3) var(--space-4);
+}
+.featTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  flex: none;
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--gold);
+  border-right: 1px solid var(--line);
+  padding-right: var(--space-4);
+}
+.featText { display: grid; gap: 2px; min-width: 0; }
+.featRef {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: var(--step-0);
+  font-weight: 700;
+  color: var(--text-0);
+}
+.featMeta { margin: 0; font-size: 0.76rem; color: var(--text-2); }
+.featActions {
+  margin-left: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.featGhost,
+.featPrimary {
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  font-weight: 700;
+  border-radius: var(--radius-s);
+  padding: 0.6em 1em;
+  cursor: pointer;
+  border: 1px solid var(--line-2);
+  white-space: nowrap;
+}
+.featGhost {
+  color: var(--text-0);
+  background: var(--surface-2);
+}
+.featGhost:hover { border-color: var(--gold); }
+.featPrimary {
+  color: var(--surface-0);
+  background: var(--gold);
+  border-color: var(--gold);
+}
+.featPrimary:hover { filter: brightness(1.08); }
+.featGhost:focus-visible,
+.featPrimary:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+@media (max-width: 720px) {
+  .featTag { border-right: none; padding-right: 0; }
+  .featActions { margin-left: 0; width: 100%; }
+}
+
+/* ---- Filters ----------------------------------------------------------- */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-4);
+}
+.field { display: grid; gap: 4px; }
+.fieldLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-2);
+}
+.select,
+.moveSelect {
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  color: var(--text-0);
+  background: var(--surface-2);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-s);
+  padding: 0.5em 0.6em;
+  min-height: 38px;
+  cursor: pointer;
+}
+.select:focus-visible,
+.moveSelect:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.showing { font-size: var(--step--1); color: var(--text-2); margin: 0 0 0.6em; }
+
+/* ---- Board ------------------------------------------------------------- */
+/* Five columns, sized to fit one screen with no horizontal scroll. The lifecycle
+   was cut from eight stages to five for exactly this reason: a board a manager
+   has to scroll sideways is a board where the last two lanes never get read.
+   Below 1100px the columns fall to a scrolling row again, because five 200px
+   columns on a laptop are narrower than the cards they hold. */
+.board {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-3);
+  padding-bottom: var(--space-3);
+}
+
+@media (max-width: 1100px) {
+  .board {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(248px, 1fr);
+    overflow-x: auto;
+  }
+}
+
+/* Two rows, and exactly two children: header, then body. When the per-column
+   sort lived on a third row of its own, this two-row template handed the sort
+   row the 1fr and pushed the body to an implicit third row, so every column
+   stretched its sort control by a different amount and the five selects floated
+   at five different heights. The sort now sits inside the header. */
+.column {
+  position: relative;
+  background: var(--surface-1);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-height: 260px;
+}
+/* Drop target uses a dashed edge and a lifted surface, not colour alone. */
+.column[data-drop="on"] {
+  border: 1px dashed var(--gold);
+  background: var(--surface-2);
+}
+
+/* Fixed height in every column, so "Resolution proposed" wrapping to two lines
+   cannot push its cards a line lower than the four columns beside it. */
+.colHead {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 62px;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--line);
+}
+.colName {
+  flex: 0 1 auto;
+  min-width: 0;
+  font-size: 0.74rem;
+  font-weight: 700;
+  line-height: 1.25;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-1);
+  overflow-wrap: break-word;
+  hyphens: none;
+}
+.colCount {
+  flex: none;
+  margin-right: auto;
+  font-size: var(--step--1);
+  font-weight: 700;
+  color: var(--text-0);
+  background: var(--surface-3);
+  border-radius: 999px;
+  padding: 0.1em 0.6em;
+  min-width: 1.8em;
+  text-align: center;
+}
+
+.colBody {
+  padding: var(--space-3);
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+  /* A drop target for the whole column, so an empty column still accepts a card. */
+  min-height: 120px;
+}
+.colEmpty { font-size: var(--step--1); color: var(--text-2); margin: 0; }
+
+/* Drop indicator: a 2px line at the computed insertion point. Paired with the
+   column's lifted surface so the target is never signaled by color alone. */
+.dropLine {
+  height: 2px;
+  border-radius: 2px;
+  background: var(--gold);
+  box-shadow: 0 0 0 1px var(--surface-0);
+}
+
+/* ---- Card -------------------------------------------------------------- */
+/* Every card is the SAME fixed height regardless of content; the inquiry is
+   clamped to two lines and nothing scrolls internally. The full case is in the
+   modal. --card-h is the single source of truth for that height. */
+.card {
+  /* Single source of truth for the uniform card height. Sized to hold the
+     mandated content (ref, priority, account, category, two-line inquiry,
+     timestamp, time-in-stage, aging chip, Open case) plus the reorder and
+     stage controls, with overflow hidden so a card can never scroll. The routed
+     or held chip on an In-progress card was crowding the case reference under
+     it at 200px; 214px gives that row its own air without touching the rule
+     that every card in a column is the same height. */
+  --card-h: 214px;
+  position: relative;
+  height: var(--card-h);
+  background: var(--surface-2);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-m);
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  overflow: hidden;
+  cursor: grab;
+  transition: transform var(--dur-2) var(--ease-out), border-color var(--dur-2) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out);
+}
+.card:active { cursor: grabbing; }
+/* Hover lifts the card and strengthens the border, teaching that it opens. */
+.card:hover {
+  transform: translateY(-2px);
+  border-color: var(--gold);
+  box-shadow: var(--shadow-1);
+}
+.card:has(.cardHit:focus-visible) { border-color: var(--gold); }
+.card[data-selected="on"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.card[data-dragging="on"] { opacity: 0.5; }
+
+/* ---- The featured case, on the board ----------------------------------- */
+/* The one card the page told you to follow. The ribbon still buys its 22px of
+   real height, and the invitation is now the border itself: a cool cyan-blue
+   ring with a highlight that runs its edge, the only cold hue on this warm
+   board (owner decision 2026-07-23; the starburst badge this replaces read
+   as clutter). The ribbon keeps the word cue, so color is never the only
+   signal. Written after [data-selected] so featured wins that tie. */
+@property --ffang {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+.card[data-featured="on"] {
+  --card-h: 240px;
+  padding-top: calc(var(--space-3) + 22px);
+  border-color: transparent;
+  box-shadow: 0 0 16px rgb(63 184 201 / 0.3), var(--shadow-1);
+  animation: ffFeatGlow 2.6s ease-in-out infinite alternate;
+}
+.card[data-featured="on"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px;
+  background: conic-gradient(
+    from var(--ffang),
+    var(--mep-accent, #3fb8c9),
+    var(--op-accent, #7fa8ff) 32%,
+    rgb(255 255 255 / 0.95) 50%,
+    var(--op-accent, #7fa8ff) 68%,
+    var(--mep-accent, #3fb8c9)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 5;
+  animation: ffBorderSpin 3.4s linear infinite;
+}
+/* Browsers without @property show the gradient standing still: a two-tone
+   border with no spin. That is the intended fallback, not a bug. */
+@keyframes ffBorderSpin {
+  to { --ffang: 360deg; }
+}
+@keyframes ffFeatGlow {
+  from { box-shadow: 0 0 10px rgb(63 184 201 / 0.22), var(--shadow-1); }
+  to { box-shadow: 0 0 24px rgb(63 184 201 / 0.48), var(--shadow-1); }
+}
+.featRibbon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  pointer-events: none;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 var(--space-3);
+  background: var(--surface-3);
+  border-bottom: 1px solid var(--mep-accent, #3fb8c9);
+  color: var(--text-0);
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  white-space: nowrap;
+}
+/* Arrival badge clears the ribbon rather than sitting under it. */
+.card[data-featured="on"] .arrived { top: calc(22px + var(--space-2)); }
+
+/* Arrived from the homepage teaser. Three signals, only one of which is color:
+   the surface lifts (luminance, which a colorblind reader does see), the outline
+   thickens (shape), and a badge names it in words with a glyph. The pulse is
+   decoration and is dropped under reduced motion. */
+.card[data-arrived="on"] {
+  background: var(--surface-3, var(--surface-2));
+  outline: 3px solid var(--gold, var(--accent));
+  outline-offset: 2px;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    0 0 24px 2px rgb(255 255 255 / 0.10);
+  animation: arrivedPulse 1.5s var(--ease-out) 2;
+}
+@keyframes arrivedPulse {
+  0%, 100% { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08), 0 0 24px 2px rgb(255 255 255 / 0.10); }
+  50%      { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), 0 0 34px 6px rgb(255 255 255 / 0.18); }
+}
+/* The card is a fixed 200px with overflow hidden, so the badge cannot add height
+   and cannot escape the border. It takes the case-ref slot for the four seconds
+   it shows: the ref is redundant right then, since you arrived from a link that
+   named it. The priority chip on the right is never covered. */
+.card[data-arrived="on"] .cardRef { visibility: hidden; }
+.arrived {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  z-index: 3;
+  pointer-events: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--surface-0);
+  border: 1px solid var(--gold, var(--accent));
+  color: var(--text-0);
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+/* Stretched hit layer covering the card. Interactive children sit above it. */
+.cardHit {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  border-radius: inherit;
+  cursor: pointer;
+  z-index: 1;
+}
+.cardHit:focus-visible { outline: 2px solid var(--gold); outline-offset: -3px; }
+
+/* Content sits above the hit layer but lets clicks fall through to it, except on
+   the account button and the controls, which re-enable their own pointer events. */
+.cardBody {
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
+  display: grid;
+  gap: 4px;
+  align-content: start;
+  min-height: 0;
+  font-family: var(--font-ui);
+}
+
+.cardTop { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.cardRef { font-size: var(--step--1); font-weight: 700; color: var(--text-0); }
+.accountBtn {
+  pointer-events: auto;
+  justify-self: start;
+  text-align: left;
+  font-family: var(--font-ui);
+  font-size: var(--step-0);
+  font-weight: 600;
+  color: var(--text-0);
+  background: none;
+  border: none;
+  border-bottom: 1px dotted var(--line-2);
+  padding: 0 0 1px;
+  cursor: pointer;
+}
+.accountBtn:hover { color: var(--gold); border-bottom-color: var(--gold); }
+.accountBtn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 2px; }
+.cardCat { font-size: var(--step--1); color: var(--text-1); }
+.cardQuote {
+  font-size: 0.78rem;
+  color: var(--text-2);
+  line-height: 1.45;
+  border-left: 2px solid var(--line-2);
+  padding-left: var(--space-2);
+  /* Clamp to two lines so every card stays the same height. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.cardWhen { font-size: 0.72rem; color: var(--text-2); }
+.dot { color: var(--text-2); }
+
+.cardFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-top: 2px;
+}
+.cardOpen {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--gold);
+}
+.card:hover .cardOpen { color: var(--text-0); }
+
+/* Aging chip: word + shape glyph, never color alone. */
+.aging {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.1em 0.6em;
+  border-radius: 999px;
+  border: 1px solid;
+}
+.aging[data-aging="fresh"] { color: var(--ok); border-color: var(--ok); }
+.aging[data-aging="aging"] { color: var(--gold); border-color: var(--gold); }
+.aging[data-aging="stalled"] { color: var(--ember); border-color: var(--ember); }
+
+/* Reorder + stage controls. Above the hit layer so they take their own clicks. */
+.controls {
+  position: relative;
+  z-index: 2;
+  pointer-events: auto;
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+  gap: var(--space-2);
+}
+.nudge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-1);
+  background: var(--surface-3);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-s);
+  padding: 0.3em 0.5em;
+  cursor: pointer;
+}
+.nudge:hover:not(:disabled) { color: var(--text-0); border-color: var(--gold); }
+.nudge:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.nudge:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Sits on its own line under the filter row it belongs to. */
+.sortHint {
+  flex: 1 0 100%;
+  max-width: 92ch;
+  font-size: var(--step--1);
+  line-height: 1.55;
+  color: var(--text-2);
+  margin: 0;
+}
+
+.prio {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.1em 0.6em;
+  border-radius: 999px;
+  border: 1px solid;
+}
+.prio[data-prio="standard"] { color: var(--info); border-color: var(--info); }
+.prio[data-prio="elevated"] { color: var(--gold); border-color: var(--gold); }
+.prio[data-prio="high"] { color: var(--ember); border-color: var(--ember); }
+.prio[data-prio="critical"] { color: var(--text-0); background: var(--risk); border-color: var(--risk); }
+
+.move { display: grid; min-width: 0; }
+.moveSelect { min-height: 30px; font-size: 0.72rem; width: 100%; padding: 0.3em 0.4em; }
+
+/* ---- Case modal -------------------------------------------------------- */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-dialog);
+  background: #000000c0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  animation: fade var(--dur-2) var(--ease-out);
+}
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+/* Wide enough for two columns, so the whole case reads without a scrollbar on a
+   normal laptop. The body still scrolls if a viewport is genuinely short, but
+   the layout is sized so it rarely has to. */
+.modal {
+  width: min(1080px, 96vw);
+  max-height: min(92vh, 900px);
+  background: var(--surface-1);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-2);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  overflow: hidden;
+  animation: pop var(--dur-2) var(--ease-out);
+}
+@keyframes pop {
+  from { opacity: 0; transform: scale(0.97) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modalHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-5) var(--space-4);
+  border-bottom: 1px solid var(--line);
+}
+.modalEyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--gold);
+  margin: 0 0 var(--space-1);
+}
+.modalTitle {
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  line-height: 1.05;
+  color: var(--text-0);
+  margin: 0;
+}
+.modalSub { font-size: var(--step--1); color: var(--text-2); margin: var(--space-1) 0 0; }
+
+.close {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  font-size: var(--step-2);
+  line-height: 1;
+  color: var(--text-1);
+  background: var(--surface-2);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-s);
+  cursor: pointer;
+}
+.close:hover { background: var(--surface-3); color: var(--text-0); }
+.close:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+.modalBody {
+  overflow-y: auto;
+  padding: var(--space-5);
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: var(--space-5);
+  align-content: start;
+  align-items: start;
+}
+.colMain { display: grid; gap: var(--space-4); align-content: start; min-width: 0; }
+.colSide { display: grid; gap: var(--space-3); align-content: start; min-width: 0; }
+
+@media (max-width: 860px) {
+  .modalBody { grid-template-columns: minmax(0, 1fr); }
+}
+
+.prioRow { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+.chan { font-size: var(--step--1); color: var(--text-2); }
+
+/* ---- Key/value rows: label left, value right, aligned and scannable ---- */
+.kv {
+  margin: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 8.5em) minmax(0, 1fr);
+  gap: 0.35em var(--space-3);
+}
+.kv dt {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-2);
+  line-height: 1.5;
+}
+.kv dd {
+  margin: 0;
+  font-size: var(--step--1);
+  color: var(--text-1);
+  line-height: 1.5;
+}
+
+/* ---- Activity / audit trail ------------------------------------------- */
+.activity {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  padding: var(--space-3) var(--space-4);
+}
+.activityHead {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--gold);
+  margin: 0 0 var(--space-3);
+}
+.activityList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+  /* The trail is the one part that may legitimately grow. Cap it so the rest of
+     the case never gets pushed out of view. */
+  max-height: 190px;
+  overflow-y: auto;
+}
+.activityItem { display: flex; align-items: center; gap: var(--space-3); }
+/* Initials stamp: who moved this case. */
+.stamp {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--surface-3);
+  border: 1px solid var(--line-2);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--text-0);
+}
+.activityText { display: grid; gap: 1px; min-width: 0; }
+.activityAction { font-size: var(--step--1); color: var(--text-0); font-weight: 600; }
+.activityMeta { font-size: 0.72rem; color: var(--text-2); }
+.activityNote {
+  margin: var(--space-3) 0 0;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--line);
+  font-size: 0.7rem;
+  color: var(--text-2);
+}
+
+/* The account's own words. */
+.quote {
+  margin: 0;
+  padding: var(--space-4);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 var(--radius-m) var(--radius-m) 0;
+}
+.quote p {
+  font-size: var(--step-0);
+  color: var(--text-0);
+  line-height: 1.55;
+  margin: 0 0 var(--space-2);
+  max-width: 62ch;
+}
+.quote cite {
+  font-style: normal;
+  font-size: var(--step--1);
+  font-weight: 700;
+  color: var(--text-2);
+}
+
+.stageBox {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  padding: var(--space-4);
+}
+.stageBox h3 {
+  font-family: var(--font-ui);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--gold);
+  margin: 0 0 var(--space-2);
+}
+.stageBox p {
+  font-size: var(--step--1);
+  color: var(--text-1);
+  line-height: 1.6;
+  margin: 0;
+  max-width: 68ch;
+}
+
+/* ---- Close-the-loop panel (resolved / improvement review) -------------- */
+.loop {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  padding: var(--space-4);
+}
+.loopHead {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--gold);
+  margin: 0 0 var(--space-3);
+}
+.loopList {
+  list-style: none;
+  margin: 0 0 var(--space-4);
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+.loopItem { display: grid; gap: 2px; }
+.loopLabel { font-size: var(--step--1); font-weight: 700; color: var(--text-0); }
+.loopDetail { font-size: var(--step--1); color: var(--text-1); line-height: 1.55; }
+
+.noteBlock {
+  background: var(--surface-1);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-s);
+  padding: var(--space-3);
+}
+.noteBlockHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+.noteBlockTitle {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-2);
+}
+.copyBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  font-family: var(--font-ui);
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--text-0);
+  background: var(--surface-3);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-s);
+  padding: 0.35em 0.7em;
+  cursor: pointer;
+}
+.copyBtn:hover { border-color: var(--gold); color: var(--gold); }
+.copyBtn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.noteBlockBody {
+  font-size: var(--step--1);
+  color: var(--text-1);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ---- Vendor profile modal --------------------------------------------- */
+.vendorModal {
+  width: min(560px, 96vw);
+  grid-template-rows: auto 1fr;
+}
+.vendorBody {
+  overflow-y: auto;
+  padding: var(--space-5);
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+}
+.vendorOpen {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  padding: var(--space-3) var(--space-4);
+}
+.vendorOpen h3 {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--gold);
+  margin: 0 0 var(--space-2);
+}
+.vendorOpen ul {
+  margin: 0;
+  padding-left: 1.1em;
+  font-size: var(--step--1);
+  color: var(--text-1);
+  display: grid;
+  gap: 2px;
+}
+.vendorOpenEmpty { font-size: var(--step--1); color: var(--text-2); margin: 0; }
+.vendorDisclaimer {
+  font-size: 0.72rem;
+  color: var(--text-2);
+  line-height: 1.55;
+  margin: 0;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--line);
+}
+
+.modalFoot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  padding: var(--space-4) var(--space-5);
+  border-top: 1px solid var(--line);
+  background: var(--surface-1);
+}
+.synth { font-size: var(--step--1); color: var(--text-2); margin: 0 0 0.6em; }
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay, .modal { animation: none; }
+  /* The pulse goes. The surface lift, the outline, and the badge stay,
+     because those carry the information and are not motion. */
+  .card[data-arrived="on"] { animation: none; }
+  /* The Click me badge holds still and keeps its static glow. */
+  .card[data-featured="on"],
+  .card[data-featured="on"]::after,
+  .dossierCta,
+  .dossierCtaTag,
+  .ctaRipple1,
+  .ctaRipple2 { animation: none; }
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: var(--space-3);
+}
+.detailCard {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  padding: var(--space-3) var(--space-4);
+}
+.detailCard h3 {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--gold);
+  margin: 0 0 var(--space-2);
+}
+.detailCard p {
+  font-size: var(--step--1);
+  color: var(--text-1);
+  line-height: 1.55;
+  margin: 0 0 var(--space-1);
+}
+.detailCard p strong { color: var(--text-0); }
+.detailCard ul {
+  margin: 0;
+  padding-left: 1.1em;
+  font-size: var(--step--1);
+  color: var(--text-1);
+  display: grid;
+  gap: 2px;
+}
+
+.foot {
+  border-top: 1px solid var(--line);
+  padding-top: var(--space-4);
+}
+.foot p {
+  font-size: var(--step--1);
+  color: var(--text-2);
+  line-height: 1.6;
+  max-width: 90ch;
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .page { padding: var(--space-5) var(--space-3) var(--space-7); }
+  .title { font-size: var(--step-4); }
+  .board { grid-auto-columns: minmax(224px, 1fr); }
+}
+
+/* ---- Per-column sort, on the column header ----------------------------- */
+/* A chip beside the count, not a control row of its own. Manual order shows ≡
+   and a solid border. Any other sort shows ⊘ and goes dashed, because a column
+   that will not accept a dragged card has to say so before the card is dragged,
+   and a greyed-out handle does not explain why it is grey. */
+.sortWrap { position: relative; flex: none; }
+.sortBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-ui);
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-1);
+  background: var(--surface-2);
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  padding: 0.35em 0.6em;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.sortBtn:hover { color: var(--text-0); border-color: var(--gold); }
+.sortBtn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.sortBtn[aria-expanded="true"] {
+  color: var(--text-0);
+  border-color: var(--gold);
+  background: var(--surface-3);
+}
+.sortBtn[data-locked="on"] {
+  border-style: dashed;
+  border-color: var(--gold);
+  color: var(--text-0);
+}
+/* Fixed width so the chip does not resize as the sort name changes, which would
+   nudge the count and stage name every time a column is re-sorted. */
+.sortName { min-width: 4.2em; text-align: left; }
+.sortGlyph { font-size: 0.85em; line-height: 1; }
+.sortCaret { font-size: 0.6em; line-height: 1; opacity: 0.8; }
+
+/* Sits above every later column, because the board paints columns in DOM order
+   and a menu in the first column must not slide under the second. */
+.sortMenu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 30;
+  min-width: 196px;
+  display: grid;
+  gap: 2px;
+  padding: var(--space-2);
+  background: var(--surface-2);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-m);
+  box-shadow: 0 14px 34px rgb(0 0 0 / 0.55);
+}
+.sortItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  color: var(--text-1);
+  background: none;
+  border: none;
+  border-radius: var(--radius-s);
+  padding: 0.42em 0.5em;
+  cursor: pointer;
+}
+.sortItem:hover { background: var(--surface-3); color: var(--text-0); }
+.sortItem:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
+/* The checked item carries a tick and bolder weight, so the selection survives
+   without color. */
+.sortItem[data-on="on"] { color: var(--text-0); font-weight: 700; }
+.sortTick {
+  flex: none;
+  width: 1em;
+  color: var(--gold);
+  font-size: 0.85em;
+}
+.sortNote {
+  margin: var(--space-2) 0 0;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--line);
+  font-size: 0.68rem;
+  line-height: 1.45;
+  color: var(--text-2);
+}
+
+/* Under about 1400px a five-lane board gives each column roughly 200px, and a
+   chip wide enough to spell "Resolution proposed" beside it does not exist. The
+   name drops to the glyph; the aria-label and the tooltip still say the sort in
+   full, so nothing is lost to a screen reader or to a hovering mouse. */
+@media (max-width: 1400px) {
+  .sortName {
+    position: absolute;
+    width: 1px;
+    min-width: 0; /* beats the 4.2em floor the visible chip sets */
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+  .sortBtn { padding: 0.35em 0.5em; }
+}
+
+/* ---- Routed or held, on an In-progress card ---------------------------- */
+/* The question the deleted "Routed" column used to answer, answered on the card
+   instead. Word plus shape; the colors differ only in luminance. */
+.handling {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  align-self: start;
+  max-width: 100%;
+  margin-bottom: 6px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid var(--line-2);
+  background: var(--surface-1);
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.handling[data-routed="yes"] {
+  color: var(--text-0);
+  border-color: var(--gold);
+}
+
+/* ---- Account dossier link ---------------------------------------------- */
+/* The account name still opens the quick-look vendor modal. Accounts that have a
+   full dossier get a second, clearly-named affordance beside it, so the two
+   destinations are never confused for each other. */
+.accountRow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  pointer-events: auto;
+  min-width: 0;
+}
+.accountDossier {
+  flex: none;
+  pointer-events: auto;
+  /* A 16px-tall chip sitting beside another link, on a card with a stretched hit
+     layer behind it, is a mis-tap waiting to happen. 24px is the WCAG AA floor. */
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--gold);
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  padding: 1px 6px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.accountDossier:hover { background: var(--gold); color: var(--surface-0); }
+.accountDossier:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+/* The modal's two doors into the account dossier (owner request 2026-07-23):
+   the account name in the title is itself a link, and the profile line below
+   is a lit pill with a small SVG "click me" sticker on its shoulder. The loud
+   invitation used to be a starburst on the board card; it read as clutter
+   there, so the shine moved to the record where the door actually is. */
+.modalTitleLink {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--mep-accent, #3fb8c9);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
+}
+.modalTitleLink:hover {
+  color: var(--gold);
+  text-decoration-color: var(--gold);
+}
+.modalTitleLink:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.dossierCta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  margin-top: var(--space-3);
+  padding: 0.68em 1.15em;
+  border-radius: 999px;
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  font-weight: 800;
+  color: var(--surface-0);
+  text-decoration: none;
+  background: linear-gradient(135deg, var(--ember), var(--gold));
+  box-shadow: 0 0 14px rgb(245 179 1 / 0.3);
+  animation: dossierCtaGlow 2.6s ease-in-out infinite alternate;
+  transition: filter var(--dur-2) var(--ease-out), translate var(--dur-2) var(--ease-out);
+}
+.dossierCta:hover { filter: brightness(1.08); translate: 0 -1px; }
+.dossierCta:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+@keyframes dossierCtaGlow {
+  from { box-shadow: 0 0 10px rgb(245 179 1 / 0.25); }
+  to { box-shadow: 0 0 22px rgb(245 179 1 / 0.5); }
+}
+.dossierCtaIcon { width: 17px; height: 17px; flex: none; }
+.dossierCtaIcon path { fill: currentColor; }
+.ctaRipple1,
+.ctaRipple2 {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  transform-origin: 9px 9px;
+  animation: ctaRipple 2s ease-out infinite;
+}
+.ctaRipple2 { animation-delay: 0.5s; }
+@keyframes ctaRipple {
+  0% { opacity: 0.9; transform: scale(0.35); }
+  70% { opacity: 0; transform: scale(1.15); }
+  100% { opacity: 0; transform: scale(1.15); }
+}
+/* The sticker: a tilted little tag riding the button's shoulder. */
+.dossierCtaTag {
+  position: absolute;
+  top: -13px;
+  right: -12px;
+  width: 66px;
+  height: 24px;
+  rotate: -7deg;
+  transform-origin: center;
+  animation: ctaTagWiggle 2.4s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+.dossierCtaTag rect {
+  fill: var(--surface-0);
+  stroke: var(--gold);
+  stroke-width: 1.5;
+}
+.dossierCtaTag text {
+  fill: var(--gold);
+  font-family: var(--font-ui);
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+@keyframes ctaTagWiggle {
+  from { rotate: -9deg; }
+  to { rotate: -3deg; }
+}

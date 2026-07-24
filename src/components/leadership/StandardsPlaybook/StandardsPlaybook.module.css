@@ -1,0 +1,72 @@
+.section { background: var(--surface-1); color: var(--text-1); scroll-margin-top: var(--sticky-h); }
+.inner { max-width: var(--shell-max); margin: 0 auto; padding: var(--space-8) var(--shell-pad); }
+
+.head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-5); flex-wrap: wrap; margin-bottom: var(--space-6); }
+.eyebrow { text-transform: uppercase; letter-spacing: 0.14em; font-size: var(--step--1); color: var(--accent); margin: 0 0 var(--space-2); }
+.h2 { font-size: var(--step-4); color: var(--text-0); margin: 0 0 var(--space-2); }
+.lede { color: var(--text-1); max-width: 66ch; margin: 0; }
+.headBadge { display: grid; gap: var(--space-2); justify-items: end; max-width: 260px; text-align: right; }
+.headNote { font-size: var(--step--1); color: var(--text-2); }
+
+.block { margin-bottom: var(--space-7); }
+.blockHead { margin-bottom: var(--space-3); }
+.h3 { font-family: var(--font-display); font-size: var(--step-2); color: var(--text-0); margin: 0 0 var(--space-1); }
+.blockNote { font-size: var(--step--1); color: var(--text-2); margin: 0; max-width: 70ch; }
+
+.twoCol { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-6); align-items: start; }
+.twoCol .block { margin-bottom: 0; }
+
+/* ---- Tables ---------------------------------------------------------- */
+.tableWrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius-m); background: var(--surface-0); }
+.table { width: 100%; border-collapse: collapse; font-size: var(--step-0); min-width: 520px; }
+.caption { text-align: left; padding: var(--space-3) var(--space-4) 0; font-size: var(--step--1); color: var(--text-2); caption-side: top; }
+.table th, .table td { text-align: left; padding: var(--space-3) var(--space-4); vertical-align: top; border-bottom: 1px solid var(--line); }
+.table thead th { font-size: var(--step--1); text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-2); font-weight: 700; }
+.table tbody th { color: var(--text-0); font-weight: 700; }
+.table td { color: var(--text-1); }
+.table tbody tr:last-child th, .table tbody tr:last-child td { border-bottom: none; }
+
+.actionCell { white-space: nowrap; }
+.exampleCell { color: var(--text-2); font-size: var(--step--1); }
+.rootCell { color: var(--text-1); min-width: 22ch; }
+
+.backupList { margin: 0; padding-left: 1.1em; display: grid; gap: 0.2em; font-size: var(--step--1); color: var(--text-1); }
+
+/* ---- SLA row selection --------------------------------------------- */
+.slaRow { cursor: pointer; transition: background var(--dur-1) var(--ease-out); }
+.slaRow:hover { background: var(--surface-2); }
+.slaRow:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.slaRowOn { background: var(--surface-2); box-shadow: inset 3px 0 0 var(--accent); }
+.slaRowDim { opacity: 0.55; }
+.priorityCell { display: flex; align-items: center; gap: 0.5em; }
+.priorityGlyph { color: var(--gold); font-size: 0.9em; }
+.focusTag { font-size: var(--step--1); font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em; }
+
+.clear { margin-top: var(--space-3); background: none; border: 1px solid var(--line-2); border-radius: 999px; color: var(--text-1); font: inherit; font-size: var(--step--1); font-weight: 600; padding: 0.4em 0.9em; cursor: pointer; }
+.clear:hover { background: var(--surface-2); }
+
+/* ---- Escalation ladder --------------------------------------------- */
+.ladder { list-style: none; counter-reset: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); }
+.ladderItem { display: grid; grid-template-columns: auto 1fr; gap: var(--space-3); align-items: start; background: var(--surface-0); border: 1px solid var(--line); border-radius: var(--radius-m); padding: var(--space-4); }
+.tierBadge { display: inline-grid; place-items: center; width: 2rem; height: 2rem; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line-2); font-family: var(--font-display); color: var(--text-0); }
+.ladderBody { display: grid; gap: var(--space-1); }
+.ladderOwner { font-weight: 700; color: var(--text-0); margin: 0; }
+.ladderHolds { color: var(--text-1); margin: 0; font-size: var(--step-0); }
+.ladderEscalate { color: var(--text-2); margin: 0; font-size: var(--step--1); }
+.escalateLabel { text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; color: var(--ember); }
+
+/* ---- Validity chip -------------------------------------------------- */
+.validity { display: inline-flex; align-items: center; gap: 0.35em; font-size: var(--step--1); font-weight: 700; border: 1px solid var(--line-2); border-radius: 999px; padding: 0.2em 0.6em; white-space: nowrap; color: var(--text-1); }
+.validity[data-validity="often-valid"] { color: var(--ok); border-color: var(--ok); }
+.validity[data-validity="often-disputable"] { color: var(--warn); border-color: var(--warn); }
+.validity[data-validity="needs-research"] { color: var(--info); border-color: var(--info); }
+
+.srOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+@media (max-width: 900px) {
+  .twoCol { grid-template-columns: 1fr; gap: var(--space-7); }
+  .headBadge { justify-items: start; text-align: left; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .slaRow { transition: none; }
+}

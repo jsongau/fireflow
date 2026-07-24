@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Samyang Buldak — Retailer Ratings Dashboard</title>
+<style>
+  :root {
+    --surface-1: #fcfcfb;
+    --surface-2: #f9f9f7;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #898781;
+    --gridline: #e1e0d9;
+    --border: rgba(11,11,11,0.10);
+    --walmart: #2a78d6;
+    --target-r: #e34948;
+    --samsclub: #eda100;
+    --good: #0ca30c;
+    --critical: #d03b3b;
+    --overlay: rgba(11,11,11,0.45);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface-1: #1a1a19; --surface-2: #0d0d0d;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7;
+      --text-muted: #898781; --gridline: #2c2c2a;
+      --border: rgba(255,255,255,0.10);
+      --walmart: #3987e5; --target-r: #e66767; --samsclub: #c98500;
+      --overlay: rgba(0,0,0,0.65);
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--surface-2); color: var(--text-primary); padding: 2rem 2.5rem; min-height: 100vh; }
+
+  .page-header { margin-bottom: 0.4rem; }
+  .page-header h1 { font-size: 1.4rem; font-weight: 700; }
+  .page-meta { font-size: 0.8125rem; color: var(--text-secondary); margin-top: 0.25rem; margin-bottom: 1.5rem; }
+
+  .legend { display: flex; gap: 1.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; }
+  .legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8125rem; color: var(--text-secondary); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+  /* Grid */
+  .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1.1rem 1.2rem 1rem;
+    cursor: pointer; transition: box-shadow 0.15s, transform 0.15s, border-color 0.15s;
+    display: flex; flex-direction: column; gap: 0.65rem; user-select: none;
+  }
+  .card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.09); transform: translateY(-2px); border-color: rgba(42,120,214,0.35); }
+  .card:active { transform: translateY(0); }
+
+  .card-name { font-size: 0.875rem; font-weight: 700; line-height: 1.3; }
+  .card-sub  { font-size: 0.6875rem; color: var(--text-muted); margin-top: 0.1rem; }
+
+  .card-agg { display: flex; align-items: flex-end; gap: 0.45rem; margin-top: 0.15rem; }
+  .card-number { font-size: 1.9rem; font-weight: 800; line-height: 1; letter-spacing: -0.02em; }
+  .card-stars { font-size: 0.7rem; color: var(--samsclub); margin-bottom: 2px; }
+  .card-reviews { font-size: 0.6875rem; color: var(--text-muted); }
+
+  .card-mini-bars { display: flex; flex-direction: column; gap: 4px; }
+  .mini-row { display: flex; align-items: center; gap: 6px; }
+  .mini-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .mini-track { flex: 1; height: 5px; background: var(--gridline); border-radius: 3px; overflow: hidden; }
+  .mini-fill { height: 100%; border-radius: 3px; transition: width 0.7s cubic-bezier(.4,0,.2,1); }
+
+  .low-badge { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.04em; color: var(--critical); background: rgba(208,59,59,0.09); border-radius: 3px; padding: 2px 5px; display: inline-block; margin-top: 2px; }
+  .open-hint { font-size: 0.6875rem; color: var(--walmart); margin-top: auto; padding-top: 0.2rem; opacity: 0; transition: opacity 0.15s; }
+  .card:hover .open-hint { opacity: 1; }
+
+  /* Modal */
+  .modal-backdrop { position: fixed; inset: 0; background: var(--overlay); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 1.5rem; opacity: 0; visibility: hidden; transition: opacity 0.2s, visibility 0.2s; }
+  .modal-backdrop.open { opacity: 1; visibility: visible; }
+  .modal { background: var(--surface-1); border-radius: 16px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; padding: 1.75rem; box-shadow: 0 20px 60px rgba(0,0,0,0.2); transform: translateY(16px) scale(0.98); transition: transform 0.2s cubic-bezier(.4,0,.2,1); position: relative; }
+  .modal-backdrop.open .modal { transform: translateY(0) scale(1); }
+  .modal-close { position: absolute; top: 1.1rem; right: 1.1rem; background: var(--gridline); border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; color: var(--text-secondary); transition: background 0.12s; }
+  .modal-close:hover { background: var(--baseline, #c3c2b7); }
+
+  .modal-header { margin-bottom: 1.25rem; }
+  .modal-title { font-size: 1.2rem; font-weight: 800; }
+  .modal-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+  .modal-agg { display: flex; align-items: center; gap: 1.25rem; background: var(--surface-2); border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
+  .modal-agg-num { font-size: 3rem; font-weight: 900; line-height: 1; letter-spacing: -0.03em; }
+  .modal-agg-detail { display: flex; flex-direction: column; gap: 0.15rem; }
+  .modal-agg-stars { font-size: 1rem; color: var(--samsclub); }
+  .modal-agg-label { font-size: 0.6875rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; }
+  .modal-agg-reviews { font-size: 0.8125rem; color: var(--text-secondary); }
+
+  .retailer-section { border: 1px solid var(--gridline); border-radius: 10px; overflow: hidden; margin-bottom: 0.75rem; }
+  .retailer-header { display: flex; align-items: center; gap: 0.65rem; padding: 0.75rem 1rem; border-bottom: 1px solid var(--gridline); background: var(--surface-2); }
+  .retailer-color-bar { width: 4px; height: 18px; border-radius: 2px; flex-shrink: 0; }
+  .retailer-name { font-size: 0.875rem; font-weight: 700; }
+  .retailer-score { margin-left: auto; font-size: 1.1rem; font-weight: 800; }
+  .retailer-score-reviews { font-size: 0.6875rem; color: var(--text-muted); margin-left: 0.4rem; }
+
+  .retailer-body { padding: 0.75rem 1rem; }
+  .rating-bar-row { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.75rem; }
+  .rating-bar-track { flex: 1; height: 10px; background: var(--gridline); border-radius: 5px; overflow: hidden; }
+  .rating-bar-fill { height: 100%; border-radius: 5px; transition: width 0.8s cubic-bezier(.4,0,.2,1); }
+  .rating-bar-label { font-size: 0.75rem; font-weight: 700; width: 28px; text-align: right; }
+
+  .breakdown-grid { display: flex; flex-direction: column; gap: 4px; }
+  .breakdown-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.6875rem; }
+  .breakdown-star { width: 18px; text-align: right; color: var(--text-muted); }
+  .breakdown-track { flex: 1; height: 6px; background: var(--gridline); border-radius: 3px; overflow: hidden; }
+  .breakdown-fill { height: 100%; border-radius: 3px; transition: width 0.8s cubic-bezier(.4,0,.2,1); }
+  .breakdown-pct { width: 30px; text-align: right; color: var(--text-secondary); }
+
+  .no-breakdown { font-size: 0.75rem; color: var(--text-muted); font-style: italic; }
+  .retailer-note-text { font-size: 0.6875rem; color: var(--text-muted); margin-top: 0.5rem; }
+  .retailer-nodata { display: flex; align-items: center; gap: 0.65rem; padding: 0.75rem 1rem; opacity: 0.55; }
+
+  .modal-source { font-size: 0.6875rem; color: var(--text-muted); padding-top: 1rem; margin-top: 0.25rem; border-top: 1px solid var(--gridline); }
+  .modal-source a { color: var(--walmart); text-decoration: none; }
+  .modal-source a:hover { text-decoration: underline; }
+
+  .tooltip { position: fixed; background: var(--text-primary); color: var(--surface-1); font-size: 0.75rem; line-height: 1.5; padding: 0.4rem 0.65rem; border-radius: 7px; pointer-events: none; opacity: 0; transition: opacity 0.1s; z-index: 300; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+  .tooltip.visible { opacity: 1; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Samyang Buldak — Retailer Ratings</h1>
+</div>
+<div class="page-meta">Click any product to see full breakdown &nbsp;·&nbsp; Walmart · Target · Sam's Club &nbsp;·&nbsp; July 2026</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--walmart)"></div> Walmart</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--target-r)"></div> Target</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--samsclub)"></div> Sam's Club</div>
+</div>
+
+<div class="product-grid" id="grid"></div>
+<div class="modal-backdrop" id="backdrop" role="dialog" aria-modal="true">
+  <div class="modal" id="modal">
+    <button class="modal-close" id="modal-close" aria-label="Close">✕</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+const SC = { name: "Sam's Club", color: "var(--samsclub)" };
+const WM = (rating, reviews, breakdown, url, note) => ({ name:"Walmart", color:"var(--walmart)", rating, reviews, breakdown: breakdown||null, url, note });
+const TG = (rating, reviews, breakdown, url, note) => ({ name:"Target",  color:"var(--target-r)", rating, reviews, breakdown: breakdown||null, url, note });
+const NA = (retailer, note) => ({ name: retailer, color: retailer==="Walmart"?"var(--walmart)":retailer==="Target"?"var(--target-r)":"var(--samsclub)", rating:null, reviews:null, note });
+
+const products = [
+  {
+    name:"Buldak Original", sub:"Hot Chicken Flavor Ramen · 5-pack",
+    aggregate:4.58, totalReviews:3689, confidence:"high",
+    retailers:[
+      WM(4.6,3385,{5:81,4:9,3:4,2:2,1:5},"https://www.walmart.com/ip/234865077"),
+      TG(4.47,242,{5:77,4:8,3:5,2:3,1:7},"https://www.target.com/p/-/A-91113531"),
+      {name:"Sam's Club",color:"var(--samsclub)",rating:4.1,reviews:62,breakdown:{5:60,4:18,3:8,2:2,1:13},url:"https://www.samsclub.com/reviews/product/19215961579",note:"Big-bowl format"}
+    ]
+  },
+  {
+    name:"Buldak Carbonara", sub:"Spicy Chicken Carbonara · 5-pack",
+    aggregate:4.58, totalReviews:10309, confidence:"high",
+    retailers:[
+      WM(4.6,9123,null,"https://www.walmart.com/ip/893267125"),
+      TG(4.5,827,{5:79,4:7,3:5,2:1,1:7},"https://www.target.com/p/-/A-91114007","Quality 4.3 · Taste 4.2 · Value 4.1 · 76% recommend"),
+      {name:"Sam's Club",color:"var(--samsclub)",rating:4.3,reviews:359,breakdown:{5:70,4:9,3:7,2:7,1:7},url:"https://www.samsclub.com/reviews/product/16408466050",note:"Big-bowl format"}
+    ]
+  },
+  {
+    name:"Buldak 2× Spicy", sub:"Double Heat Hot Chicken · 5-pack",
+    aggregate:4.17, totalReviews:146, confidence:"medium",
+    retailers:[
+      WM(4.2,99,{5:74.7,4:3,3:4,2:5.1,1:13.1},"https://www.walmart.com/ip/120823388","Polarizing — 13% give 1★"),
+      TG(4.1,47,{5:66,4:9,3:6,2:9,1:11},"https://www.target.com/p/-/A-91113900","Out of stock at scrape time"),
+      NA("Sam's Club","Not carried")
+    ]
+  },
+  {
+    name:"Buldak Cheese (Quattro)", sub:"Quattro Cheese Hot Chicken · 5-pack",
+    aggregate:4.50, totalReviews:853, confidence:"medium",
+    retailers:[
+      WM(4.5,850,null,"https://www.walmart.com/ip/5300292527"),
+      TG(4.67,3,{5:67,4:33,3:0,2:0,1:0},"https://www.target.com/p/-/A-94964921","⚠ Only 3 reviews — very low confidence"),
+      NA("Sam's Club","Not carried")
+    ]
+  },
+  {
+    name:"Buldak Corn", sub:"Corn Hot Chicken Flavor · 3-pack",
+    aggregate:2.60, totalReviews:9, confidence:"low",
+    retailers:[
+      WM(2.6,9,{5:22,4:11,3:0,2:33,1:33},"https://www.walmart.com/ip/104132268","⚠ Only 9 ratings"),
+      NA("Target","Not listed"),
+      NA("Sam's Club","Not listed")
+    ]
+  },
+  {
+    name:"Buldak Rose", sub:"Rose Spicy Chicken Ramen · 5-pack",
+    aggregate:4.49, totalReviews:1933, confidence:"high",
+    retailers:[
+      WM(4.5,1771,null,"https://www.walmart.com/ip/8505256842"),
+      TG(4.35,162,{5:67,4:15,3:7,2:4,1:6},"https://www.target.com/p/-/A-94607289"),
+      NA("Sam's Club","Not listed")
+    ]
+  },
+  {
+    name:"Buldak Habanero Lime", sub:"Habanero Lime Hot Chicken · 5-pack",
+    aggregate:4.50, totalReviews:850, confidence:"high",
+    retailers:[
+      WM(4.5,850,null,"https://www.walmart.com/ip/5043260828"),
+      NA("Target","Not carried at Target"),
+      NA("Sam's Club","Not listed")
+    ]
+  },
+  {
+    name:"Buldak Yakisoba", sub:"Spicy Chicken Yakisoba · 5-pack",
+    aggregate:4.29, totalReviews:245, confidence:"medium",
+    retailers:[
+      WM(4.5,143,null,"https://www.walmart.com/ip/7247409435"),
+      TG(4.0,102,{5:60,4:14,3:7,2:9,1:11},"https://www.target.com/p/-/A-91959820"),
+      NA("Sam's Club","Not listed")
+    ]
+  },
+  {
+    name:"Buldak Taco", sub:"Spicy Taco Flavor Ramen · 5-pack",
+    aggregate:4.20, totalReviews:67, confidence:"medium",
+    retailers:[
+      NA("Walmart","No ratings yet"),
+      TG(4.2,67,{5:60,4:16,3:9,2:9,1:6},"https://www.target.com/p/-/A-94683434"),
+      NA("Sam's Club","Not listed")
+    ]
+  },
+  {
+    name:"Buldak SWICY", sub:"Sweet & Spicy Chicken Ramen · 5-pack",
+    aggregate:4.16, totalReviews:63, confidence:"low",
+    retailers:[
+      WM(4.8,5,null,"https://www.walmart.com/ip/18207010649","⚠ Only 5 reviews"),
+      TG(4.1,58,{5:64,4:9,3:9,2:9,1:10},"https://www.target.com/p/-/A-94964922"),
+      NA("Sam's Club","Not listed")
+    ]
+  },
+  {
+    name:"Buldak Cream Carbonara", sub:"Cream Carbonara Hot Chicken · 5-pack",
+    aggregate:4.62, totalReviews:31, confidence:"low",
+    retailers:[
+      WM(4.7,18,null,"https://www.walmart.com/ip/5274891373","⚠ Low sample"),
+      TG(4.5,13,{5:77,4:15,3:0,2:0,1:8},"https://www.target.com/p/-/A-94964919","Taste 4.8 · Value 4.7 · 83% recommend"),
+      NA("Sam's Club","Not listed")
+    ]
+  }
+];
+
+function starsStr(r) {
+  if (!r) return "";
+  const f = Math.floor(r), h = (r-f)>=0.25&&(r-f)<0.75;
+  return "★".repeat(f)+(h?"½":"")+"☆".repeat(5-f-(h?1:0));
+}
+function fmtN(n) {
+  if (n==null) return ""; return n>=1000?(n/1000).toFixed(1)+"k":n.toLocaleString();
+}
+function aggColor(r) { return r>=4.5?"var(--good)":r>=3.5?"var(--text-primary)":"var(--critical)"; }
+
+const tooltip = document.getElementById("tooltip");
+document.addEventListener("mousemove", e => { tooltip.style.left=(e.clientX+14)+"px"; tooltip.style.top=(e.clientY-10)+"px"; });
+
+const grid = document.getElementById("grid");
+products.forEach((p,pi) => {
+  const card = document.createElement("div");
+  card.className = "card";
+  card.setAttribute("tabindex","0");
+  card.setAttribute("role","button");
+
+  card.innerHTML = `
+    <div>
+      <div class="card-name">${p.name}</div>
+      <div class="card-sub">${p.sub}</div>
+      ${p.confidence==="low"?'<div class="low-badge">LOW SAMPLE</div>':""}
+    </div>
+    <div class="card-agg">
+      <div class="card-number" style="color:${aggColor(p.aggregate)}">${p.aggregate.toFixed(2)}</div>
+      <div><div class="card-stars">${starsStr(p.aggregate)}</div><div class="card-reviews">${p.totalReviews.toLocaleString()} reviews</div></div>
+    </div>
+    <div class="card-mini-bars" id="mini-${pi}"></div>
+    <div class="open-hint">View breakdown →</div>
+  `;
+  grid.appendChild(card);
+
+  const mc = document.getElementById(`mini-${pi}`);
+  p.retailers.forEach(r => {
+    const row = document.createElement("div"); row.className = "mini-row";
+    const dot = document.createElement("div"); dot.className = "mini-dot"; dot.style.background = r.color;
+    const track = document.createElement("div"); track.className = "mini-track";
+    if (r.rating !== null) {
+      const fill = document.createElement("div"); fill.className = "mini-fill";
+      fill.style.background = r.color; fill.style.width = "0%";
+      track.appendChild(fill);
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{ fill.style.width=(r.rating/5*100)+"%"; }));
+    }
+    row.appendChild(dot); row.appendChild(track); mc.appendChild(row);
+  });
+
+  const open = () => showModal(p);
+  card.addEventListener("click", open);
+  card.addEventListener("keydown", e => { if(e.key==="Enter"||e.key===" ") open(); });
+});
+
+const backdrop = document.getElementById("backdrop");
+const modalContent = document.getElementById("modal-content");
+document.getElementById("modal-close").addEventListener("click", closeModal);
+backdrop.addEventListener("click", e => { if(e.target===backdrop) closeModal(); });
+document.addEventListener("keydown", e => { if(e.key==="Escape") closeModal(); });
+
+function showModal(p) {
+  const withData = p.retailers.filter(r=>r.rating!==null&&r.url);
+  let html = `
+    <div class="modal-header">
+      <div class="modal-title">${p.name}</div>
+      <div class="modal-sub">${p.sub}</div>
+    </div>
+    <div class="modal-agg">
+      <div class="modal-agg-num" style="color:${aggColor(p.aggregate)}">${p.aggregate.toFixed(2)}</div>
+      <div class="modal-agg-detail">
+        <div class="modal-agg-stars">${starsStr(p.aggregate)}</div>
+        <div class="modal-agg-label">Weighted Aggregate</div>
+        <div class="modal-agg-reviews">${p.totalReviews.toLocaleString()} total reviews · ${withData.length} retailer${withData.length!==1?"s":""}</div>
+        ${p.confidence==="low"?'<div class="low-badge" style="margin-top:4px">LOW SAMPLE — directional only</div>':""}
+      </div>
+    </div>
+  `;
+
+  p.retailers.forEach(r => {
+    if (r.rating!==null) {
+      const bdRows = r.breakdown ? [5,4,3,2,1].map(s=>`
+        <div class="breakdown-row">
+          <span class="breakdown-star">${s}★</span>
+          <div class="breakdown-track"><div class="breakdown-fill" style="background:${r.color};width:0%" data-target="${r.breakdown[s]}"></div></div>
+          <span class="breakdown-pct">${parseFloat(r.breakdown[s]).toFixed(0)}%</span>
+        </div>`).join("") : "";
+      html += `
+        <div class="retailer-section">
+          <div class="retailer-header">
+            <div class="retailer-color-bar" style="background:${r.color}"></div>
+            <div class="retailer-name">${r.name}</div>
+            <div><span class="retailer-score">${r.rating.toFixed(1)}</span><span class="retailer-score-reviews">&nbsp;${fmtN(r.reviews)} rev</span></div>
+          </div>
+          <div class="retailer-body">
+            <div class="rating-bar-row">
+              <div class="rating-bar-track"><div class="rating-bar-fill" style="background:${r.color};width:0%" data-target="${(r.rating/5*100).toFixed(1)}"></div></div>
+              <div class="rating-bar-label">${r.rating.toFixed(1)}</div>
+            </div>
+            ${r.breakdown?`<div class="breakdown-grid">${bdRows}</div>`:`<div class="no-breakdown">Star breakdown not available</div>`}
+            ${r.note?`<div class="retailer-note-text">${r.note}</div>`:""}
+          </div>
+        </div>`;
+    } else {
+      html += `
+        <div class="retailer-section">
+          <div class="retailer-nodata">
+            <div class="retailer-color-bar" style="background:${r.color};opacity:0.3"></div>
+            <div class="retailer-name" style="color:var(--text-muted)">${r.name}</div>
+            <div style="margin-left:auto;font-size:.75rem;color:var(--text-muted)">${r.note||"No data"}</div>
+          </div>
+        </div>`;
+    }
+  });
+
+  if (withData.length) {
+    html += `<div class="modal-source">Sources: ${withData.map(r=>`<a href="${r.url}" target="_blank" rel="noopener">${r.name}</a>`).join(" &nbsp;·&nbsp; ")}</div>`;
+  }
+
+  modalContent.innerHTML = html;
+  backdrop.classList.add("open");
+  document.body.style.overflow = "hidden";
+
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    modalContent.querySelectorAll("[data-target]").forEach(el=>{ el.style.width=el.dataset.target+"%"; });
+  }));
+}
+
+function closeModal() { backdrop.classList.remove("open"); document.body.style.overflow=""; }
+</script>
+</body>
+</html>

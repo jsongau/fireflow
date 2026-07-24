@@ -1,0 +1,34 @@
+Product,Retailer,Rating,Review_Count,5star_pct,4star_pct,3star_pct,2star_pct,1star_pct,Aggregate_Rating,Aggregate_Reviews,Notes,URL,Confidence
+Buldak Original,Walmart,4.6,3385,81,9,4,2,5,4.58,3689,,https://www.walmart.com/ip/234865077,High
+Buldak Original,Target,4.47,242,77,8,5,3,7,4.58,3689,,https://www.target.com/p/-/A-91113531,Medium-High
+Buldak Original,Sam's Club,4.1,62,60,18,8,2,13,4.58,3689,Big-bowl format,https://www.samsclub.com/reviews/product/19215961579,Medium
+Buldak Carbonara,Walmart,4.6,9123,,,,,,4.58,10309,,https://www.walmart.com/ip/893267125,Very High
+Buldak Carbonara,Target,4.5,827,79,7,5,1,7,4.58,10309,Quality 4.3 · Taste 4.2 · Value 4.1 · 76% recommend,https://www.target.com/p/-/A-91114007,High
+Buldak Carbonara,Sam's Club,4.3,359,70,9,7,7,7,4.58,10309,Big-bowl format,https://www.samsclub.com/reviews/product/16408466050,High
+Buldak 2x Spicy,Walmart,4.2,99,74.7,3.0,4.0,5.1,13.1,4.17,146,Polarizing — high 1★ rate,https://www.walmart.com/ip/120823388,Medium
+Buldak 2x Spicy,Target,4.1,47,66,9,6,9,11,4.17,146,Out of stock at scrape time,https://www.target.com/p/-/A-91113900,Low-Medium
+Buldak 2x Spicy,Sam's Club,,,,,,,,,,,Not carried,
+Buldak Cheese (Quattro),Walmart,4.5,850,,,,,,4.50,853,,https://www.walmart.com/ip/5300292527,High
+Buldak Cheese (Quattro),Target,4.67,3,67,33,0,0,0,4.50,853,⚠ Only 3 reviews,https://www.target.com/p/-/A-94964921,Very Low
+Buldak Cheese (Quattro),Sam's Club,,,,,,,,,,,Not carried,
+Buldak Corn,Walmart,2.6,9,22,11,0,33,33,2.60,9,⚠ Only 9 ratings,https://www.walmart.com/ip/104132268,Very Low
+Buldak Corn,Target,,,,,,,,,,,Not listed,
+Buldak Corn,Sam's Club,,,,,,,,,,,Not listed,
+Buldak Rose,Walmart,4.5,1771,,,,,,4.49,1933,,https://www.walmart.com/ip/8505256842,Very High
+Buldak Rose,Target,4.35,162,67,15,7,4,6,4.49,1933,,https://www.target.com/p/-/A-94607289,High
+Buldak Rose,Sam's Club,,,,,,,,,,,Not listed,
+Buldak Habanero Lime,Walmart,4.5,850,,,,,,4.50,850,,https://www.walmart.com/ip/5043260828,High
+Buldak Habanero Lime,Target,,,,,,,,,,,Not carried at Target,
+Buldak Habanero Lime,Sam's Club,,,,,,,,,,,Not listed,
+Buldak Yakisoba,Walmart,4.5,143,,,,,,4.29,245,,https://www.walmart.com/ip/7247409435,Medium-High
+Buldak Yakisoba,Target,4.0,102,60,14,7,9,11,4.29,245,,https://www.target.com/p/-/A-91959820,Medium
+Buldak Yakisoba,Sam's Club,,,,,,,,,,,Not listed,
+Buldak Taco,Walmart,,,,,,,,,,,No ratings yet,https://www.walmart.com/ip/18134409551,N/A
+Buldak Taco,Target,4.2,67,60,16,9,9,6,4.20,67,,https://www.target.com/p/-/A-94683434,Medium
+Buldak Taco,Sam's Club,,,,,,,,,,,Not listed,
+Buldak SWICY,Walmart,4.8,5,,,,,,4.16,63,⚠ Only 5 reviews,https://www.walmart.com/ip/18207010649,Very Low
+Buldak SWICY,Target,4.1,58,64,9,9,9,10,4.16,63,,https://www.target.com/p/-/A-94964922,Medium
+Buldak SWICY,Sam's Club,,,,,,,,,,,Not listed,
+Buldak Cream Carbonara,Walmart,4.7,18,,,,,,4.62,31,⚠ Low sample,https://www.walmart.com/ip/5274891373,Low
+Buldak Cream Carbonara,Target,4.5,13,77,15,0,0,8,4.62,31,Taste 4.8 · Value 4.7 · 83% recommend,https://www.target.com/p/-/A-94964919,Low
+Buldak Cream Carbonara,Sam's Club,,,,,,,,,,,Not listed,

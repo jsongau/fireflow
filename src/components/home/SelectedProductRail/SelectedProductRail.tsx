@@ -1,5 +1,6 @@
 import type { CSSProperties, KeyboardEvent } from "react";
 import { useId, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { useHome } from "@/state/homeStore";
 import { FAMILY_BY_ID } from "@/data/families";
 import { VARIANT_BY_ID } from "@/data/variants";
@@ -7,6 +8,7 @@ import { BRAND_BY_ID } from "@/data/brands";
 import { CATEGORY_BY_ID } from "@/data/categories";
 import { imageForVariant } from "@/data/images";
 import { playSound } from "@/lib/sound/sound";
+import { useStickyHeightVar } from "@/lib/layout/useStickyHeightVar";
 import styles from "./SelectedProductRail.module.css";
 
 /** Turn a heat-positioning token into a plain word ("very-hot" -> "Very hot"). */
@@ -41,6 +43,12 @@ export function SelectedProductRail() {
   const expandBtnRef = useRef<HTMLButtonElement>(null);
   const panelId = useId();
 
+  /* The rail's own height feeds --rail-h (and therefore --sticky-h), which
+     drives scroll-margin on every anchored section. It changes when the inner
+     row wraps or a product is selected, so it is measured, not assumed. */
+  const railRef = useRef<HTMLElement | null>(null);
+  useStickyHeightVar(railRef, "--rail-h");
+
   function handleCompactKeyDown(event: KeyboardEvent<HTMLDivElement>) {
     if (event.key === "Escape" && expanded) {
       setExpanded(false);
@@ -51,6 +59,7 @@ export function SelectedProductRail() {
   return (
     <aside
       className={styles.rail}
+      ref={railRef}
       role="region"
       aria-label="Selected product"
       style={brand ? ({ "--rail-accent": `var(${brand.accentToken})` } as CSSProperties) : undefined}
@@ -95,27 +104,27 @@ export function SelectedProductRail() {
             </span>
 
             {state.compareIds.length > 0 && (
-              <a href="#compare" className={styles.compare}>
+              <Link to="/#compare" className={styles.compare}>
                 In compare · {state.compareIds.length}
-              </a>
+              </Link>
             )}
 
             <span className={styles.spacer} />
 
-            <a
-              href="#resolve"
+            <Link
+              to="/order"
               className={styles.action}
-              onClick={() => dispatch({ type: "SET_MODE", mode: "consumer" })}
+              onClick={() => dispatch({ type: "SET_MODE", mode: "retailer" })}
             >
-              Consumer care
-            </a>
-            <a
-              href="#resolve"
+              Order
+            </Link>
+            <Link
+              to="/support"
               className={styles.action}
-              onClick={() => dispatch({ type: "SET_MODE", mode: "vendor" })}
+              onClick={() => dispatch({ type: "SET_MODE", mode: "retailer" })}
             >
-              Vendor support
-            </a>
+              Account support
+            </Link>
             <button
               className={styles.action}
               onClick={() => { dispatch({ type: "ADD_COMPARE", familyId: family.id }); playSound("compareAdd"); }}
@@ -180,20 +189,20 @@ export function SelectedProductRail() {
                 </div>
               )}
               <div className={styles.panelActions}>
-                <a
-                  href="#resolve"
+                <Link
+                  to="/order"
                   className={styles.action}
-                  onClick={() => dispatch({ type: "SET_MODE", mode: "consumer" })}
+                  onClick={() => dispatch({ type: "SET_MODE", mode: "retailer" })}
                 >
-                  Consumer care
-                </a>
-                <a
-                  href="#resolve"
+                  Order
+                </Link>
+                <Link
+                  to="/support"
                   className={styles.action}
-                  onClick={() => dispatch({ type: "SET_MODE", mode: "vendor" })}
+                  onClick={() => dispatch({ type: "SET_MODE", mode: "retailer" })}
                 >
-                  Vendor support
-                </a>
+                  Account support
+                </Link>
                 <button
                   type="button"
                   className={styles.action}
@@ -203,9 +212,9 @@ export function SelectedProductRail() {
                   {inCompare ? "Added to compare" : "Add to compare"}
                 </button>
                 {state.compareIds.length > 0 && (
-                  <a href="#compare" className={styles.compare}>
+                  <Link to="/#compare" className={styles.compare}>
                     In compare · {state.compareIds.length}
-                  </a>
+                  </Link>
                 )}
                 <button
                   type="button"

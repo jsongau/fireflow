@@ -1,13 +1,16 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { useHome } from "@/state/homeStore";
 import { FAMILY_BY_ID } from "@/data/families";
 import { defaultVariantForFamily } from "@/data/variants";
 import { imageForVariant } from "@/data/images";
 import { BRAND_BY_ID } from "@/data/brands";
 import { CATEGORY_BY_ID, FORMAT_BY_ID } from "@/data/categories";
+import { LIFECYCLE_FAMILY_IDS, LIFECYCLE_ORDER_ID, O2C_OPEN_ORDER_KEY } from "@/data/ediLifecycle";
 import { computeRanking } from "@/data/rankings";
 import { spiceLevel, spiceName } from "@/data/spiciness";
 import type { ProductFamily, ProductVariant, HeatPositioning } from "@/types/domain";
+import { SectionNote } from "@/components/employer/SectionNote/SectionNote";
 import styles from "./ComparisonLab.module.css";
 
 const HEAT_LABEL: Record<HeatPositioning, string> = {
@@ -44,8 +47,8 @@ export function ComparisonLab() {
     { key: "allergens", label: "Allergens (default format)", get: (_f, v) => (v?.allergens?.length ? `${v.allergens.join(", ")} (${v.formatLabel})` : "Verify package") },
     { key: "components", label: "In the package", get: (_f, v) => (v?.components?.length ? v.components.join(" · ") : "—") },
     { key: "storage", label: "Storage", get: (_f, v) => (v?.storage === "refrigerate-after-opening" ? "Refrigerate after opening" : v?.storage === "frozen" ? "Keep frozen" : v?.storage === "ambient" ? "Ambient" : "—") },
-    { key: "firsttime", label: "First-time fit", get: (f) => (firstTimeMap.has(f.id) ? `${firstTimeMap.get(f.id)}` : "—") },
-    { key: "support", label: "Support complexity", get: (f) => (supportMap.has(f.id) ? `${supportMap.get(f.id)}` : "—") },
+    { key: "firsttime", label: "First-time fit (editorial)", get: (f) => (firstTimeMap.has(f.id) ? `${firstTimeMap.get(f.id)}` : "—") },
+    { key: "support", label: "Support complexity (editorial)", get: (f) => (supportMap.has(f.id) ? `${supportMap.get(f.id)}` : "—") },
     { key: "confidence", label: "Evidence confidence", get: (_f, v) => (v ? v.dataConfidence : "—") },
   ];
 
@@ -111,8 +114,20 @@ export function ComparisonLab() {
                           {f.name}
                         </span>
                         <span className={styles.colActions}>
-                          <a href="#resolve" onClick={() => { dispatch({ type: "SELECT_FAMILY", familyId: f.id }); dispatch({ type: "SET_MODE", mode: "consumer" }); }}>Consumer</a>
-                          <a href="#resolve" onClick={() => { dispatch({ type: "SELECT_FAMILY", familyId: f.id }); dispatch({ type: "SET_MODE", mode: "vendor" }); }}>Vendor</a>
+                          <Link to="/order" onClick={() => { dispatch({ type: "SELECT_FAMILY", familyId: f.id }); dispatch({ type: "SET_MODE", mode: "retailer" }); }}>Order</Link>
+                          <Link to="/support" onClick={() => { dispatch({ type: "SELECT_FAMILY", familyId: f.id }); dispatch({ type: "SET_MODE", mode: "retailer" }); }}>Account case</Link>
+                          {LIFECYCLE_FAMILY_IDS.includes(f.id) && (
+                            <Link
+                              to="/intelligence#o2c"
+                              onClick={() => {
+                                try { sessionStorage.setItem(O2C_OPEN_ORDER_KEY, LIFECYCLE_ORDER_ID); } catch { /* storage unavailable */ }
+                                dispatch({ type: "SELECT_FAMILY", familyId: f.id });
+                                dispatch({ type: "SET_MODE", mode: "retailer" });
+                              }}
+                            >
+                              Trace in retailer order
+                            </Link>
+                          )}
                           <button onClick={() => dispatch({ type: "REMOVE_COMPARE", familyId: f.id })} aria-label={`Remove ${f.name}`}>Remove</button>
                         </span>
                       </th>
@@ -139,6 +154,8 @@ export function ComparisonLab() {
             </div>
           </>
         )}
+
+        <SectionNote sectionId="compare" />
       </div>
     </section>
   );

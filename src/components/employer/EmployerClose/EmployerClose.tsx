@@ -1,5 +1,5 @@
-import { useHome } from "@/state/homeStore";
 import { ButtonLink } from "@/components/primitives";
+import { SectionNote } from "@/components/employer/SectionNote/SectionNote";
 import { EMPLOYER, hasResume, hasContact } from "@/config/employer";
 import styles from "./EmployerClose.module.css";
 
@@ -10,7 +10,6 @@ import styles from "./EmployerClose.module.css";
  * button ever ships.
  */
 export function EmployerClose() {
-  const { dispatch } = useHome();
   return (
     <section id="why" className={styles.section} aria-labelledby="why-h">
       <div className={styles.inner}>
@@ -37,13 +36,7 @@ export function EmployerClose() {
           )}
         </div>
 
-        <button
-          type="button"
-          className={styles.reopen}
-          onClick={() => dispatch({ type: "OPEN_INTRO" })}
-        >
-          Reopen the introduction
-        </button>
+        <SectionNote sectionId="why" />
       </div>
     </section>
   );

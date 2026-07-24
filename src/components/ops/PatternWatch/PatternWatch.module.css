@@ -1,0 +1,176 @@
+/* PatternWatch — open cases by category, against the repeat-issue trigger.
+
+   A flagged row is signaled three ways, only one of which is color: the word
+   "Pattern" with a glyph, a diagonal hatch across the bar, and a thicker left
+   rule on the row. Photocopy this page in black and white and it still reads.
+   That matters here more than anywhere, because a bar chart is the single most
+   common place a dashboard hides its meaning in hue. */
+
+.wrap {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  background: var(--surface-1);
+  padding: var(--space-4);
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-4);
+}
+.title {
+  margin: 0 0 2px;
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  color: var(--text-0);
+}
+.sub {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--text-2);
+  max-width: 60ch;
+}
+.trigger {
+  flex: none;
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-2);
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+
+.rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(120px, 210px) minmax(0, 1fr) minmax(84px, auto);
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
+  border-radius: var(--radius-s);
+  border-left: 2px solid transparent;
+}
+.row[data-flagged="yes"] {
+  border-left: 5px solid var(--gold);
+  background: var(--surface-2);
+  padding-left: var(--space-2);
+}
+
+.label {
+  font-size: 0.8rem;
+  color: var(--text-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.row[data-flagged="yes"] .label { color: var(--text-0); font-weight: 600; }
+
+.track {
+  height: 14px;
+  border-radius: 4px;
+  background: var(--surface-0);
+  border: 1px solid var(--line-2);
+  overflow: hidden;
+}
+.fill {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 3px 0 0 3px;
+  transition: width var(--dur-3) var(--ease-out);
+}
+/* Texture, not tint. A hatched bar is distinguishable from a solid one without
+   any ability to tell the two colors apart. */
+.fill[data-flagged="yes"] {
+  background-color: var(--gold);
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgb(0 0 0 / 0.32) 0 3px,
+    transparent 3px 7px
+  );
+}
+
+.count {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  font-variant-numeric: tabular-nums;
+}
+.countNum {
+  font-weight: 700;
+  color: var(--text-0);
+  font-size: 0.86rem;
+}
+.flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-0);
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  padding: 2px 6px;
+  white-space: nowrap;
+}
+
+.banner {
+  margin-top: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--gold);
+  border-radius: var(--radius-s);
+  background: var(--surface-2);
+}
+.bannerHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0 0 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-0);
+}
+.bannerBody {
+  margin: 0;
+  font-size: var(--step--1);
+  line-height: 1.6;
+  color: var(--text-1);
+}
+
+.basis {
+  margin: var(--space-4) 0 0;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--line);
+  font-size: 0.74rem;
+  line-height: 1.55;
+  color: var(--text-2);
+}
+.basisLabel { font-weight: 700; color: var(--text-1); }
+
+@media (max-width: 560px) {
+  .row { grid-template-columns: minmax(0, 1fr) minmax(70px, auto); }
+  .track { grid-column: 1 / -1; order: 3; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fill { transition: none; }
+}

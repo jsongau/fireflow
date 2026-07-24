@@ -2,12 +2,12 @@ import type { SourceType, Confidence } from "@/types/domain";
 import { SOURCE_TYPES } from "@/data/sources";
 import styles from "./Badge.module.css";
 
-/** Source-type badge — dot keyed to a token + text label (never color alone). */
+/** Source-type badge — a plain text label. The word carries the meaning; the
+    old colored dot was decoration, and the site's dot pills were retired. */
 export function SourceBadge({ type }: { type: SourceType }) {
   const meta = SOURCE_TYPES[type];
   return (
     <span className={styles.badge} data-source={type}>
-      <span className={styles.dot} style={{ background: `var(${meta.token})` }} aria-hidden="true" />
       {meta.short}
     </span>
   );
@@ -28,12 +28,7 @@ export function ConfidenceBadge({ level }: { level: Confidence }) {
   );
 }
 
-/** Plain synthetic-data marker for operational content. */
-export function SyntheticBadge() {
-  return (
-    <span className={styles.badge} data-source="synthetic">
-      <span className={styles.dot} style={{ background: "var(--src-synthetic)" }} aria-hidden="true" />
-      Synthetic
-    </span>
-  );
-}
+/* SyntheticBadge was removed 2026-07-10. Every section that carried the pill
+   now carries a Nathan's Note that says what the section is and why its data
+   is synthetic, which does the disclosure work with reasoning instead of a
+   glowing dot. Do not reintroduce a dot-pill for this. */

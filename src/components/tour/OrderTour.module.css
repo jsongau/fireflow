@@ -1,0 +1,95 @@
+/* Follow-the-order tour. Docked bar, not a modal: the page stays usable and
+   nothing is covered that the current stop needs. Words carry state. */
+
+.bar {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: var(--space-4);
+  z-index: 60;
+  width: min(600px, calc(100vw - 24px));
+  background: var(--surface-1);
+  border: 1px solid var(--line-2);
+  border-left: 3px solid var(--gold);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-3, var(--shadow-2));
+  padding: var(--space-3) var(--space-4);
+  display: grid;
+  gap: var(--space-2);
+}
+
+.kicker {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: var(--step--1);
+  font-weight: 700;
+  color: var(--gold);
+}
+.title { margin: 0; font-family: var(--font-display); font-size: var(--step-1); color: var(--text-0); }
+.body { margin: 0; color: var(--text-1); font-size: var(--step--1); max-width: 70ch; }
+
+.controls { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+
+.btn, .primary, .exit {
+  font: inherit; font-size: var(--step--1); font-weight: 700; cursor: pointer;
+  border-radius: var(--radius-s); padding: 0.4em 0.9em; min-height: 36px;
+}
+.btn {
+  border: 1px solid var(--line-2); background: var(--surface-2); color: var(--text-1);
+}
+.btn:hover:not(:disabled) { background: var(--surface-3); color: var(--text-0); }
+.btn:disabled { cursor: not-allowed; color: var(--text-2); }
+.primary {
+  border: 1px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface-1));
+  color: var(--text-0);
+}
+.primary:hover { background: color-mix(in srgb, var(--accent) 22%, var(--surface-1)); }
+.primaryLink {
+  font-size: var(--step--1); font-weight: 700; color: var(--accent);
+  padding: 0.4em 0.2em; display: inline-flex; align-items: center; min-height: 36px;
+}
+.primaryLink:hover { color: var(--ember); }
+.exit {
+  margin-left: auto; border: 1px solid transparent; background: none; color: var(--text-2);
+}
+.exit:hover { color: var(--text-0); }
+
+@media (max-width: 700px) {
+  /* Clear the floating support launcher in the lower right. */
+  .bar { bottom: 84px; }
+}
+
+/* --- Entry strip on the home page --- */
+.entry {
+  background: var(--surface-0);
+  border-block: 1px solid var(--line);
+}
+.entryInner {
+  max-width: 1100px; margin: 0 auto;
+  padding: var(--space-5) var(--space-4);
+  display: flex; align-items: center; gap: var(--space-5); flex-wrap: wrap;
+}
+.entryKicker {
+  margin: 0 0 2px; text-transform: uppercase; letter-spacing: 0.1em;
+  font-size: var(--step--1); font-weight: 700; color: var(--gold);
+}
+.entryTitle {
+  margin: 0 0 2px; font-family: var(--font-display);
+  font-size: var(--step-1); color: var(--text-0);
+}
+.entryBody { margin: 0; color: var(--text-2); font-size: var(--step--1); max-width: 72ch; }
+.entryBtn {
+  margin-left: auto; font: inherit; font-size: var(--step-0); font-weight: 700; cursor: pointer;
+  border: 1px solid var(--accent); border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface-1));
+  color: var(--text-0); padding: 0.55em 1.2em; white-space: nowrap;
+}
+.entryBtn:hover { background: color-mix(in srgb, var(--accent) 22%, var(--surface-1)); }
+
+.entryNote { flex-basis: 100%; }
+
+@media (max-width: 700px) {
+  .entryBtn { margin-left: 0; }
+}

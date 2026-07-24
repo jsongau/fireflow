@@ -1,0 +1,299 @@
+/* FeaturedCase — one case told end to end, above the board.
+
+   The panel borrows the teaser's pointer spotlight so the two surfaces feel like
+   one object across the navigation. It does NOT borrow the rotating conic ring:
+   the teaser's card is a link and the ring is an affordance for clicking it. This
+   panel is already where you clicked to. A ring here would be decoration with
+   nothing to say.
+
+   Stage state is a glyph and a word. The luminance step between done, now, and
+   next is atmosphere on top of that, never instead of it. */
+
+.section {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.panel {
+  position: relative;
+  isolation: isolate;
+  --mx: 50%;
+  --my: 0%;
+  background: var(--surface-1);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  padding: var(--space-5);
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.4),
+    inset 0 1px 0 rgb(255 255 255 / 0.05);
+}
+.panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity var(--dur-3) var(--ease-out);
+  background: radial-gradient(
+    420px circle at var(--mx) var(--my),
+    rgb(255 255 255 / 0.05),
+    transparent 70%
+  );
+}
+@media (hover: hover) and (pointer: fine) {
+  .panel:hover::before { opacity: 1; }
+}
+.panel > * { position: relative; z-index: 1; }
+
+/* ---- Head -------------------------------------------------------------- */
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+}
+.headText { min-width: 0; flex: 1 1 480px; }
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: var(--step--1);
+  font-weight: 700;
+  color: var(--gold);
+  margin: 0 0 var(--space-2);
+}
+.title {
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  line-height: 1.15;
+  color: var(--text-0);
+  margin: 0 0 var(--space-3);
+}
+.standfirst {
+  margin: 0;
+  color: var(--text-1);
+  line-height: 1.6;
+  max-width: 72ch;
+}
+
+.openFull {
+  flex: none;
+  background: var(--surface-2);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-s);
+  color: var(--text-0);
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  font-weight: 700;
+  padding: 0.7em 1.1em;
+  cursor: pointer;
+  transition: border-color var(--dur-2) var(--ease-out), background var(--dur-2) var(--ease-out);
+}
+.openFull:hover { border-color: var(--gold); background: var(--surface-3); }
+.openFull:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+.disclaimer {
+  margin: var(--space-4) 0 0;
+  padding: var(--space-3);
+  border: 1px solid var(--src-synthetic, var(--line-2));
+  border-radius: var(--radius-s);
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+
+/* ---- At a glance ------------------------------------------------------- */
+.glance {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-4);
+  margin: var(--space-5) 0;
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.glanceItem { display: grid; gap: 2px; }
+.glanceItem dt {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-2);
+}
+.glanceItem dd {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  line-height: 1.1;
+  color: var(--text-0);
+}
+.glanceNote {
+  margin: var(--space-2) 0 0;
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+
+/* ---- The trail --------------------------------------------------------- */
+.trail {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-4);
+}
+
+.step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  gap: var(--space-4);
+  /* Luminance, not hue. Done and now sit brighter than next. */
+  --lit: 0.35;
+}
+.step[data-state="done"] { --lit: 0.7; }
+.step[data-state="now"] { --lit: 1; }
+
+/* The rule joining the stages. */
+.step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 11px;
+  top: 26px;
+  bottom: calc(var(--space-4) * -1);
+  width: 1px;
+  background: var(--line-2);
+}
+
+.marker {
+  grid-row: 1 / -1;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--line-2);
+  background: var(--surface-0);
+  color: var(--text-1);
+  font-size: 0.7rem;
+  line-height: 1;
+  z-index: 1;
+  align-self: start;
+}
+.step[data-state="done"] .marker { color: var(--text-0); border-color: var(--text-2); }
+.step[data-state="now"] .marker {
+  color: var(--text-0);
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px var(--surface-1), 0 0 0 4px var(--gold);
+}
+
+.stepBody { min-width: 0; }
+
+.stepHead {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  margin: 0 0 4px;
+}
+.stepName {
+  font-weight: 700;
+  color: var(--text-1);
+  opacity: calc(0.55 + var(--lit) * 0.45);
+}
+.step[data-state="now"] .stepName { color: var(--text-0); }
+.stepState {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-2);
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+.step[data-state="now"] .stepState { color: var(--gold); border-color: var(--gold); }
+
+.stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.72rem;
+  color: var(--text-2);
+  margin-left: auto;
+}
+.initials {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--surface-3);
+  border: 1px solid var(--line-2);
+  color: var(--text-1);
+  font-size: 0.6rem;
+  font-weight: 700;
+}
+
+.stepGloss {
+  margin: 0;
+  font-size: var(--step--1);
+  line-height: 1.6;
+  color: var(--text-2);
+  opacity: calc(0.6 + var(--lit) * 0.4);
+  max-width: 78ch;
+}
+.step[data-state="now"] .stepGloss { color: var(--text-1); }
+
+.followUps {
+  margin: var(--space-3) 0 0;
+  padding: 0 0 0 var(--space-4);
+  display: grid;
+  gap: var(--space-2);
+  list-style: none;
+  border-left: 2px solid var(--line-2);
+}
+.followUps li {
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+.followLabel { color: var(--text-1); font-weight: 700; }
+
+/* ---- Why --------------------------------------------------------------- */
+.why {
+  margin: var(--space-5) 0 0;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--line);
+  font-size: var(--step--1);
+  line-height: 1.7;
+  color: var(--text-1);
+  max-width: 80ch;
+}
+.whyLabel {
+  font-weight: 700;
+  color: var(--text-0);
+  margin-right: var(--space-2);
+}
+
+@media (max-width: 720px) {
+  .head { flex-direction: column; }
+  .openFull { width: 100%; }
+  .stamp { margin-left: 0; width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel::before { display: none; }
+  .openFull { transition: none; }
+}
+
+/* Handling reads as a phrase, not a headline number, so it drops out of the
+   display face the other glance figures use. */
+.handlingValue {
+  font-family: var(--font-ui) !important;
+  font-size: var(--step-0) !important;
+  font-weight: 700;
+  line-height: 1.3 !important;
+}

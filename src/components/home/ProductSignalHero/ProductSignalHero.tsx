@@ -5,6 +5,7 @@ import { VARIANT_BY_ID } from "@/data/variants";
 import { BRAND_BY_ID } from "@/data/brands";
 import { ButtonLink, Segmented, ProductStage, SourceBadge } from "@/components/primitives";
 import { FORMAT_BY_ID, CATEGORY_BY_ID } from "@/data/categories";
+import { SectionNote } from "@/components/employer/SectionNote/SectionNote";
 import styles from "./ProductSignalHero.module.css";
 
 const BRAND_FILTERS = [
@@ -42,8 +43,8 @@ export function ProductSignalHero() {
             Know the product. Understand the friction. Resolve the experience.
           </h1>
           <p className={styles.lede}>
-            Explore Samyang America&rsquo;s public U.S. product portfolio, compare how each product is
-            experienced, and see how consumer and vendor questions become structured Customer Experience
+            Explore Samyang America&rsquo;s public U.S. product portfolio, order it the way retailers and
+            distributors actually buy, and see how account questions become structured Customer Experience
             workflows.
           </p>
 
@@ -108,7 +109,7 @@ export function ProductSignalHero() {
                 </p>
                 {family.source && <SourceBadge type={family.source.type} />}
                 <div className={styles.actions}>
-                  <ButtonLink href="#product" variant="primary" size="sm">Explore product</ButtonLink>
+                  <ButtonLink to="/products#product" variant="primary" size="sm">Explore product</ButtonLink>
                   <ButtonLink
                     href="#compare"
                     variant="secondary"
@@ -118,20 +119,20 @@ export function ProductSignalHero() {
                     Compare
                   </ButtonLink>
                   <ButtonLink
-                    href="#resolve"
+                    to="/order"
                     variant="secondary"
                     size="sm"
-                    onClick={() => dispatch({ type: "SET_MODE", mode: "consumer" })}
+                    onClick={() => dispatch({ type: "SET_MODE", mode: "retailer" })}
                   >
-                    Ask as a consumer
+                    Order this product
                   </ButtonLink>
                   <ButtonLink
-                    href="#resolve"
+                    to="/support"
                     variant="secondary"
                     size="sm"
-                    onClick={() => dispatch({ type: "SET_MODE", mode: "vendor" })}
+                    onClick={() => dispatch({ type: "SET_MODE", mode: "retailer" })}
                   >
-                    Ask as a vendor
+                    Open an account case
                   </ButtonLink>
                 </div>
               </div>
@@ -146,6 +147,8 @@ export function ProductSignalHero() {
             </div>
           )}
         </div>
+
+        <SectionNote sectionId="hero" />
       </div>
     </section>
   );

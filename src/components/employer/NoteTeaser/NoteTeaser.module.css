@@ -1,0 +1,190 @@
+/* NoteTeaser — slim fourth-wall bar. Cool operator palette so it reads as
+   commentary, not product chrome.
+
+   The "awaken" entrance: the note arrives as a small pill (avatar plus the
+   Nathan's Notes tag), pauses, then widens into a full bar as the hook fades up
+   inside it. Three properties carry it, each on its own clock:
+
+     opacity + transform   the pill drifts in from the left        (0 to 560ms)
+     max-width + radius    the pill becomes a bar                  (340 to 1240ms)
+     hook + action opacity the sentence arrives last               (700ms on)
+
+   The overlap is deliberate. The pill has almost finished settling before it
+   starts to grow, so the two motions read as one gesture rather than a sequence.
+   Under prefers-reduced-motion every duration collapses to 0ms in tokens.css and
+   the note simply appears, whole, with no from-state left behind. */
+
+.teaser {
+  width: 100%;
+  max-width: 760px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: left;
+  background: var(--op-surface);
+  border: 1px solid var(--op-line-2);
+  border-left: 3px solid var(--gold);
+  padding: var(--space-2) var(--space-3);
+  min-height: 52px;
+  cursor: pointer;
+  overflow: hidden;
+
+  /* The from-state. Pill: short, fully rounded, drifted left, transparent. */
+  opacity: 0;
+  transform: translate3d(-18px, 0, 0);
+  max-width: 272px;
+  border-radius: 999px;
+
+  transition:
+    opacity var(--op-dur-slide) var(--op-ease-awaken),
+    transform var(--op-dur-slide) var(--op-ease-awaken),
+    max-width var(--op-dur-grow) var(--op-ease-awaken) var(--op-delay-grow),
+    border-radius var(--op-dur-grow) var(--op-ease-awaken) var(--op-delay-grow),
+    border-color var(--dur-2) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out);
+  will-change: max-width, transform, opacity;
+}
+
+.teaser[data-awake="true"] {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  max-width: 760px;
+  border-radius: 0 var(--radius-m) var(--radius-m) 0;
+  will-change: auto;
+}
+
+/* The bar reacts, the pill does not: nothing is interactive until it has landed. */
+.teaser[data-awake="true"]:hover {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 1px var(--gold);
+}
+.teaser:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: var(--op-bg);
+  font-family: var(--font-operator-tag);
+  font-weight: 700;
+  font-size: 0.7rem;
+}
+
+.text {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.tag {
+  font-family: var(--font-operator-tag);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--gold);
+  white-space: nowrap;
+}
+
+/* The sentence and the affordance arrive after the bar has room to hold them.
+   Fading them in during the widen is what stops the text reflowing on screen. */
+.hook,
+.action {
+  opacity: 0;
+  transform: translate3d(0, 4px, 0);
+  transition:
+    opacity var(--op-dur-settle) var(--op-ease-awaken) calc(var(--op-delay-grow) + 360ms),
+    transform var(--op-dur-settle) var(--op-ease-awaken) calc(var(--op-delay-grow) + 360ms);
+}
+.teaser[data-awake="true"] .hook,
+.teaser[data-awake="true"] .action {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.hook {
+  font-family: var(--font-operator);
+  font-style: italic;
+  font-size: 0.82rem;
+  color: var(--op-text-1);
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.action {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-operator-tag);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--op-text-1);
+  white-space: nowrap;
+}
+.glyph {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--op-line-2);
+  color: var(--gold);
+  font-weight: 700;
+  line-height: 1;
+}
+
+@media (max-width: 520px) {
+  /* Keep the word: state must never rest on a glyph or color alone. */
+  .action { font-size: 0.62rem; gap: var(--space-1); }
+  .hook { -webkit-line-clamp: 1; }
+  .teaser { max-width: 240px; }
+  .teaser[data-awake="true"] { max-width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* No from-state at all. The note is simply present, at full width, opaque.
+     Nathan is colorblind, not motion-sensitive, but the same principle applies:
+     never let a visitor's setting leave content unreachable. */
+  .teaser,
+  .teaser[data-awake="false"] {
+    opacity: 1;
+    transform: none;
+    max-width: 760px;
+    border-radius: 0 var(--radius-m) var(--radius-m) 0;
+    transition: none;
+  }
+  .hook,
+  .action {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .glyph { transition: none; }
+}
+
+@media print {
+  /* An unawakened note is opacity:0. A printed page never scrolls, so the
+     observer never fires and the commentary would silently vanish from a PDF. */
+  .teaser,
+  .teaser[data-awake="false"] {
+    opacity: 1;
+    transform: none;
+    max-width: 100%;
+    border-radius: 0;
+  }
+  .hook, .action { opacity: 1; transform: none; }
+}

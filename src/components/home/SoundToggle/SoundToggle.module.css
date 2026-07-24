@@ -26,11 +26,3 @@
   border-color: var(--ember);
   color: var(--text-0);
 }
-.dot {
-  color: var(--text-2);
-  font-size: 0.8em;
-  line-height: 1;
-}
-.dot[data-on="true"] {
-  color: var(--ember);
-}

@@ -1,160 +1,72 @@
-import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { useHome } from "@/state/homeStore";
 import { imageForVariant } from "@/data/images";
-import type { UserMode } from "@/types/domain";
-import { OperatorNotesToggle } from "@/components/employer/OperatorNotesToggle/OperatorNotesToggle";
+import { NAV_GROUPS, NAV_PRIMARY, activeGroupId, type NavGroupItem } from "@/data/nav";
 import { SoundToggle } from "@/components/home/SoundToggle/SoundToggle";
+import { useStickyHeightVar } from "@/lib/layout/useStickyHeightVar";
 import styles from "./MegaNav.module.css";
 
 /* ------------------------------------------------------------------ */
-/* Nav model — every href resolves to a real in-page anchor.           */
+/* Nav model lives in src/data/nav.ts (the single source of truth).    */
+/* NAV_GROUPS composes the top-level groups and resolves every href,   */
+/* blurb, mode, and product-preview familyId from the route table, so  */
+/* the MegaNav and the footer can never drift from each other.         */
 /* ------------------------------------------------------------------ */
 
-interface NavItem {
-  label: string;
+/* ------------------------------------------------------------------ */
+/* One link renderer for both the desktop panel and mobile drawer.     */
+/* A route path (starts with "/") becomes a react-router <Link> so      */
+/* BrowserRouter navigates without a full reload; an in-page "#anchor"  */
+/* stays a plain <a>, which ScrollAndFocusManager scrolls to.           */
+/* ------------------------------------------------------------------ */
+
+interface NavAnchorProps {
   href: string;
-  blurb: string;
-  /** Optional mode to set when the link is followed. */
-  mode?: UserMode;
-  /** Optional family id to preview a real product photo (Explore group). */
-  familyId?: string;
+  className?: string;
+  onClick?: () => void;
+  onMouseEnter?: () => void;
+  onFocus?: () => void;
+  children: ReactNode;
 }
 
-interface NavGroup {
-  id: string;
-  label: string;
-  items: NavItem[];
+function NavAnchor({ href, children, ...rest }: NavAnchorProps) {
+  if (href.startsWith("/")) {
+    return (
+      <Link to={href} {...rest}>
+        {children}
+      </Link>
+    );
+  }
+  return (
+    <a href={href} {...rest}>
+      {children}
+    </a>
+  );
 }
-
-const GROUPS: NavGroup[] = [
-  {
-    id: "explore",
-    label: "Explore",
-    items: [
-      {
-        label: "Portfolio Pulse",
-        href: "#portfolio",
-        blurb: "Browse 45 families across 76 formats. Flavors, not repetition.",
-        familyId: "buldak-carbonara",
-      },
-      {
-        label: "Rankings Lab",
-        href: "#rankings",
-        blurb: "Multi-axis rankings you can re-weight. Editorial, never official.",
-        familyId: "buldak-original",
-      },
-      {
-        label: "Comparison Lab",
-        href: "#compare",
-        blurb: "Put formats side by side on the facts that actually differ.",
-        familyId: "buldak-2x-spicy",
-      },
-      {
-        label: "Product Dossier",
-        href: "#product",
-        blurb: "One product, fully sourced. Allergens bound to the exact format.",
-        familyId: "buldak-habanero-lime",
-      },
-    ],
-  },
-  {
-    id: "consumer",
-    label: "Consumer Care",
-    items: [
-      {
-        label: "Start a consumer case",
-        href: "#resolve",
-        blurb: "Missing packet, damaged bottle, a heat question. Routed with the evidence it needs.",
-        mode: "consumer",
-      },
-      {
-        label: "Resolution walkthrough",
-        href: "#simulate",
-        blurb: "Watch a synthetic case move from reported to resolved, stage by stage.",
-      },
-    ],
-  },
-  {
-    id: "vendor",
-    label: "Vendor Support",
-    items: [
-      {
-        label: "Start a vendor case",
-        href: "#resolve",
-        blurb: "PO issues, deductions, lead times. Structured for the retail relationship.",
-        mode: "vendor",
-      },
-      {
-        label: "Resolution walkthrough",
-        href: "#simulate",
-        blurb: "See how a vendor deduction becomes a corrective action.",
-      },
-    ],
-  },
-  {
-    id: "intel",
-    label: "CX Intelligence",
-    items: [
-      {
-        label: "SAP SD / Order-to-Cash",
-        href: "#o2c",
-        blurb: "Follow one synthetic order from PO to cash, with the failure points CX owns at each step.",
-      },
-      {
-        label: "Command Center",
-        href: "#command",
-        blurb: "A manager's synthetic queue: SLA exposure, overdue updates, open deductions.",
-      },
-      {
-        label: "Product Signals",
-        href: "#signals",
-        blurb: "How repeated cases become root-cause reviews and measured fixes.",
-      },
-    ],
-  },
-  {
-    id: "about",
-    label: "About",
-    items: [
-      {
-        label: "What this demonstrates",
-        href: "#fit",
-        blurb: "Each target capability tied to a working part of FireFlow.",
-      },
-      {
-        label: "Why I built FireFlow",
-        href: "#why",
-        blurb: "The thinking a résumé can't show, in Nathan's words.",
-      },
-      {
-        label: "Brand Universe",
-        href: "#brands",
-        blurb: "Four brands, four positions, from Buldak's breadth to MEP's soup focus.",
-      },
-      {
-        label: "Methodology",
-        href: "#methodology",
-        blurb: "What's official, editorial, or synthetic, and what we leave unknown.",
-      },
-      {
-        label: "FAQ",
-        href: "#faq",
-        blurb: "Straight answers about what FireFlow is, and what it isn't.",
-      },
-    ],
-  },
-];
 
 export function MegaNav() {
   const { dispatch } = useHome();
+  const { pathname } = useLocation();
   const [openId, setOpenId] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [preview, setPreview] = useState<NavItem | null>(null);
+  const [preview, setPreview] = useState<NavGroupItem | null>(null);
+
+  /* The group that owns the current route. Marked aria-current="page" and given
+     a heavier weight plus a gold bottom bar (never color alone). */
+  const activeId = activeGroupId(pathname);
 
   const btnRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const navRef = useRef<HTMLElement | null>(null);
+  const barRef = useRef<HTMLDivElement | null>(null);
 
-  const openGroup = GROUPS.find((g) => g.id === openId) ?? null;
+  /* Publish the bar's real height to --nav-h so the selected-product rail
+     sticks exactly beneath it. We measure the bar rather than the whole <nav>
+     because the mobile drawer is an in-flow child of <nav> and would otherwise
+     report an 80vh "nav height". The +1 covers the nav's bottom border. */
+  useStickyHeightVar(barRef, "--nav-h", 1);
+
+  const openGroup = NAV_GROUPS.find((g) => g.id === openId) ?? null;
 
   const closePanel = useCallback((returnFocusIndex?: number) => {
     setOpenId(null);
@@ -165,13 +77,13 @@ export function MegaNav() {
   const toggleGroup = (id: string) => {
     setOpenId((cur) => {
       const next = cur === id ? null : id;
-      const group = GROUPS.find((g) => g.id === next);
+      const group = NAV_GROUPS.find((g) => g.id === next);
       setPreview(next && group ? group.items[0] ?? null : null);
       return next;
     });
   };
 
-  const onFollow = (item: NavItem) => {
+  const onFollow = (item: NavGroupItem) => {
     if (item.mode) dispatch({ type: "SET_MODE", mode: item.mode });
     setOpenId(null);
     setPreview(null);
@@ -183,12 +95,12 @@ export function MegaNav() {
     switch (e.key) {
       case "ArrowRight": {
         e.preventDefault();
-        btnRefs.current[(i + 1) % GROUPS.length]?.focus();
+        btnRefs.current[(i + 1) % NAV_GROUPS.length]?.focus();
         break;
       }
       case "ArrowLeft": {
         e.preventDefault();
-        btnRefs.current[(i - 1 + GROUPS.length) % GROUPS.length]?.focus();
+        btnRefs.current[(i - 1 + NAV_GROUPS.length) % NAV_GROUPS.length]?.focus();
         break;
       }
       case "Home":
@@ -197,7 +109,7 @@ export function MegaNav() {
         break;
       case "End":
         e.preventDefault();
-        btnRefs.current[GROUPS.length - 1]?.focus();
+        btnRefs.current[NAV_GROUPS.length - 1]?.focus();
         break;
       case "Escape":
         if (openId) {
@@ -212,7 +124,7 @@ export function MegaNav() {
   const onPanelKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Escape" && openId) {
       e.preventDefault();
-      const idx = GROUPS.findIndex((g) => g.id === openId);
+      const idx = NAV_GROUPS.findIndex((g) => g.id === openId);
       closePanel(idx >= 0 ? idx : undefined);
     }
   };
@@ -239,17 +151,18 @@ export function MegaNav() {
       ref={navRef}
       onMouseLeave={() => { setOpenId(null); setPreview(null); }}
     >
-      <div className={styles.bar}>
-        <a href="#hero" className={styles.brand} onClick={() => closePanel()}>
+      <div className={styles.bar} ref={barRef}>
+        <Link to="/" className={styles.brand} onClick={() => closePanel()}>
           <span className={styles.brandMark}>FireFlow</span>
           <span className={styles.brandTag}>Product Intelligence</span>
-        </a>
+        </Link>
 
         {/* Desktop menubar. Opens on hover and on click, closes when the
             pointer leaves the whole menubar+panel area. */}
         <div className={styles.menubar} role="menubar" aria-label="Sections">
-          {GROUPS.map((group, i) => {
+          {NAV_GROUPS.map((group, i) => {
             const isOpen = openId === group.id;
+            const isActive = activeId === group.id;
             return (
               <button
                 key={group.id}
@@ -258,8 +171,12 @@ export function MegaNav() {
                 role="menuitem"
                 aria-haspopup="true"
                 aria-expanded={isOpen}
+                aria-current={isActive ? "page" : undefined}
                 tabIndex={i === 0 ? 0 : -1}
                 className={isOpen ? `${styles.groupBtn} ${styles.groupBtnOn}` : styles.groupBtn}
+                /* Active-route cue pairs weight with a 2px gold bottom bar, never
+                   color alone. Inline so the shared CSS module is left untouched. */
+                style={isActive ? { fontWeight: 800, boxShadow: "inset 0 -2px 0 0 var(--gold)" } : undefined}
                 onClick={() => toggleGroup(group.id)}
                 onMouseEnter={() => { setOpenId(group.id); setPreview(group.items[0] ?? null); }}
                 onKeyDown={(e) => onBtnKeyDown(e, i)}
@@ -270,8 +187,25 @@ export function MegaNav() {
           })}
         </div>
 
-        {/* Quiet global controls (desktop). */}
-        <OperatorNotesToggle className={styles.navToggle} />
+        {/* The one promoted destination. It sits OUTSIDE role="menubar" on
+            purpose, so the menubar stays a clean set of group menuitems and
+            the pill rides the normal tab order like the brand link. */}
+        <Link
+          to={NAV_PRIMARY.href}
+          className={styles.opsCta}
+          aria-current={pathname === NAV_PRIMARY.href ? "page" : undefined}
+          onClick={() => closePanel()}
+        >
+          <span className={styles.opsCtaGlyph} aria-hidden="true">◆</span>
+          {/* Two labels, one visible at a time: the full name where the bar has
+              room, a short one on small laptops so the pill survives instead of
+              overflowing the bar (the media queries in the module pick). */}
+          <span className={styles.opsCtaLong}>{NAV_PRIMARY.label}</span>
+          <span className={styles.opsCtaShort}>Ops board</span>
+        </Link>
+
+        {/* Quiet global control (desktop). Operator Notes are always on, so
+            there is no notes toggle to crowd the bar. */}
         <SoundToggle className={styles.navToggle} />
 
         {/* Mobile disclosure toggle */}
@@ -286,37 +220,84 @@ export function MegaNav() {
         </button>
       </div>
 
-      {/* Desktop split panel */}
+      {/* Desktop split panel.
+
+          Left: the link list. Each row carries a `sub` line, so the list is
+          readable on its own and a visitor who never moves the pointer still
+          learns what each destination is.
+
+          Right: the preview card for whichever row is hovered, focused, or
+          first in the group. It answers "why open this" with a kicker, a
+          one-line promise, two or three concrete proof points, and a CTA that
+          names the action. The proof list is the part that earns the click. */}
       {openGroup && (
         <div className={styles.panel} onKeyDown={onPanelKeyDown}>
           <div className={styles.panelInner}>
             <ul className={styles.catList} aria-label={`${openGroup.label} sections`}>
-              {openGroup.items.map((item) => (
-                <li key={`${openGroup.id}-${item.href}-${item.label}`}>
-                  <a
-                    href={item.href}
-                    className={styles.catLink}
-                    onMouseEnter={() => setPreview(item)}
-                    onFocus={() => setPreview(item)}
-                    onClick={() => onFollow(item)}
-                  >
-                    {item.label}
-                  </a>
-                </li>
-              ))}
+              {openGroup.items.map((item) => {
+                const isPreviewed = preview?.href === item.href && preview?.label === item.label;
+                return (
+                  <li key={`${openGroup.id}-${item.href}-${item.label}`}>
+                    <NavAnchor
+                      href={item.href}
+                      className={
+                        isPreviewed ? `${styles.catLink} ${styles.catLinkActive}` : styles.catLink
+                      }
+                      onMouseEnter={() => setPreview(item)}
+                      onFocus={() => setPreview(item)}
+                      onClick={() => onFollow(item)}
+                    >
+                      <span className={styles.catLabel}>{item.label}</span>
+                      {item.sub && <span className={styles.catSub}>{item.sub}</span>}
+                    </NavAnchor>
+                  </li>
+                );
+              })}
             </ul>
 
-            <div className={styles.previewPane} aria-live="polite">
+            <div
+              className={
+                previewImage ? styles.previewPane : `${styles.previewPane} ${styles.previewPaneNoImg}`
+              }
+              aria-live="polite"
+            >
               {preview ? (
                 <>
                   {previewImage && (
                     <img className={styles.previewImg} src={previewImage} alt="" loading="lazy" />
                   )}
-                  <p className={styles.previewTitle}>{preview.label}</p>
-                  <p className={styles.previewBlurb}>{preview.blurb}</p>
+
+                  <div className={styles.previewHead}>
+                    {preview.kicker && <p className={styles.previewKicker}>{preview.kicker}</p>}
+                    <p className={styles.previewTitle}>{preview.label}</p>
+                  </div>
+
+                  <div className={styles.previewBody}>
+                    {preview.blurb && <p className={styles.previewBlurb}>{preview.blurb}</p>}
+
+                    {preview.proof && preview.proof.length > 0 && (
+                      <ul className={styles.proofList}>
+                        {preview.proof.map((line) => (
+                          <li key={line} className={styles.proofItem}>
+                            <span>{line}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+
+                    {preview.cta && (
+                      <NavAnchor
+                        href={preview.href}
+                        className={styles.previewCta}
+                        onClick={() => onFollow(preview)}
+                      >
+                        {preview.cta}
+                      </NavAnchor>
+                    )}
+                  </div>
                 </>
               ) : (
-                <p className={styles.previewBlurb}>Hover a section to preview it.</p>
+                <p className={styles.previewEmpty}>Hover a section to preview it.</p>
               )}
             </div>
           </div>
@@ -326,20 +307,28 @@ export function MegaNav() {
       {/* Mobile drawer */}
       {drawerOpen && (
         <div className={styles.drawer} id="meganav-drawer">
+          <Link
+            to={NAV_PRIMARY.href}
+            className={styles.drawerOpsCta}
+            onClick={() => { setDrawerOpen(false); }}
+          >
+            Ops Dashboard · the live case board
+          </Link>
           <div className={styles.drawerControls}>
-            <OperatorNotesToggle />
             <SoundToggle />
           </div>
-          {GROUPS.map((group) => (
+          {NAV_GROUPS.map((group) => (
             <section key={group.id} className={styles.drawerGroup}>
               <p className={styles.drawerLabel}>{group.label}</p>
               <ul className={styles.drawerList}>
                 {group.items.map((item) => (
                   <li key={`${group.id}-${item.href}-${item.label}`}>
-                    <a href={item.href} className={styles.drawerLink} onClick={() => onFollow(item)}>
+                    <NavAnchor href={item.href} className={styles.drawerLink} onClick={() => onFollow(item)}>
                       <span className={styles.drawerLinkLabel}>{item.label}</span>
-                      <span className={styles.drawerLinkBlurb}>{item.blurb}</span>
-                    </a>
+                      {/* The short `sub` line, not the full blurb: a drawer row is a
+                          target, and a paragraph inside it costs thumb travel. */}
+                      <span className={styles.drawerLinkBlurb}>{item.sub ?? item.blurb}</span>
+                    </NavAnchor>
                   </li>
                 ))}
               </ul>

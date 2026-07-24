@@ -12,13 +12,13 @@ This is the acceptance test for the whole build. Every homepage chapter must pro
 | Lead the CX function; oversee service + order management from order entry through fulfillment and issue resolution | Resolution Simulator; Command Center preview | The simulator walks a case from report → verification → routing → resolution → improvement; Command shows the manager's queue across consumer + vendor cases. |
 | Develop & execute service / order-management **strategy** | Methodology & Trust; Master plan framing | The page is organized as an operating model, not a ticket tool; methodology explains the model and its boundaries. |
 | Own **order-to-cash** end to end | Vendor path; Resolution Simulator (vendor scenarios: partial fill, delivery delay, pricing mismatch, deduction, invoice, EDI) | Vendor scenarios trace order → delivery → billing → dispute stages explicitly, labeled as order-to-cash touchpoints. |
-| Establish & govern **escalation standards** | Resolution Simulator (severity, approvals); Two Paths routing | Cases carry severity, required approvals, and specialist-escalation triggers (allergen/injury/foreign material/tampering). |
+| Establish & govern **escalation standards** | Resolution Simulator (severity, approvals); account-case routing | Cases carry severity, required approvals, and specialist-escalation triggers (allergen/injury/foreign material/tampering). |
 | Drive **continuous improvement** of service levels, fill rates, efficiency, CX | Product Signals & Continuous Improvement | Recurring inquiry → pattern → root cause → action → measurement loop. |
 | Accountability for **service levels, fill rates, on-time fulfillment, CSAT** | Command Center preview (synthetic, labeled) | Drill-down metrics for SLA exposure, overdue updates, open deductions, product concerns — every value labeled synthetic. |
-| Primary operational **liaison**; proactive communication; effective resolution | Selected Product Rail; Two Paths; case "next customer update" field | The next promised update is a first-class, visible field; the rail keeps context so the customer never repeats themselves. |
+| Primary operational **liaison**; proactive communication; effective resolution | Selected Product Rail; account-case launcher; case "next customer update" field | The next promised update is a first-class, visible field; the rail keeps context so the customer never repeats themselves. |
 | Lead resolution of **complex issues, escalations, deductions, disputes**; long-term corrective actions | Resolution Simulator; Product Signals | Deduction/chargeback and dispute scenarios with corrective-action steps. |
 | Partner with **Supply Chain, Sales, Logistics, Finance** on fulfillment + cost-to-serve | Case "collaborating teams" field; Command routing | Each case names cross-functional owners/collaborators. |
-| **Lead, coach, develop** the CX team | Command Center preview (team workload / coaching, synthetic) | Workload + coaching view, clearly synthetic. |
+| **Lead, coach, develop** the CX team | Team and coaching board (`/leadership#team`) | Synthetic roster, workload balance with an overloaded rep surfaced, approval-authority matrix, QA rubric, 1:1 cadence. Labeled on-page as how Nathan would run the function, not a claim of having managed this team. |
 | Oversee **SAP / ERP** process compliance, data integrity | Methodology; Dossier source labels; state model | System-agnostic, integration-ready framing; strict source/confidence labeling demonstrates data-integrity instincts — **without claiming SAP tenure**. |
 | Analyze operational performance + **customer trends** | Rankings Lab; Product Signals | Transparent multi-axis measurement and trend-to-action. |
 
@@ -27,7 +27,7 @@ This is the acceptance test for the whole build. Every homepage chapter must pro
 | Requirement | Signal |
 |---|---|
 | 8+ yrs CX/CS/OM in CPG/F&B/Retail | Domain fluency: correct use of fill rate, deduction/chargeback, EDI, order-to-cash, cost-to-serve throughout. |
-| 3+ yrs leadership | Command Center's ownership, collaboration, workload/coaching views. |
+| 3+ yrs leadership | **Not demonstrated by the build.** Command Center shows per-case ownership and collaboration, not people management. Résumé and interview carry this until `/leadership#team` is built. |
 | End-to-end order-to-cash ownership | Vendor scenarios structured along O2C stages. |
 | **Extensive SAP SD** (order entry, pricing, delivery, billing, customer master, order mgmt) | Demonstrate **conceptual command** of these objects; **do not claim extensive hands-on SAP**. Label system integration-ready. (See risk #4 in master plan.) |
 | ERP; SPS Commerce / EDI preferred | EDI failure scenario in the simulator; integration-ready language. |

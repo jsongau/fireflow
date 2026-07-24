@@ -1,5 +1,5 @@
 .section { background: var(--surface-0); color: var(--text-1); scroll-margin-top: var(--sticky-h); }
-.inner { max-width: 1200px; margin: 0 auto; padding: var(--space-8) var(--space-4); }
+.inner { max-width: var(--shell-max); margin: 0 auto; padding: var(--space-8) var(--shell-pad); }
 
 .head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-5); flex-wrap: wrap; margin-bottom: var(--space-6); }
 .eyebrow { text-transform: uppercase; letter-spacing: 0.14em; font-size: var(--step--1); color: var(--gold); margin: 0 0 var(--space-2); }

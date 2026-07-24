@@ -14,20 +14,110 @@
 .h2 { font-family: var(--font-display); font-size: var(--step-4); color: var(--text-0); margin: 0 0 var(--space-2); }
 .lede { color: var(--text-1); max-width: 68ch; margin: 0 0 var(--space-5); }
 
-/* Synthetic scenario banner */
-.scenario {
-  border: 1px solid var(--line-2); border-radius: var(--radius-m);
-  background: var(--surface-1); padding: var(--space-4); margin-bottom: var(--space-6);
+/* --- Order Queue board --- */
+.queue {
+  border: 1px solid var(--line-2); border-radius: var(--radius-l);
+  background: var(--surface-1); padding: var(--space-5); margin-bottom: var(--space-5);
+  box-shadow: var(--shadow-2);
 }
+.queueHead { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-3); flex-wrap: wrap; margin-bottom: var(--space-3); }
+.queueH { font-family: var(--font-display); font-size: var(--step-2); color: var(--text-0); margin: 0 0 2px; }
+.queueLede { color: var(--text-2); font-size: var(--step--1); max-width: 70ch; margin: 0; }
 .synthTag {
   display: inline-block; font-size: var(--step--1); font-weight: 700;
   color: var(--src-synthetic, #a78bfa); border: 1px solid currentColor;
-  border-radius: 999px; padding: 0.1em 0.6em; margin-bottom: var(--space-2);
+  border-radius: 999px; padding: 0.1em 0.6em; white-space: nowrap;
 }
-.scenarioLine { margin: 0 0 var(--space-1); color: var(--text-0); }
-.scenarioSummary { margin: 0; color: var(--text-1); font-size: var(--step--1); max-width: 80ch; }
+
+.queueToolbar { display: flex; align-items: center; gap: var(--space-3) var(--space-4); flex-wrap: wrap; margin: var(--space-3) 0 var(--space-4); }
+.queueControl { display: flex; align-items: center; gap: var(--space-2); }
+.queueControlLabel { font-size: var(--step--1); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-2); }
+.queueCount { font-size: var(--step--1); color: var(--text-2); margin-left: auto; white-space: nowrap; }
+
+/* Shared column template for the header row and the order rows. */
+.queueCols, .row {
+  display: grid;
+  grid-template-columns: 108px 52px minmax(180px, 1.7fr) minmax(110px, 1fr) minmax(130px, 1.3fr) 44px 92px;
+  gap: var(--space-3);
+  align-items: center;
+}
+.queueCols {
+  padding: 0 var(--space-3); margin-bottom: var(--space-2);
+  font-size: var(--step--1); font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.05em; color: var(--text-2);
+}
+.queueColRight { text-align: right; }
+
+.queueList { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
+.row {
+  width: 100%; text-align: left; cursor: pointer; font: inherit; color: var(--text-1);
+  background: var(--surface-2); border: var(--bw) solid var(--line-2);
+  border-radius: var(--radius-m); padding: var(--space-2) var(--space-3);
+  transition: border-color var(--dur-1) var(--ease-out), background var(--dur-1) var(--ease-out);
+}
+.row:hover { background: var(--surface-3); }
+/* Selection carries a word in the row ("selected"), never the ring alone. */
+.row[aria-pressed="true"] {
+  border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--surface-2));
+  box-shadow: 0 0 0 2px var(--accent-600);
+}
+
+.bandCell { display: inline-flex; align-items: center; gap: 0.4em; font-weight: 800; font-size: var(--step--1); white-space: nowrap; }
+.row[data-band="work-now"] .bandCell, .selBand[data-band="work-now"] { color: var(--ember); }
+.row[data-band="today"] .bandCell, .selBand[data-band="today"] { color: var(--warn); }
+.row[data-band="monitor"] .bandCell, .selBand[data-band="monitor"] { color: var(--text-2); }
+
+.scoreCell { font-family: var(--font-display); font-size: var(--step-1); color: var(--text-0); }
+.whoCell { display: grid; gap: 1px; min-width: 0; }
+.rowCustomer { color: var(--text-0); font-weight: 700; }
+.rowSelected { color: var(--accent); font-weight: 700; font-size: var(--step--1); white-space: nowrap; }
+.rowProduct { color: var(--text-2); font-size: var(--step--1); }
+.rowTrail { color: var(--gold); font-weight: 700; white-space: nowrap; }
+.stageCell { font-size: var(--step--1); color: var(--text-1); }
+.exCell { font-size: var(--step--1); font-weight: 600; color: var(--text-1); }
+.exCell[data-clean="true"] { color: var(--ok); font-weight: 700; }
+.ageCell { font-size: var(--step--1); color: var(--text-1); white-space: nowrap; }
+.expCell { font-size: var(--step--1); font-weight: 600; color: var(--text-0); text-align: right; white-space: nowrap; }
+
+/* --- Selected order workbench: the visible score math --- */
+.workbench {
+  background: var(--surface-1); border: 1px solid var(--line-2);
+  border-radius: var(--radius-l); padding: var(--space-5) var(--space-6);
+  box-shadow: var(--shadow-2); margin-bottom: var(--space-6);
+}
+.selHead { display: flex; align-items: flex-start; gap: var(--space-3); flex-wrap: wrap; margin-bottom: var(--space-4); }
+.selBand { font-weight: 800; font-size: var(--step-0); white-space: nowrap; padding-top: 3px; }
+.selTitle { font-family: var(--font-display); font-size: var(--step-2); color: var(--text-0); margin: 0; }
+.selMeta { margin: 2px 0 0; color: var(--text-2); font-size: var(--step--1); }
+.selScore {
+  margin-left: auto; font-size: var(--step--1); font-weight: 700; color: var(--gold);
+  border: 1px solid var(--line-2); border-radius: 999px; padding: 0.25em 0.7em; white-space: nowrap;
+}
+
+.factorsH { margin: 0 0 var(--space-3); font-size: var(--step--1); text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-2); font-weight: 700; }
+.factorList { list-style: none; margin: 0 0 var(--space-3); padding: 0; display: grid; gap: var(--space-2); }
+.factor {
+  display: flex; gap: var(--space-3); align-items: baseline;
+  background: var(--surface-2); border: 1px solid var(--line);
+  border-radius: var(--radius-s); padding: var(--space-2) var(--space-3);
+}
+.factorPts { font-family: var(--font-display); font-size: var(--step-1); color: var(--text-0); min-width: 3.4em; white-space: nowrap; }
+.factorBody { display: grid; gap: 1px; }
+.factorLabel { font-weight: 700; color: var(--text-0); font-size: var(--step--1); text-transform: uppercase; letter-spacing: 0.05em; }
+.factorDetail { color: var(--text-1); font-size: var(--step--1); }
+.factorTotal { margin: 0 0 var(--space-3); font-weight: 700; color: var(--text-0); }
+
+.rubric { border: 1px dashed var(--line-2); border-radius: var(--radius-s); padding: var(--space-2) var(--space-3); }
+.rubricSummary { cursor: pointer; font-weight: 700; color: var(--text-1); font-size: var(--step--1); }
+.rubricSummary:hover { color: var(--text-0); }
+.rubricBody { color: var(--text-1); font-size: var(--step--1); }
+.rubricBody p { margin: var(--space-2) 0 0; max-width: 80ch; }
+.rubricBody ul { margin: var(--space-2) 0 0; padding-left: 1.2em; display: grid; gap: 4px; }
+.rubricBody strong { color: var(--text-0); }
 
 /* --- Document-flow spine --- */
+.spineH { font-family: var(--font-display); font-size: var(--step-2); color: var(--text-0); margin: 0 0 var(--space-2); }
+.spineLede { color: var(--text-1); font-size: var(--step--1); max-width: 74ch; margin: 0 0 var(--space-4); }
 .flowWrap { margin-bottom: var(--space-6); }
 .flow {
   list-style: none; margin: 0; padding: 0; counter-reset: stage;
@@ -49,7 +139,9 @@
 .nodeLabel::before { content: counter(stage) ". "; color: var(--text-2); font-family: var(--font-ui); }
 .nodeDoc { font-size: var(--step--1); color: var(--text-2); }
 .nodeState { font-size: var(--step--1); font-weight: 700; color: var(--accent); }
-/* States communicated by glyph colour + border + weight + the word "current"/"completed". */
+.nodeHere { font-size: var(--step--1); font-weight: 700; color: var(--gold); }
+/* States communicated by glyph colour + border + weight + the words
+   "inspecting" / "order is here" / "(completed by this order)". */
 .node[data-state="done"] { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 8%, var(--surface-1)); }
 .node[data-state="done"] .nodeGlyph { color: var(--ok); }
 .node[data-state="current"] {
@@ -68,6 +160,7 @@
 .detailGlyph { font-size: var(--step-4); color: var(--ember); line-height: 1; }
 .detailTitle { font-family: var(--font-display); font-size: var(--step-3); color: var(--text-0); margin: 0; }
 .detailDoc { font-size: var(--step--1); color: var(--text-2); margin: 2px 0 0; }
+.detailOrder { font-size: var(--step--1); color: var(--gold); font-weight: 600; margin: 4px 0 0; max-width: 60ch; }
 .metric {
   margin-left: auto; font-size: var(--step--1); font-weight: 700; color: var(--gold);
   border: 1px solid var(--line-2); border-radius: 999px; padding: 0.25em 0.7em; white-space: nowrap;
@@ -89,6 +182,11 @@
   background: none; border: none; border-bottom: 1px dashed currentColor; padding: 0 1px;
 }
 .term:hover, .term:focus-visible { color: var(--text-0); }
+/* Terms that open the Customer Master study: stronger weight plus a shape
+   marker, so the affordance never depends on color alone. */
+.term[data-linked="true"] { color: var(--ember); font-weight: 800; cursor: pointer; }
+.term[data-linked="true"]:hover, .term[data-linked="true"]:focus-visible { color: var(--text-0); }
+.termOpen { font-size: 0.85em; margin-left: 0.3em; }
 .tip {
   position: absolute; bottom: calc(100% + 8px); left: 0; z-index: 5;
   width: max-content; max-width: 280px;
@@ -144,12 +242,18 @@
 .exChip[data-on="true"] .exHere { color: #fff; }
 
 .exDetail { background: var(--surface-1); border: 1px solid var(--line-2); border-radius: var(--radius-m); padding: var(--space-5); }
-.exDetailTitle { font-family: var(--font-display); font-size: var(--step-1); color: var(--text-0); margin: 0 0 var(--space-3); }
+.exDetailTitle { font-family: var(--font-display); font-size: var(--step-1); color: var(--text-0); margin: 0 0 var(--space-2); }
+.exOnOrder { margin: 0 0 var(--space-3); color: var(--ember); font-weight: 600; font-size: var(--step--1); }
 .exGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: var(--space-3); margin: 0; }
 .exGrid > div { background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-s); padding: var(--space-3); }
 .exGrid dt { font-size: var(--step--1); text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-2); font-weight: 700; margin-bottom: 2px; }
 .exGrid dd { margin: 0; color: var(--text-1); font-size: var(--step--1); }
 .exEmpty { color: var(--text-2); font-style: italic; padding: var(--space-4); border: 1px dashed var(--line-2); border-radius: var(--radius-m); }
+.exClean {
+  color: var(--text-1); padding: var(--space-4);
+  border: 1px dashed var(--line-2); border-radius: var(--radius-m); margin: 0; max-width: 90ch;
+}
+.exClean strong { color: var(--ok); }
 
 /* --- Glossary index --- */
 .glossary { border: 1px solid var(--line-2); border-radius: var(--radius-m); background: var(--surface-1); padding: var(--space-3) var(--space-4); margin-bottom: var(--space-5); }
@@ -165,15 +269,38 @@
 }
 .disclosureTag { color: var(--info); font-weight: 700; }
 .next { margin: 0; }
+.next + .next { margin-top: var(--space-2); }
 .nextLink { font-weight: 700; color: var(--accent); text-decoration: none; }
 .nextLink:hover { color: var(--ember); }
 
 .srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
+/* Rows collapse to a two-line card so the queue stays readable at 390px. */
+@media (max-width: 900px) {
+  .queueCols { display: none; }
+  .row {
+    grid-template-columns: auto auto 1fr auto;
+    grid-template-areas:
+      "band score who exp"
+      "stage stage ex age";
+    row-gap: var(--space-1);
+  }
+  .bandCell { grid-area: band; }
+  .scoreCell { grid-area: score; }
+  .whoCell { grid-area: who; }
+  .expCell { grid-area: exp; }
+  .stageCell { grid-area: stage; }
+  .exCell { grid-area: ex; text-align: right; }
+  .ageCell { grid-area: age; text-align: right; }
+  .queueCount { margin-left: 0; }
+}
 @media (max-width: 760px) {
   .flow { grid-auto-flow: row; grid-auto-columns: auto; }
   .metric { margin-left: 0; }
+  .selScore { margin-left: 0; }
+  .workbench { padding: var(--space-4); }
+  .queue { padding: var(--space-4); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .node, .stepBtn, .tip { transition: none; }
+  .node, .stepBtn, .tip, .row { transition: none; }
 }

@@ -1,3 +1,7 @@
+/* Account Support Intake — floating FAB + multi-step SOP drawer.
+   "Buldak Night" dark system. Priority never signals by color alone: every
+   priority renders a glyph and a word alongside the color. */
+
 .root {
   position: fixed;
   right: var(--space-4);
@@ -5,9 +9,9 @@
   z-index: var(--z-modal);
   display: grid;
   justify-items: end;
-  gap: var(--space-3);
 }
 
+/* ---- Floating action button ------------------------------------------- */
 .fab {
   display: inline-flex;
   align-items: center;
@@ -23,103 +27,583 @@
   min-height: 48px;
   cursor: pointer;
   box-shadow: var(--shadow-2);
-  transition: background var(--dur-1) var(--ease-out);
+  transition: background var(--dur-1) var(--ease-out), transform var(--dur-1) var(--ease-out);
 }
 .fab:hover { background: var(--accent-600); }
-.fabDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--gold);
-  flex: none;
-}
+.fab:active { transform: translateY(1px); }
 
-.panel {
-  width: min(320px, calc(100vw - var(--space-6)));
-  background: var(--surface-2);
-  border: 1px solid var(--line-2);
-  border-radius: var(--radius-l);
-  box-shadow: var(--shadow-2);
-  padding: var(--space-4);
-  display: grid;
-  gap: var(--space-3);
-  transform-origin: bottom right;
-  animation: popIn var(--dur-2) var(--ease-out);
-}
-@keyframes popIn {
-  from { opacity: 0; transform: scale(0.94) translateY(6px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
-}
+/* ---- Overlay + drawer -------------------------------------------------- */
+.overlay {
+  /* Single source of truth for the drawer width, so the operator note panel can
+     dock immediately beside the drawer instead of at the viewport edge. */
+  --drawer-w: min(460px, 100%);
 
-.panelHead {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-dialog);
+  background: #000000b0;
   display: flex;
-  align-items: baseline;
+  justify-content: flex-end;
+  animation: fade var(--dur-2) var(--ease-out);
+}
+
+.drawer {
+  width: var(--drawer-w);
+  height: 100%;
+  background: var(--surface-1);
+  border-left: 1px solid var(--line-2);
+  box-shadow: var(--shadow-2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideIn var(--dur-3) var(--ease-out);
+}
+
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideIn {
+  from { opacity: 0.4; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* ---- Header ------------------------------------------------------------ */
+.head {
+  display: flex;
+  align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-3);
+  padding: var(--space-5) var(--space-5) var(--space-4);
+  border-bottom: 1px solid var(--line);
 }
-.panelTitle {
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: var(--step--1);
+  font-weight: 700;
+  color: var(--gold);
+  margin: 0 0 var(--space-1);
+}
+.title {
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  line-height: 1.05;
+  color: var(--text-0);
+  margin: 0;
+}
+.subtitle {
+  font-size: var(--step--1);
+  color: var(--text-1);
+  margin: var(--space-2) 0 0;
+  max-width: 34ch;
+}
+.close {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  font-size: var(--step-2);
+  line-height: 1;
+  color: var(--text-1);
+  background: var(--surface-2);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  transition: background var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out);
+}
+.close:hover { background: var(--surface-3); color: var(--text-0); }
+
+/* ---- Step progress rail ------------------------------------------------ */
+.progress {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  list-style: none;
+  margin: 0;
+  padding: var(--space-3) var(--space-5);
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-0);
+}
+.progressItem {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 1;
+  min-width: 0;
+}
+.progressDot {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: var(--step--1);
+  font-weight: 700;
+  border: 1.5px solid var(--line-2);
+  color: var(--text-2);
+  background: var(--surface-2);
+}
+.progressLabel {
+  font-size: var(--step--1);
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.progressItem[data-state="current"] .progressDot {
+  border-color: var(--accent);
+  color: var(--text-0);
+  background: var(--surface-3);
+}
+.progressItem[data-state="current"] .progressLabel {
+  color: var(--text-0);
+  font-weight: 700;
+}
+.progressItem[data-state="done"] .progressDot {
+  border-color: var(--ok);
+  color: var(--surface-0);
+  background: var(--ok);
+}
+.progressItem[data-state="done"] .progressLabel { color: var(--text-1); }
+
+/* ---- Body -------------------------------------------------------------- */
+.body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-5);
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+}
+
+/* Nathan's Notes dock — holds the collapsed teaser between the scrolling body
+   and the footer, so the hook is always visible without scrolling. On wide
+   screens the expanded reading renders outside the drawer (see the left panel).
+   On narrow screens it expands here, and only then may the dock scroll. */
+.noteDock {
+  flex: none;
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  border-top: 1px solid var(--op-line-2);
+  background: var(--op-bg);
+}
+
+@media (max-width: 1099px) {
+  .noteDock {
+    max-height: 58vh;
+    overflow-y: auto;
+  }
+}
+.section { display: grid; gap: var(--space-3); }
+.prompt {
   font-family: var(--font-display);
   font-size: var(--step-2);
   color: var(--text-0);
   margin: 0;
 }
-.closeBtn {
-  font-size: var(--step--1);
-  font-weight: 600;
-  color: var(--text-2);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-}
-.closeBtn:hover { color: var(--text-0); }
-
-.panelBody {
+.hint {
   font-size: var(--step--1);
   color: var(--text-1);
   margin: 0;
 }
+.hint strong { color: var(--text-0); }
 
-.toggle {
+/* ---- Role cards -------------------------------------------------------- */
+.cardGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-2);
 }
-.toggleBtn {
+.card {
+  display: grid;
+  gap: 2px;
+  text-align: left;
+  padding: var(--space-3);
+  min-height: 64px;
+  background: var(--surface-2);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-m);
+  cursor: pointer;
+  transition: border-color var(--dur-1) var(--ease-out), background var(--dur-1) var(--ease-out),
+    transform var(--dur-1) var(--ease-out);
+}
+.card:hover { border-color: var(--accent); background: var(--surface-3); }
+.card:active { transform: translateY(1px); }
+.card[aria-pressed="true"] {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+  background: var(--surface-3);
+}
+.cardTitle { font-weight: 700; font-size: var(--step-0); color: var(--text-0); }
+.cardBlurb { font-size: var(--step--1); color: var(--text-2); line-height: 1.3; }
+
+/* ---- Category pills ---------------------------------------------------- */
+.pillGrid { display: grid; gap: var(--space-2); }
+.pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  text-align: left;
+  padding: 0.7em var(--space-3);
+  min-height: 46px;
+  background: var(--surface-2);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-m);
+  cursor: pointer;
+  transition: border-color var(--dur-1) var(--ease-out), background var(--dur-1) var(--ease-out),
+    transform var(--dur-1) var(--ease-out);
+}
+.pill:hover { border-color: var(--accent); background: var(--surface-3); }
+.pill:active { transform: translateY(1px); }
+.pill[aria-pressed="true"] {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+/* The pill carries the procedure that governs the category, above its name. A rep
+   who cites "SOP-DE-01" is citing something a reader can go find on the leadership
+   page, which is the difference between a standard and a habit. */
+.pillText { display: grid; gap: 2px; min-width: 0; }
+.pillSop {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--text-2);
+}
+.pillLabel { font-weight: 600; font-size: var(--step-0); color: var(--text-0); }
+
+.pillPrio { display: inline-flex; align-items: center; gap: 0.4em; }
+/* The resolve target sits under the priority, so the promise is visible at the
+   moment the path is chosen rather than after a form is filled in. Muted, so it
+   never competes with the priority word it qualifies. */
+.pillSla {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--text-2);
+}
+.pillMeta {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  font-size: var(--step--1);
+  font-weight: 700;
+}
+
+/* Priority text color — always paired with a glyph and word. */
+.pillMeta[data-prio="standard"] { color: var(--info); }
+.pillMeta[data-prio="elevated"] { color: var(--gold); }
+.pillMeta[data-prio="high"] { color: var(--ember); }
+.pillMeta[data-prio="critical"] { color: var(--risk); }
+
+/* ---- Details form ------------------------------------------------------ */
+.form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+.field { display: grid; gap: 4px; min-width: 0; }
+.fieldWide { grid-column: 1 / -1; }
+.fieldLabel {
+  font-size: var(--step--1);
+  font-weight: 700;
+  color: var(--text-1);
+}
+.optional { font-weight: 400; color: var(--text-2); }
+.input,
+.textarea {
+  font-family: var(--font-ui);
+  font-size: var(--step-0);
+  color: var(--text-0);
+  background: var(--surface-2);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-s);
+  padding: 0.6em 0.7em;
+  width: 100%;
+}
+.input:focus,
+.textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-600);
+}
+.textarea { resize: vertical; min-height: 72px; }
+.fileStub {
+  display: block;
+  font-size: var(--step--1);
+  color: var(--text-2);
+  background: var(--surface-2);
+  border: 1px dashed var(--line-2);
+  border-radius: var(--radius-s);
+  padding: 0.7em;
+}
+.computed {
+  font-size: var(--step-0);
+  font-weight: 700;
+  color: var(--text-0);
+  background: var(--surface-2);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-s);
+  padding: 0.5em 0.7em;
+}
+
+/* ---- Urgency selector -------------------------------------------------- */
+.urgency { display: grid; gap: var(--space-2); }
+.prioRow { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.prioBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: var(--step--1);
+  color: var(--text-1);
+  background: var(--surface-2);
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  padding: 0.45em 0.9em;
+  min-height: 38px;
+  cursor: pointer;
+  transition: border-color var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out);
+}
+.prioBtn:hover { border-color: var(--accent); }
+.prioBtn[data-prio="standard"][aria-pressed="true"] { color: var(--info); border-color: var(--info); }
+.prioBtn[data-prio="elevated"][aria-pressed="true"] { color: var(--gold); border-color: var(--gold); }
+.prioBtn[data-prio="high"][aria-pressed="true"] { color: var(--ember); border-color: var(--ember); }
+.prioBtn[data-prio="critical"][aria-pressed="true"] {
+  color: var(--text-0);
+  background: var(--risk);
+  border-color: var(--risk);
+}
+
+/* ---- Wave B: channel + deduction controls ------------------------------ */
+
+/* Generic option pills (order channel, deduction type). Selected state carries a
+   check glyph plus border and background, never color alone. */
+.optRow { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.optBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
   font-family: var(--font-ui);
   font-weight: 600;
   font-size: var(--step--1);
   color: var(--text-1);
-  background: var(--surface-1);
+  background: var(--surface-2);
   border: 1px solid var(--line-2);
-  border-radius: var(--radius-s);
-  padding: 0.6em;
-  min-height: 40px;
+  border-radius: 999px;
+  padding: 0.45em 0.9em;
+  min-height: 38px;
   cursor: pointer;
+  transition: border-color var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out);
 }
-.toggleBtn:hover { border-color: var(--accent); }
-.toggleOn {
+.optBtn:hover { border-color: var(--accent); }
+.optBtn[aria-pressed="true"] {
   color: var(--text-0);
   background: var(--surface-3);
   border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
 }
 
-.startBtn {
-  display: block;
-  text-align: center;
-  text-transform: capitalize;
+.docLine {
+  font-size: var(--step--1);
+  color: var(--text-2);
+  margin: 0;
+}
+
+.dedPanel {
+  display: grid;
+  gap: var(--space-2);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  padding: var(--space-3);
+}
+.dedLine {
+  font-size: var(--step--1);
+  color: var(--text-1);
+  line-height: 1.5;
+  margin: 0;
+}
+.dedLine strong { color: var(--text-0); }
+
+.checklist {
+  margin: var(--space-1) 0 0;
+  padding-left: 1.1em;
+  font-size: var(--step--1);
+  color: var(--text-2);
+  display: grid;
+  gap: 2px;
+}
+
+/* Validity chip: glyph plus word, never color alone. */
+.valChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  font-size: var(--step--1);
   font-weight: 700;
+  padding: 0.15em 0.7em;
+  border-radius: 999px;
+  border: 1px solid;
+}
+.valChip[data-v="often-valid"] { color: var(--ok); border-color: var(--ok); }
+.valChip[data-v="often-disputable"] { color: var(--ember); border-color: var(--ember); }
+.valChip[data-v="needs-research"] { color: var(--info); border-color: var(--info); }
+
+/* Jump to the order-to-cash chapter. Color and weight, never an underline. */
+.o2cLink {
+  align-self: start;
+  display: inline-block;
+  font-size: var(--step--1);
+  font-weight: 700;
+  color: var(--gold);
+  text-decoration: none;
+}
+.o2cLink:hover { color: var(--text-0); }
+
+.error {
+  font-size: var(--step--1);
+  color: var(--text-0);
+  background: var(--surface-3);
+  border: 1px solid var(--risk);
+  border-left-width: 3px;
+  border-radius: var(--radius-s);
+  padding: var(--space-2) var(--space-3);
+  margin: 0;
+}
+
+/* ---- Summary card ------------------------------------------------------ */
+.summary {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+}
+.sumRow {
+  display: grid;
+  grid-template-columns: minmax(0, 12em) 1fr;
+  gap: var(--space-3);
+  padding: 0.6em var(--space-3);
+  border-bottom: 1px solid var(--line);
+}
+.sumRow:last-child { border-bottom: none; }
+.sumLabel {
+  font-size: var(--step--1);
+  font-weight: 700;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.sumValue { font-size: var(--step-0); color: var(--text-1); }
+.sumValue strong { color: var(--text-0); }
+
+.prioChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  font-size: var(--step--1);
+  font-weight: 700;
+  padding: 0.15em 0.7em;
+  border-radius: 999px;
+  border: 1px solid;
+}
+.prioChip[data-prio="standard"] { color: var(--info); border-color: var(--info); }
+.prioChip[data-prio="elevated"] { color: var(--gold); border-color: var(--gold); }
+.prioChip[data-prio="high"] { color: var(--ember); border-color: var(--ember); }
+.prioChip[data-prio="critical"] { color: var(--text-0); background: var(--risk); border-color: var(--risk); }
+
+.synthNote {
+  font-size: var(--step--1);
+  color: var(--text-2);
+  margin: 0;
+}
+
+
+/* ---- Confirmation ------------------------------------------------------ */
+.confirmMark {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: var(--step-3);
+  color: var(--surface-0);
+  background: var(--ok);
+  margin: var(--space-2) 0;
+  animation: pop var(--dur-3) var(--ease-out);
+}
+@keyframes pop {
+  from { opacity: 0; transform: scale(0.6); }
+  to { opacity: 1; transform: scale(1); }
+}
+.confirmTitle {
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  color: var(--text-0);
+  margin: 0;
+}
+.confirmBody {
+  font-size: var(--step-0);
+  color: var(--text-1);
+  margin: 0;
+}
+
+/* ---- Footer actions ---------------------------------------------------- */
+.actions {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  border-top: 1px solid var(--line);
+  background: var(--surface-1);
+}
+.ghostBtn,
+.primaryBtn {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: var(--step-0);
+  border-radius: var(--radius-s);
+  padding: 0.65em 1.2em;
+  min-height: 44px;
+  cursor: pointer;
+  transition: background var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out);
+}
+.ghostBtn {
+  color: var(--text-1);
+  background: transparent;
+  border: 1px solid var(--line-2);
+}
+.ghostBtn:hover { color: var(--text-0); border-color: var(--text-2); }
+.primaryBtn {
   color: var(--text-0);
   background: var(--accent);
   border: 1px solid var(--accent-600);
-  border-radius: var(--radius-s);
-  padding: 0.7em;
-  min-height: 44px;
-  text-decoration: none;
+  margin-left: auto;
 }
-.startBtn:hover { background: var(--accent-600); }
+.primaryBtn:hover { background: var(--accent-600); }
+
+/* ---- Responsive -------------------------------------------------------- */
+@media (max-width: 520px) {
+  .root { right: var(--space-3); bottom: var(--space-3); }
+  .fab { font-size: var(--step--1); padding: 0.65em 1em; }
+  .drawer { width: 100%; border-left: none; }
+  .cardGrid { grid-template-columns: 1fr; }
+  .form { grid-template-columns: 1fr; }
+  .progressLabel { display: none; }
+  .progressItem { flex: 0 0 auto; }
+  .progress { justify-content: flex-start; gap: var(--space-3); }
+  .sumRow { grid-template-columns: 1fr; gap: 2px; }
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .panel { animation: none; }
-  .fab { transition: none; }
+  .overlay,
+  .drawer,
+  .confirmMark,
+  .fab { animation: none; transition: none; }
 }

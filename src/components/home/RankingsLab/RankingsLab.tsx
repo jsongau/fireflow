@@ -6,6 +6,7 @@ import { defaultVariantForFamily } from "@/data/variants";
 import { imageForVariant } from "@/data/images";
 import { BRAND_BY_ID } from "@/data/brands";
 import { SourceBadge, ConfidenceBadge } from "@/components/primitives";
+import { SectionNote } from "@/components/employer/SectionNote/SectionNote";
 import styles from "./RankingsLab.module.css";
 
 const INPUT_LABELS: Record<string, string> = {
@@ -127,6 +128,8 @@ export function RankingsLab() {
             rather than authored. They are shown at lower confidence, never presented as fact.
           </p>
         </details>
+
+        <SectionNote sectionId="rankings" />
       </div>
     </section>
   );

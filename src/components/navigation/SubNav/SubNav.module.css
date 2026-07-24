@@ -1,0 +1,92 @@
+/* Per-page sticky sub nav. Treatment mirrors SelectedProductRail so the two
+   sticky bars read as one instrument. It sits below the nav and rail and below
+   the MegaNav dropdown (z-subnav 25 < z-nav 30). */
+.subnav {
+  position: sticky;
+  top: calc(var(--nav-h) + var(--rail-h));
+  z-index: var(--z-subnav);
+  background: color-mix(in srgb, var(--surface-1) 92%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+
+.list {
+  max-width: var(--shell-max);
+  margin: 0 auto;
+  padding: var(--space-2) var(--shell-pad);
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-1);
+  list-style: none;
+}
+
+.item {
+  display: flex;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--step--1);
+  font-weight: 500;
+  color: var(--text-2);
+  text-decoration: none;
+  white-space: nowrap;
+  border-radius: var(--radius-s);
+  /* Reserve the indicator height so the active bar adds no layout shift. */
+  border-bottom: 2px solid transparent;
+  transition: color var(--dur-1) var(--ease-out);
+}
+.link:hover {
+  color: var(--text-0);
+}
+.link:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* Active section: weight + bottom indicator bar + visible diamond glyph, never
+   color alone. aria-current="true" carries it for assistive tech;
+   aria-current="page" is reserved for the MegaNav route match. */
+.linkActive {
+  color: var(--text-0);
+  font-weight: 700;
+  border-bottom-color: var(--gold);
+}
+
+.glyph {
+  color: var(--gold);
+  font-size: 0.68em;
+  line-height: 1;
+  /* Present in the DOM for every item to hold layout; only the active item
+     reveals it, so the diamond itself (a shape) is the cue, not its color. */
+  opacity: 0;
+}
+.linkActive .glyph {
+  opacity: 1;
+}
+
+.label {
+  min-width: 0;
+}
+
+/* Mobile: a horizontally scrollable chip row. The list scrolls inside its own
+   box so the page never gains horizontal overflow. */
+@media (max-width: 640px) {
+  .list {
+    padding: var(--space-1) var(--space-3);
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+  }
+  .item {
+    scroll-snap-align: start;
+    flex: none;
+  }
+  .link {
+    padding: var(--space-1) var(--space-2);
+  }
+}

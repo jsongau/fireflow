@@ -97,7 +97,7 @@ export const FAMILIES: ProductFamily[] = [
     creaminess: 4,
     relatedFamilyIds: ["buldak-original-hot-sauce", "buldak-carbonara"],
     officialPositioning: "Creamy carbonara sauce; refrigerate after opening.",
-    consumerQuestions: [
+    buyerQuestions: [
       "Is the bottle leaking or is the cap loose?",
       "Does it need refrigeration after opening?",
       "How spicy is it compared to the noodles?",
@@ -136,7 +136,7 @@ export const FAMILIES: ProductFamily[] = [
     creaminess: 1,
     relatedFamilyIds: ["buldak-carbonara-hot-sauce", "buldak-original"],
     officialPositioning: "Original spicy sauce; refrigerate after opening.",
-    consumerQuestions: [
+    buyerQuestions: [
       "Is the bottle leaking or is the cap loose?",
       "Was the seal broken on arrival?",
       "Does it need refrigeration after opening?",
@@ -200,7 +200,7 @@ export const FAMILIES: ProductFamily[] = [
     creaminess: 0,
     relatedFamilyIds: ["buldak-original", "buldak-carbonara"],
     officialPositioning: "Extreme-heat stir-fry noodle.",
-    consumerQuestions: [
+    buyerQuestions: [
       "How hot is 2X compared to the Original?",
       "Can I use only part of the sauce to reduce heat?",
       "What is the difference from the Original?",
@@ -251,7 +251,7 @@ export const FAMILIES: ProductFamily[] = [
     creaminess: 4,
     relatedFamilyIds: ["buldak-cream-carbonara", "buldak-quattro-cheese", "buldak-original"],
     officialPositioning: "Creamy carbonara plus Buldak heat.",
-    consumerQuestions: [
+    buyerQuestions: [
       "Is Carbonara mild?",
       "How is it different from Cream Carbonara?",
       "My sauce or cheese powder packet is missing.",
@@ -316,7 +316,7 @@ export const FAMILIES: ProductFamily[] = [
     creaminess: 0,
     relatedFamilyIds: ["buldak-original", "buldak-2x-spicy"],
     officialPositioning: "Habanero-lime stir-fry noodle; noodles and flakes cook together, sauce added after.",
-    consumerQuestions: [
+    buyerQuestions: [
       "How does the heat compare to the Original?",
       "How strong is the lime flavor?",
       "Is this the product I'm looking for (identification)?",
@@ -368,7 +368,7 @@ export const FAMILIES: ProductFamily[] = [
     creaminess: 0,
     relatedFamilyIds: ["buldak-2x-spicy", "buldak-carbonara", "buldak-cheese"],
     officialPositioning: "Original spicy-chicken stir-fry noodle.",
-    consumerQuestions: [
+    buyerQuestions: [
       "How spicy is the Original?",
       "Is it soup or stir-fry?",
       "How much water should remain before adding the sauce?",

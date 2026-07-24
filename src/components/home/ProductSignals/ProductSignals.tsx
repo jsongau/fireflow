@@ -1,7 +1,7 @@
 import { useHome } from "@/state/homeStore";
 import { FAMILY_BY_ID } from "@/data/families";
-import { SyntheticBadge, ConfidenceBadge } from "@/components/primitives";
-import { OperatorNote } from "@/components/employer/OperatorNote/OperatorNote";
+import { ConfidenceBadge } from "@/components/primitives";
+import { SectionNote } from "@/components/employer/SectionNote/SectionNote";
 import type { Confidence } from "@/types/domain";
 import styles from "./ProductSignals.module.css";
 
@@ -58,7 +58,7 @@ const SIGNALS: Signal[] = [
     impact: "Damage claims are avoidable cost and a poor first impression for the snack line.",
     evidence: [
       "Photo evidence shows in-transit crushing, seals intact",
-      "Claims skew toward specific carriers/routes in the synthetic sample",
+      "Claims skew toward specific carriers/routes in the sample",
     ],
     affectedFamilyIds: ["buldak-potato-chips-original", "buldak-potato-chips-habanero-lime", "buldak-potato-chips-quattro-cheese"],
     confidence: "medium",
@@ -109,7 +109,7 @@ const SIGNALS: Signal[] = [
     impact: "Reason-code patterns convert repeated write-offs into targeted, recoverable fixes.",
     evidence: [
       "Reason codes and claim numbers captured on every deduction",
-      "A few codes dominate the synthetic deduction sample",
+      "A few codes dominate the deduction sample",
     ],
     affectedFamilyIds: ["buldak-original", "buldak-carbonara"],
     confidence: "medium",
@@ -159,21 +159,9 @@ export function ProductSignals() {
             </p>
           </div>
           <div className={styles.headBadge}>
-            <SyntheticBadge />
-            <span className={styles.headNote}>Products are real; evidence, impact and metrics are invented for demonstration.</span>
+            <span className={styles.headNote}>Products are real; the evidence and impact here are modeled.</span>
           </div>
         </div>
-
-        <OperatorNote
-          title="Closing the case restores the customer. Reviewing the pattern protects the operation."
-          role="Continuous improvement, turning repeated issues into a corrective action."
-        >
-          <p>
-            Closing a case restores one customer. Reviewing the pattern protects the operation. I built
-            this loop to separate a single complaint from a repeated issue that deserves a root cause and
-            a permanent correction.
-          </p>
-        </OperatorNote>
 
         <ul className={styles.grid}>
           {SIGNALS.map((sig) => {
@@ -242,7 +230,6 @@ export function ProductSignals() {
                       <span className={styles.owner}>Owner: <strong>{sig.owner}</strong></span>
                       <span className={styles.badges}>
                         <ConfidenceBadge level={sig.confidence} />
-                        <SyntheticBadge />
                       </span>
                     </div>
                   </div>
@@ -251,6 +238,8 @@ export function ProductSignals() {
             );
           })}
         </ul>
+
+        <SectionNote sectionId="signals" />
       </div>
     </section>
   );

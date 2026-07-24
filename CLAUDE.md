@@ -9,6 +9,12 @@ portfolio artifact, not a real product. All operational data is synthetic and la
 `CHANGELOG.md` (history). For copy or employer-layer work, read the packs in
 `docs/nathan-writing-style-fireflow/` and `docs/employer-layer-pack/`.**
 
+**Before writing or editing any Nathan's Note / Operator Note, read
+`skills/nathans-notes-voice/SKILL.md`.** It is the canonical note voice: the four
+gates (the customer's cost, the operational cause, the owner and next action,
+Nathan's judgment) plus the concierge standard. `skills/nathans-notes-voice.skill`
+is the installable copy.
+
 ## Canonical
 - The **React + Vite + TypeScript app in `src/` is the product.** Entry: `index.html`
   → `src/main.tsx` → `src/pages/HomePage.tsx`.
@@ -21,8 +27,13 @@ portfolio artifact, not a real product. All operational data is synthetic and la
 - `npm run build` (`tsc -b && vite build`) and `npm run verify:data` need a
   platform-matched `node_modules` (they fail in a Linux sandbox if it was installed
   on macOS). Run `npm install` first on a fresh machine.
-- Deploy: `npx vercel --prod` from the folder (builds on Vercel; when prompted, do
-  NOT connect git — it would deploy stale committed code). Live: https://samyang-xi.vercel.app
+- Deploy — HARD RULE (2026-07-09, see `skills/deploy-from-project/SKILL.md`): every
+  deploy runs from the project root, never from `~` or any parent. Always the chained
+  form `cd ~/Claude/Projects/Samyang && npx vercel --prod`, and verify
+  `.vercel/project.json` names `samyang` first. If the CLI asks about deploying the
+  home directory the answer is always N; when prompted, do NOT connect git — it would
+  deploy stale committed code. This applies to instructions handed to Nathan too:
+  never give a bare deploy command without the `cd`. Live: https://samyang-xi.vercel.app
 
 ## Non-negotiable rules
 - **Honesty:** no SAP implementation/integration/tenure claims; no "8 years of SAP";
@@ -34,8 +45,22 @@ portfolio artifact, not a real product. All operational data is synthetic and la
   name the action. Grep-sweep after copy edits.
 - **Accessibility:** Nathan is colorblind — never signal state by color alone (add
   glyph/word/shape). Keyboard operable; respect `prefers-reduced-motion`; visible focus.
-- **Fourth wall:** break it only at the intro and in optional Operator Notes (≤6,
-  gated on `operatorNotesEnabled`); no popups on every section; product usable with notes off.
+- **Fourth wall:** break it only at the intro and in Operator Notes. Operator Notes are
+  **always on** — no `operatorNotesEnabled` flag, no nav toggle, one intro entrance.
+  Notes read as builder commentary, never as product UI or a real Samyang annotation.
+- **Operator Notes, guided-tour rule (2026-07-09):** there is **no cap** on the number of
+  notes. Every section may carry **exactly one** note. Notes are **collapsed to a one-line
+  teaser by default** (`NoteTeaser`) and expand on demand into the docked panel
+  (`OperatorNotePanel`). Nothing auto-expands except the intro cover. One note per
+  section, one panel open at a time. The old ≤6 cap existed to stop notes becoming
+  wallpaper; collapse-by-default achieves the same end while allowing a note everywhere.
+  The cap is now gone from `skills/nathans-notes-voice/` and the writing-style packs as
+  well, so no agent inherits a contradiction. The surviving test is **per note**: it
+  explains a decision visible on screen, or it does not ship. A note that only narrates
+  what the section already shows is still clutter, and deleting it is still right.
+  **Before writing any note, read `docs/nathan-writing-style-fireflow/03-OPERATOR-NOTES-VOICE.md`
+  and `08-BANNED-AI-PATTERNS.md`.** No epigrams, no "not X, but Y" reversals, no
+  punchline endings. Judgment shows through operating detail, not phrasing.
 - Don't nest `<Button>` in `<a>` — use the `ButtonLink` primitive. Comparison is
   head-to-head: `MAX_COMPARE = 2`.
 

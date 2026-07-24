@@ -1,0 +1,51 @@
+/* SectionNote — the collapsed teaser plus its expanded panel, pinned at the foot
+   of a section. Contained width so the commentary reads as a distinct block, not
+   another full-bleed product row. */
+
+.wrap {
+  margin-top: var(--space-6);
+  width: 100%;
+  max-width: 760px;
+}
+
+/* The reveal.
+
+   grid-template-rows: 0fr to 1fr grows the panel to its natural height without
+   measuring it in JavaScript and without a max-height guess that clips a long
+   note or leaves dead space under a short one. The inner element carries the
+   overflow, because a grid item will not shrink below its content unless told to
+   (min-height: 0).
+
+   Opening rides the long expo curve; closing is quicker (420ms, and EXIT_MS in
+   SectionNote.tsx must match). Slow entrances feel considered. Slow exits feel
+   like the interface is arguing with you. */
+.reveal {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 420ms var(--op-ease-awaken);
+}
+.reveal[data-open="true"] {
+  grid-template-rows: 1fr;
+  transition: grid-template-rows var(--op-dur-grow) var(--op-ease-awaken);
+}
+.revealInner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* The inline panel already carries its own top margin, padding, and the accent
+   left border that marks it as commentary; it grows directly beneath the teaser. */
+.panel {
+  max-width: 760px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal[data-open="true"] {
+    transition: none;
+  }
+}
+
+/* Invisible scroll anchor for the NathanFloater. Zero-height marker at the
+   section foot; the floater observes the section it sits in. */
+.anchor { display: block; width: 100%; height: 0; scroll-margin-top: var(--nav-h, 72px); }

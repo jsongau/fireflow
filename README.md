@@ -11,7 +11,7 @@ The goal is to *show* rather than tell: that I can organize a large consumer-pro
 Three connected layers, threaded by one shared "selected product" so nothing ever has to be re-entered:
 
 - **Explore** — browse the portfolio (45 normalized product families across 76 formats, four brands), filter by brand / category / spiciness / type, see transparent multi-axis rankings, compare products head-to-head, and open a per-format product dossier.
-- **Resolve** — turn a specific consumer or vendor question into a verified, routed, governed case; a resolution simulator walks it through a full lifecycle (reported → verified → routed → resolution proposed → customer updated → resolved → improvement review).
+- **Resolve** — turn a specific retailer or distributor question into a verified, routed, governed case; a resolution simulator walks it through a full lifecycle (reported, verified, routed, resolution proposed, customer updated, resolved, improvement review). There is no individual-consumer complaint path; every case is raised by a trade account.
 - **Command** — a manager's synthetic case queue, product-signal / continuous-improvement loop, and brand overview.
 
 Every product fact is labeled by origin (**official / public retail signal / editorial / synthetic**), allergens and preparation are bound to the exact format, rankings show their inputs and confidence, and serious matters (allergen, injury, foreign material, tampering) route to specialist escalation without diagnosing or giving medical advice.
@@ -29,7 +29,7 @@ npm run build      # full typecheck + production bundle -> dist/
 npm run verify:data  # data-integrity check (45 families / 76 variants, references valid)
 ```
 
-A zero-install single-file version also lives at `preview.html` (open it in a browser; keep `preview-data.js` and `public/products/` alongside it).
+An earlier single-file prototype (`preview.html` + `preview-data.js`) is retained for reference only. It is **out of sync** with the current app and is not canonical. The React app in `src/` is the product.
 
 ## Documentation
 

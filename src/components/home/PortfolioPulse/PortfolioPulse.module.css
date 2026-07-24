@@ -3,9 +3,9 @@
   scroll-margin-top: var(--sticky-h);
 }
 .inner {
-  max-width: 1200px;
+  max-width: var(--shell-max);
   margin: 0 auto;
-  padding: var(--space-8) var(--space-4);
+  padding: var(--space-8) var(--shell-pad);
 }
 .head {
   display: flex;
@@ -208,8 +208,31 @@
   border: 1px dashed var(--line-2);
   border-radius: var(--radius-m);
 }
+.clearInline {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--ember);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+.clearInline:hover { border-bottom-color: var(--ember); }
 
 @media (prefers-reduced-motion: reduce) {
   .card { transition: none; }
   .card:hover { transform: none; }
+}
+
+/* Scroll anchor for page changes. Its scroll-margin clears the site nav plus the
+   catalog's own sticky toolbar, so Next lands on the first card and not under it.
+   The toolbar height is approximated rather than measured: it varies with wrap,
+   and being a little generous is invisible while being short is not. */
+.gridTop {
+  scroll-margin-top: calc(var(--sticky-h) + 132px);
+}
+@media (max-width: 720px) {
+  /* Collapsed, the phone toolbar is a single compact row. */
+  .gridTop { scroll-margin-top: calc(var(--sticky-h) + 76px); }
 }

@@ -11,7 +11,7 @@ This should be a visible employer-facing section or a mode-specific panel.
 | Job requirement / role need | FireFlow feature evidence | What it proves | Nathan’s experience angle |
 |---|---|---|---|
 | Product knowledge | Product dossier, source labels, format-specific details | Can learn a large product catalog and explain it clearly | Consumer products and retail operations background |
-| Customer communication | Consumer Care path, support status, case updates | Can structure answers and reduce repeat questions | Customer-facing issue resolution |
+| Customer communication | Account support path (retailer / distributor), support status, case updates | Can structure answers and reduce repeat questions | Customer-facing issue resolution |
 | Order management | Order-to-Cash Process Intelligence chapter | Understands the flow from order entry through billing and resolution | Operations mindset across intake, ownership, and follow up |
 | SAP SD concepts | SAP SD aligned workflow study | Understands order entry, pricing, delivery, billing, customer records, and order status at a workflow level | Honest readiness to support and learn the system |
 | Pricing exceptions | Pricing review / dispute logic | Recognizes that price mismatches become customer and finance problems if not surfaced early | Experience explaining costs and resolving discrepancies |

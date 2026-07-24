@@ -1,23 +1,38 @@
-/* Operator Note — deliberately distinct from product UI.
-   Ember left rule + warm tint + builder avatar, so it reads as commentary. */
+/* Operator Note — a fourth-wall surface, deliberately NOT product UI.
+   Cool slate panel, indigo left rule, editorial serif voice, and a monospace
+   tag, so it reads as Nathan's commentary against the warm Buldak Night UI.
+   State is never signaled by color alone (the tag carries a word + avatar). */
 .note {
   margin: var(--space-5) 0;
-  border: 1px solid color-mix(in srgb, var(--ember) 40%, var(--line-2));
-  border-left: 3px solid var(--ember);
-  background: color-mix(in srgb, var(--ember) 7%, var(--surface-1));
+  border: 1px solid var(--op-line-2);
+  border-left: 3px solid var(--op-accent);
+  background: var(--op-surface);
   border-radius: 0 var(--radius-m) var(--radius-m) 0;
   padding: var(--space-4) var(--space-5);
+  color: var(--op-text-0);
+
+  /* Awaken: the card drifts up and settles the first time it is seen. */
+  opacity: 0;
+  transform: translate3d(-10px, 12px, 0);
+  transition:
+    opacity var(--op-dur-slide) var(--op-ease-awaken),
+    transform var(--op-dur-grow) var(--op-ease-awaken);
+}
+.note[data-awake="true"] {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
 }
 .tag {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  margin: 0 0 var(--space-2);
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-operator-tag);
   font-size: var(--step--1);
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--ember);
+  letter-spacing: 0.16em;
+  color: var(--op-accent);
 }
 .avatar {
   display: grid;
@@ -25,32 +40,139 @@
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: var(--ember);
-  color: var(--surface-0);
-  font-family: var(--font-display);
-  font-size: 0.7rem;
-  letter-spacing: 0;
+  background: var(--op-accent);
+  color: var(--op-bg);
+  font-family: var(--font-operator-tag);
+  font-weight: 700;
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
 }
 .title {
-  font-family: var(--font-display);
-  font-size: var(--step-1);
-  color: var(--text-0);
+  font-family: var(--font-operator);
+  font-weight: 600;
+  font-size: var(--step-2);
+  line-height: 1.2;
+  color: var(--op-text-0);
   margin: 0 0 var(--space-2);
 }
-.body { color: var(--text-0); font-size: var(--step-0); line-height: 1.6; max-width: 74ch; }
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: var(--space-2) 0 0;
+  padding: var(--space-1) 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-operator-tag);
+  font-size: var(--step--1);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--op-accent-2);
+}
+.toggle:hover {
+  color: var(--op-accent);
+}
+.toggle:focus-visible {
+  outline: 2px solid var(--op-accent);
+  outline-offset: 3px;
+  border-radius: var(--radius-s);
+}
+.toggleGlyph {
+  display: grid;
+  place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+/* The reveal. `hidden` cannot be animated (display: none has no from-state), so
+   the body grows through a 0fr-to-1fr grid row instead. The inner element owns
+   the overflow, since a grid item will not shrink under its content without
+   min-height: 0. The body is unmounted while collapsed, so this wrapper is an
+   empty, zero-height box that still carries the id `aria-controls` points at.
+
+   Open slowly, close briskly: 900ms in, 420ms out (and 420 must match the
+   EXIT_MS constant in OperatorNote.tsx). */
+.reveal {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 420ms var(--op-ease-awaken);
+}
+.reveal[data-open="true"] {
+  grid-template-rows: 1fr;
+  transition: grid-template-rows var(--op-dur-grow) var(--op-ease-awaken);
+}
+.revealInner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.collapse {
+  margin-top: var(--space-3);
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition:
+    opacity var(--op-dur-settle) var(--op-ease-awaken) 120ms,
+    transform var(--op-dur-settle) var(--op-ease-awaken) 120ms;
+}
+.collapse[data-animate="false"] {
+  opacity: 0;
+  transform: translate3d(0, 10px, 0);
+  transition: none;
+}
+
+.body {
+  font-family: var(--font-operator);
+  color: var(--op-text-1);
+  font-size: var(--step-0);
+  line-height: 1.6;
+  max-width: 74ch;
+}
 .body p { margin: 0 0 var(--space-2); }
 .body p:last-child { margin-bottom: 0; }
+.body strong { color: var(--op-text-0); font-weight: 600; }
 .role {
   margin: var(--space-3) 0 0;
+  font-family: var(--font-operator-tag);
   font-size: var(--step--1);
-  color: var(--text-1);
-  border-top: 1px solid var(--line);
+  color: var(--op-text-1);
+  border-top: 1px solid var(--op-line-2);
   padding-top: var(--space-2);
 }
 .roleLabel {
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-2);
+  letter-spacing: 0.08em;
+  color: var(--op-accent-2);
   margin-right: var(--space-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* No from-state survives: the note, and its body, are simply present. */
+  .note,
+  .note[data-awake="false"] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .reveal,
+  .reveal[data-open="true"] { transition: none; }
+  .collapse,
+  .collapse[data-animate="false"] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+@media print {
+  /* See NoteTeaser: never let the entrance animation eat the note on paper. */
+  .note, .note[data-awake="false"] { opacity: 1; transform: none; }
+  .reveal { grid-template-rows: 1fr; }
+  .collapse, .collapse[data-animate="false"] { opacity: 1; transform: none; }
 }

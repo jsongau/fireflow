@@ -1,3 +1,4 @@
+import { SectionNote } from "@/components/employer/SectionNote/SectionNote";
 import styles from "./HomepageFAQ.module.css";
 
 interface QA {
@@ -8,43 +9,31 @@ interface QA {
 const FAQS: QA[] = [
   {
     q: "Is this an official Samyang site?",
-    a: "No. FireFlow is an independent portfolio concept built from publicly available information. It is not affiliated with, commissioned by, or connected to Samyang America or Samyang Foods. It exists to demonstrate a Customer Experience approach, not to represent the company.",
+    a: "No. I built FireFlow on my own, from public information, to show how I would run Customer Experience for this portfolio. It is not affiliated with or endorsed by Samyang Foods or Samyang America.",
   },
   {
     q: "How are products ranked?",
-    a: "Rankings are an editorial model, never official Samyang ratings. Each view weighs a set of transparent inputs (things like official prominence, retail visibility, and support-inquiry value), and you can re-weight them yourself. Where inputs are missing for a family, the score is marked lower-confidence rather than guessed.",
-  },
-  {
-    q: "Are the inquiry records real?",
-    a: "No. Every case, customer, order, shipment, metric, owner, timeline, and outcome shown in the resolution and command sections is synthetic, invented purely to demonstrate how a CX workflow behaves. Nothing here reflects real people or real transactions.",
+    a: "The rankings are an editorial read, not official Samyang ratings. Each view weighs a few inputs you can see and re-weight yourself, like official prominence, retail visibility, and how often a product drives support questions. Where a family is missing an input, the score is marked lower-confidence instead of guessed.",
   },
   {
     q: "Why are formats grouped into families?",
-    a: "Samyang America lists each format as its own product, so the same flavor can appear many times. FireFlow normalizes those listings into 45 families across 76 formats, so you browse by flavor and then choose a format, instead of scrolling past the same product repeated.",
-  },
-  {
-    q: "Can consumers submit a real complaint?",
-    a: "Not through FireFlow. The consumer path shows how a complaint would be classified, what evidence it would need, and where it would route. For a genuine product concern, always contact Samyang America directly and keep your packaging and lot code.",
-  },
-  {
-    q: "Can vendors place a real order?",
-    a: "No. The vendor path is a demonstration of how order, deduction, and shipment issues would be structured and routed. It does not connect to any ordering or account system, and no real orders can be placed here.",
+    a: "Samyang America lists every format as its own product, so the same flavor shows up many times. I normalized the catalog into 45 families across 76 formats, so a buyer picks the flavor first and the format second, instead of scrolling past the same product on repeat.",
   },
   {
     q: "Where does product information come from?",
-    a: "Product facts trace to public Samyang America product information and are labeled Official. Retail engagement markers are labeled Retail signal and date-stamped. They are not sales figures. Interpretations built by this project are labeled Editorial, and demonstration data is labeled Synthetic.",
+    a: "Product facts trace to public Samyang America product pages and are labeled Official. Retail engagement markers are labeled Retail signal and date-stamped; they are not sales figures. Reads I built are labeled Editorial, and modeled records are labeled Modeled, so you always know which is which.",
   },
   {
     q: "How are allergens handled?",
-    a: "Allergen and preparation facts are bound only to the exact format we have an official source for, typically the Multi noodle pack or the 200g sauce bottle. Other formats deliberately carry no allergen data rather than borrow another format's, because that would be unsafe for a food product. Always verify the current physical package.",
+    a: "Allergen and preparation facts are bound to the exact format we have an official source for, usually the Multi noodle pack or the 200g sauce bottle. Other formats carry no allergen data rather than borrow another format's, because guessing on a food product is not safe. Always check the current physical package.",
   },
   {
     q: "What does Customer Guidance Opportunity mean?",
-    a: "It is an editorial label for a product that tends to generate questions best answered with guidance, for example clarifying heat, format differences, or preparation. It is not a defect signal and does not imply a quality problem.",
+    a: "It is an editorial label for a product that tends to draw questions best answered with guidance, like clarifying heat, format differences, or preparation. It is not a defect flag and does not imply a quality problem.",
   },
   {
-    q: "Why was FireFlow created?",
-    a: "As a portfolio piece: a way to show how real product data, honest sourcing, and a structured resolution workflow come together into a Customer Experience system, using a portfolio people recognize, without pretending to be the brand.",
+    q: "Why did I build FireFlow?",
+    a: "I built it for one job: the Customer Experience role at Samyang America. Rather than describe how I would run the function, I built it, on a portfolio people recognize, so the thinking is on the screen instead of in a cover letter.",
   },
 ];
 
@@ -56,7 +45,7 @@ export function HomepageFAQ() {
           <p className={styles.eyebrow}>About</p>
           <h2 id="faq-h" className={styles.h2}>Frequently asked questions</h2>
           <p className={styles.lede}>
-            The honest answers: what FireFlow is, what it isn&rsquo;t, and how the numbers are made.
+            What FireFlow is, and how the numbers are made.
           </p>
         </header>
 
@@ -71,6 +60,8 @@ export function HomepageFAQ() {
             </details>
           ))}
         </div>
+
+        <SectionNote sectionId="faq" />
       </div>
     </section>
   );

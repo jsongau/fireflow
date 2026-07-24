@@ -12,11 +12,16 @@
  * the extracted file set; families/variants without a real photo are left
  * unmapped so the UI falls back to a placeholder rather than a broken image.
  *
- * Families with NO photography (leave unmapped): Buldak Mac & Cheese Sweet
- * Corn, and every Samyang, Tangle, and MEP family.
+ * Tangle, MEP, and Samyang-branded photos: sourced directly from
+ * samyangamerica.com/images/products/ (same official source and transparent-
+ * cutout style as the Buldak set above). Filenames match the source site's
+ * own naming exactly, including its inconsistent casing (e.g.
+ * `mep-Black-Pepper-Beef.png`). Fetch them with
+ * `fetch-missing-product-photos.sh` at the repo root before these paths will
+ * resolve to real images.
  */
 
-const P = (file: string) => `/products/${file}.png`;
+const P = (file: string) => `${import.meta.env.BASE_URL}products/${file}.png`;
 
 /**
  * Variant id (`<familyId>--<format>`) -> product image path.
@@ -94,9 +99,13 @@ export const IMAGE_BY_VARIANT: Record<string, string> = {
   "buldak-potato-chips-habanero-lime--bag": P("buldak-potato-habarnero"),
   "buldak-potato-chips-quattro-cheese--bag": P("buldak-potato-cheese"),
 
-  // --- Buldak Mac & Cheese Carbo --- (Sweet Corn has no photo -> unmapped)
+  // --- Buldak Mac & Cheese Carbo ---
   "buldak-mac-and-cheese-carbo--box": P("mccarbobox"),
   "buldak-mac-and-cheese-carbo--four-cup": P("mccarbobowl4pack"),
+
+  // --- Buldak Mac & Cheese Sweet Corn ---
+  "buldak-mac-and-cheese-sweet-corn--box": P("mccheesebox"),
+  "buldak-mac-and-cheese-sweet-corn--four-cup": P("mccheese4pack"),
 
   // --- Buldak Glass Noodles ---
   "buldak-carbo-glass-noodles--pack": P("glass-noodle-carbonara-big-bowl-0112"),
@@ -115,6 +124,36 @@ export const IMAGE_BY_VARIANT: Record<string, string> = {
   "buldak-frozen-tteokbokki--shelf-stable": P("buldak-hmr-topokki"),
   "buldak-carbo-frozen-topokki--frozen": P("carbofrozentopokki"),
   "buldak-carbo-frozen-topokki--shelf-stable": P("buldak-hmr-carbonara-topokki"),
+
+  // --- Tangle (pasta) ---
+  "tangle-garlic-oil--multi": P("multi-garlic-oil"),
+  "tangle-garlic-oil--big-bowl": P("bigbowl-garlic-oil"),
+  "tangle-creamy-mushroom--multi": P("multi-creamy-mushroom"),
+  "tangle-creamy-mushroom--big-bowl": P("bigbowl-creamy-mushroom"),
+  "tangle-bulgogi-alfredo--multi": P("multi-bulgogi-alfredo"),
+  "tangle-bulgogi-alfredo--big-bowl": P("bigbowl-bulgogi-alfredo"),
+  "tangle-chunky-tomato--multi": P("multi-chunky-tomato"),
+  "tangle-chunky-tomato--big-bowl": P("bigbowl-chunky-tomato"),
+
+  // --- MEP ---
+  "mep-black-pepper-beef--multi": P("mep-Black-Pepper-Beef"),
+  "mep-black-pepper-beef--bowl": P("mep-Black-Pepper-Beef-bowl"),
+  "mep-garlic-clam--multi": P("mep-Garlic-Clam"),
+  "mep-garlic-clam--bowl": P("mep-Garlic-Clam-bowl"),
+  "mep-red-pepper-chicken-cilantro--multi": P("mep-Redc-Pepper"),
+  "mep-red-pepper-chicken-cilantro--bowl": P("mep-Redc-Pepper-bowl"),
+
+  // --- Samyang-branded ---
+  "samyang-ramen--multi": P("samyang-multi-original"),
+  "samyang-ramen--cup": P("samyang-cup-original"),
+  "samyang-jjajang-ramen--multi": P("samyang-multi-jjajang"),
+  "samyang-ramen-extra-spicy--multi": P("samyang-multi-extra-spicy"),
+  "samyang-kimchi-ramen--multi": P("samyang-multi-kimchi"),
+  "samyang-potato-ramen--multi": P("samyang-multi-potato"),
+  "samyang-vegetasty-noodle-soup--multi": P("samyang-multi-vegetasty"),
+  "samyang-sattobap--bag": P("sato"),
+  "samyang-wang-changgu--bag": P("wang"),
+  "samyang-changgu--bag": P("changgu"),
 };
 
 /**
@@ -142,6 +181,7 @@ export const IMAGE_BY_FAMILY: Record<string, string> = {
   "buldak-potato-chips-habanero-lime": P("buldak-potato-habarnero"),
   "buldak-potato-chips-quattro-cheese": P("buldak-potato-cheese"),
   "buldak-mac-and-cheese-carbo": P("mccarbobox"),
+  "buldak-mac-and-cheese-sweet-corn": P("mccheesebox"),
   "buldak-carbo-glass-noodles": P("glass-noodle-carbonara-big-bowl-0112"),
   "buldak-wide-glass-noodle-rose": P("buldak-hmr-wide-glass-noodle-rose"),
   "buldak-carbonara-dumpling": P("buldak-carbonara-dumpling"),
@@ -150,6 +190,25 @@ export const IMAGE_BY_FAMILY: Record<string, string> = {
   "buldak-fried-rice": P("buldak-frozen-fried-rice"),
   "buldak-frozen-tteokbokki": P("buldak-frozen-topokki"),
   "buldak-carbo-frozen-topokki": P("carbofrozentopokki"),
+
+  "tangle-garlic-oil": P("multi-garlic-oil"),
+  "tangle-creamy-mushroom": P("multi-creamy-mushroom"),
+  "tangle-bulgogi-alfredo": P("multi-bulgogi-alfredo"),
+  "tangle-chunky-tomato": P("multi-chunky-tomato"),
+
+  "mep-black-pepper-beef": P("mep-Black-Pepper-Beef"),
+  "mep-garlic-clam": P("mep-Garlic-Clam"),
+  "mep-red-pepper-chicken-cilantro": P("mep-Redc-Pepper"),
+
+  "samyang-ramen": P("samyang-multi-original"),
+  "samyang-jjajang-ramen": P("samyang-multi-jjajang"),
+  "samyang-ramen-extra-spicy": P("samyang-multi-extra-spicy"),
+  "samyang-kimchi-ramen": P("samyang-multi-kimchi"),
+  "samyang-potato-ramen": P("samyang-multi-potato"),
+  "samyang-vegetasty-noodle-soup": P("samyang-multi-vegetasty"),
+  "samyang-sattobap": P("sato"),
+  "samyang-wang-changgu": P("wang"),
+  "samyang-changgu": P("changgu"),
 };
 
 /**

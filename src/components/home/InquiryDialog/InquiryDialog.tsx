@@ -13,8 +13,8 @@ import styles from "./InquiryDialog.module.css";
  * There is no backend. Opening this dialog does NOT send anything anywhere. It
  * demonstrates how a completed inquiry would be recorded and routed through the
  * FireFlow operating model, using only information already in state (the chosen
- * product, format, channel, and issue). The consumer and vendor paths render
- * different, plausible case detail. Everything shown is generated in the browser
+ * product, format, channel, and issue). It renders a plausible B2B account case
+ * for a retailer or distributor. Everything shown is generated in the browser
  * and clearly labelled synthetic.
  *
  * Accessibility: role="dialog", aria-modal, focus trap, Escape to close, focus
@@ -38,14 +38,7 @@ export interface InquiryDialogProps {
   onClose: () => void;
 }
 
-const SEVERITY_LABEL: Record<Severity, string> = {
-  standard: "Standard",
-  elevated: "Elevated",
-  priority: "Priority",
-  specialist: "Specialist escalation",
-};
-
-const VENDOR_PRIORITY: Record<Severity, string> = {
+const ACCOUNT_PRIORITY: Record<Severity, string> = {
   standard: "Standard",
   elevated: "Elevated",
   priority: "High",
@@ -61,11 +54,11 @@ const SLA_TARGET: Record<Severity, string> = {
 
 const MODE_LABEL: Record<UserMode, string> = {
   explore: "Explore",
-  consumer: "Consumer Care",
-  vendor: "Vendor and Retailer Support",
+  retailer: "Retailer account",
+  distributor: "Distributor account",
 };
 
-const VENDOR_ACCOUNTS = [
+const SYNTHETIC_ACCOUNTS = [
   "Great Lakes Grocery Group",
   "Pacific Retail Collective",
   "Summit Foods Distribution",
@@ -167,9 +160,9 @@ export function InquiryDialog({
       >
         <div className={styles.head}>
           <div>
-            <p className={styles.eyebrow}>Demonstration</p>
+            <p className={styles.eyebrow}>Case routed</p>
             <h2 id={titleId} className={styles.title}>
-              Demonstration case created
+              Case created
             </h2>
           </div>
           <button type="button" className={styles.close} onClick={onClose} aria-label="Close">
@@ -179,8 +172,7 @@ export function InquiryDialog({
 
         <div className={styles.body}>
           <p className={styles.lede}>
-            This synthetic case has been routed through the FireFlow operating model. No information
-            was transmitted to Samyang or any external system.
+            This case has been routed through the FireFlow operating model.
           </p>
           <p className={styles.synthNote}>
             Everything below is generated in your browser to show how a completed inquiry would be
@@ -192,9 +184,7 @@ export function InquiryDialog({
             organization aligned while the answer is being worked.
           </p>
 
-          {channel === "consumer"
-            ? renderConsumer()
-            : renderVendor()}
+          {renderAccountCase()}
 
           <p className={styles.meta}>
             Generated locally from the {MODE_LABEL[mode]} view.
@@ -206,7 +196,7 @@ export function InquiryDialog({
           <ButtonLink href="#simulate" variant="primary" size="sm" onClick={onClose}>
             Run the resolution simulator
           </ButtonLink>
-          <ButtonLink href="#command" variant="secondary" size="sm" onClick={onClose}>
+          <ButtonLink to="/intelligence#command" variant="secondary" size="sm" onClick={onClose}>
             Open the command center
           </ButtonLink>
           <Button type="button" variant="ghost" size="sm" onClick={onClose}>
@@ -219,86 +209,22 @@ export function InquiryDialog({
 
   /* ---------------------------------------------------------------- */
 
-  function renderConsumer() {
-    const nextStage = issue.requiresSpecialistEscalation
-      ? "Specialist escalation with evidence intake"
-      : "Verification and evidence intake";
-    return (
-      <div className={styles.block}>
-        <dl className={styles.info}>
-          <dt className={styles.term}>Case reference</dt>
-          <dd className={styles.desc}>
-            <strong>{caseRef}</strong> (synthetic)
-          </dd>
-
-          <dt className={styles.term}>Product</dt>
-          <dd className={styles.desc}>
-            <strong>{productLabel}</strong>
-          </dd>
-
-          <dt className={styles.term}>Issue type</dt>
-          <dd className={styles.desc}>{issue.label}</dd>
-
-          <dt className={styles.term}>Severity</dt>
-          <dd className={styles.desc}>
-            <span className={styles.chip} data-sev={issue.defaultSeverity}>
-              {SEVERITY_LABEL[issue.defaultSeverity]}
-            </span>
-          </dd>
-
-          <dt className={styles.term}>Information captured</dt>
-          <dd className={styles.desc}>
-            Product family, format, and category, plus the issue type you selected. No personal
-            details were entered in this demonstration.
-          </dd>
-
-          <dt className={styles.term}>Routing destination</dt>
-          <dd className={styles.desc}>{routing}</dd>
-
-          <dt className={styles.term}>Expected next stage</dt>
-          <dd className={styles.desc}>{nextStage}</dd>
-        </dl>
-
-        <div>
-          <p className={styles.evLabel}>Evidence that would be requested</p>
-          {hasEvidence ? (
-            <ul className={styles.evList}>
-              {issue.evidenceRequested.map((e, i) => (
-                <li key={i}>{e}</li>
-              ))}
-            </ul>
-          ) : (
-            <p className={styles.desc}>No extra evidence is needed for this issue type.</p>
-          )}
-        </div>
-
-        {issue.requiresSpecialistEscalation && (
-          <p className={styles.notice}>
-            This issue type is handled as a specialist escalation. FireFlow records the facts and
-            routes the case to the right team. It does not diagnose, assess, or provide medical
-            advice. If someone is unwell, contact a medical professional.
-          </p>
-        )}
-      </div>
-    );
-  }
-
-  function renderVendor() {
+  function renderAccountCase() {
     const isO2c = issue.routeTo.some((t) => O2C_TEAMS.includes(t));
-    const account = VENDOR_ACCOUNTS[seed % VENDOR_ACCOUNTS.length] ?? "Regional Retail Partner";
+    const account = SYNTHETIC_ACCOUNTS[seed % SYNTHETIC_ACCOUNTS.length] ?? "Regional Retail Partner";
     const po = `PO-${480000 + (seed % 20000)}`;
     const invoice = `INV-${90000 + ((seed >>> 3) % 9000)}`;
-    const workflow = isO2c ? "Order-to-Cash exception handling" : "Vendor request intake and routing";
+    const workflow = isO2c ? "Order-to-Cash exception handling" : "Account request intake and routing";
     return (
       <div className={styles.block}>
         <dl className={styles.info}>
           <dt className={styles.term}>Case reference</dt>
           <dd className={styles.desc}>
-            <strong>{caseRef}</strong> (synthetic)
+            <strong>{caseRef}</strong>
           </dd>
 
           <dt className={styles.term}>Account</dt>
-          <dd className={styles.desc}>{account} (synthetic)</dd>
+          <dd className={styles.desc}>{account}</dd>
 
           <dt className={styles.term}>Product</dt>
           <dd className={styles.desc}>
@@ -307,7 +233,7 @@ export function InquiryDialog({
 
           <dt className={styles.term}>Order context</dt>
           <dd className={styles.desc}>
-            {po}, invoice {invoice} (synthetic)
+            {po}, invoice {invoice}
           </dd>
 
           <dt className={styles.term}>Issue type</dt>
@@ -316,7 +242,7 @@ export function InquiryDialog({
           <dt className={styles.term}>Priority</dt>
           <dd className={styles.desc}>
             <span className={styles.chip} data-sev={issue.defaultSeverity}>
-              {VENDOR_PRIORITY[issue.defaultSeverity]}
+              {ACCOUNT_PRIORITY[issue.defaultSeverity]}
             </span>
           </dd>
 
@@ -358,7 +284,7 @@ export function InquiryDialog({
         )}
 
         {isO2c && (
-          <ButtonLink className={styles.docLink} href="#o2c" variant="secondary" size="sm" onClick={onClose}>
+          <ButtonLink className={styles.docLink} to="/intelligence#o2c" variant="secondary" size="sm" onClick={onClose}>
             Open the SAP SD order-to-cash chapter
           </ButtonLink>
         )}

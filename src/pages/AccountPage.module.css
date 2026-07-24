@@ -1,0 +1,1324 @@
+/* AccountPage — a retail account operations dossier.
+
+   Two columns: a collapsible sticky rail and the main column. The account
+   intelligence figures sit in a strip under the hero rather than a third rail,
+   which was squeezing the purchase order table into a horizontal scroll. Below
+   1000px the rail becomes a full-width tap-to-open section list.
+
+   Risk is a word and a glyph everywhere. The color on a risk chip is decoration
+   layered on top of a label that already says the thing. */
+
+.page {
+  background: var(--surface-0);
+  color: var(--text-1);
+  padding: var(--space-5) var(--space-5) var(--space-8);
+  min-height: 100vh;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+/* ---- Breadcrumb --------------------------------------------------------- */
+.crumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  list-style: none;
+  margin: 0 0 var(--space-5);
+  padding: 0;
+  font-size: var(--step--1);
+  color: var(--text-2);
+}
+.crumbs li + li::before {
+  content: "/";
+  margin-right: var(--space-2);
+  color: var(--line-2);
+}
+.crumbs a {
+  color: var(--gold);
+  text-decoration: none;
+  font-weight: 600;
+}
+.crumbs a:hover { color: var(--text-0); }
+.crumbs [aria-current="page"] { color: var(--text-0); font-weight: 600; }
+
+/* ---- Hero --------------------------------------------------------------- */
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+  padding-bottom: var(--space-6);
+  border-bottom: 1px solid var(--line);
+  margin-bottom: var(--space-6);
+}
+.heroText { flex: 1 1 620px; min-width: 0; }
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: var(--step--1);
+  font-weight: 700;
+  color: var(--gold);
+  margin: 0 0 var(--space-2);
+}
+.h1 {
+  font-family: var(--font-display);
+  font-size: var(--step-6, var(--step-5));
+  line-height: 1.02;
+  color: var(--text-0);
+  margin: 0 0 var(--space-3);
+}
+.subtitle {
+  font-size: var(--step-1);
+  color: var(--text-1);
+  margin: 0 0 var(--space-4);
+  max-width: 60ch;
+}
+.intro {
+  color: var(--text-2);
+  line-height: 1.65;
+  max-width: 74ch;
+  margin: 0 0 var(--space-5);
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  list-style: none;
+  margin: 0 0 var(--space-5);
+  padding: 0;
+}
+.badges li {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-2);
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+
+.ctas { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+.cta,
+.ctaPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-s);
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid var(--line-2);
+  background: var(--surface-1);
+  color: var(--text-0);
+}
+.ctaPrimary { background: var(--gold); color: var(--surface-0); border-color: var(--gold); }
+.cta:hover { border-color: var(--gold); }
+.ctaPrimary:hover { filter: brightness(1.08); }
+.cta:focus-visible,
+.ctaPrimary:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+.heroAside {
+  flex: 0 1 360px;
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+}
+.heroDisclaimer {
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--src-synthetic, var(--line-2));
+  border-radius: var(--radius-s);
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+
+/* ---- Layout ------------------------------------------------------------- */
+/* Two columns. The right "account intelligence" rail was removed: a third column
+   squeezed the purchase order table into a horizontal scroll, and that table is
+   the one thing on this page a reader has to take in at a glance. Its figures now
+   sit in a strip under the hero, where they are read once rather than followed.
+
+   The rail collapses to a slim strip, handing its 180px back to the table. */
+.body {
+  display: grid;
+  /* 150px, down from 180px. The rail is an index, not a reading surface, and
+     the 30px goes straight back to the purchase order table. */
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: var(--space-5);
+  align-items: start;
+}
+.body[data-rail="collapsed"] {
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: var(--space-4);
+}
+
+/* ---- Account intelligence strip ---------------------------------------- */
+.intelStrip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--space-4);
+  margin: 0 0 var(--space-6);
+  padding: var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  background: var(--surface-1);
+}
+.intelStrip dt {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-2);
+  margin-bottom: 4px;
+}
+.intelStrip dd {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  line-height: 1;
+  color: var(--text-0);
+}
+/* A risk chip is not a numeral, so it must not inherit the display face. */
+.intelStrip dd:has(.risk) { font-family: var(--font-ui); font-size: 1rem; }
+
+/* ---- Sticky rail -------------------------------------------------------- */
+.rail {
+  position: sticky;
+  top: calc(var(--sticky-h) + var(--space-4));
+  max-height: calc(100vh - var(--sticky-h) - var(--space-7));
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.railToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  /* 44px, matching every other control on this page. It was 36px, which cleared
+     the WCAG floor and undercut the page's own bar. */
+  min-height: 44px;
+  margin-bottom: var(--space-2);
+  padding: 0 var(--space-2);
+  background: var(--surface-1);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  font-family: var(--font-ui);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+.railToggle:hover { border-color: var(--gold); color: var(--text-0); }
+.railToggle:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.railToggleGlyph { flex: none; font-size: 0.9rem; line-height: 1; }
+.body[data-rail="collapsed"] .railToggleLabel { display: none; }
+.body[data-rail="collapsed"] .railToggle { justify-content: center; padding: 0; }
+
+/* Collapsed, the rail still names the section you are in, rotated into the
+   gutter. A navigation control that hides your position is not one. */
+.railWhere {
+  margin: var(--space-3) 0 0;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-size: 0.64rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+
+.railList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1px;
+}
+/* `display: grid` beats the `hidden` attribute's UA `display: none`. Without
+   this the collapsed rail stays on screen. */
+.railList[hidden] { display: none; }
+.railLink {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 6px var(--space-2);
+  border-radius: var(--radius-s);
+  border-left: 2px solid transparent;
+  color: var(--text-2);
+  text-decoration: none;
+  font-size: 0.76rem;
+  line-height: 1.3;
+}
+.railLink:hover { color: var(--text-0); background: var(--surface-1); }
+.railLink:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
+/* Active: a filled glyph, a heavier weight, a left rule, and a lifted surface.
+   Four signals, one of which is color. */
+.railLink[aria-current="true"] {
+  color: var(--text-0);
+  font-weight: 700;
+  background: var(--surface-1);
+  border-left-color: var(--gold);
+}
+.railMark { flex: none; font-size: 0.6rem; color: var(--gold); }
+
+/* ---- Main --------------------------------------------------------------- */
+.main { min-width: 0; }
+
+.section {
+  padding: var(--space-6) 0;
+  border-bottom: 1px solid var(--line);
+  scroll-margin-top: calc(var(--sticky-h) + var(--space-4));
+}
+.section:last-of-type { border-bottom: none; }
+
+.sectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+.h2 {
+  font-family: var(--font-display);
+  font-size: var(--step-4);
+  color: var(--text-0);
+  margin: 0 0 var(--space-3);
+}
+.lede {
+  color: var(--text-2);
+  line-height: 1.65;
+  max-width: 78ch;
+  margin: 0 0 var(--space-5);
+}
+
+/* Honest-limits paragraph. Bordered so it reads as a statement, not filler. */
+.honest {
+  margin: var(--space-5) 0 0;
+  padding: var(--space-4);
+  border-left: 3px solid var(--src-synthetic, var(--gold));
+  background: var(--surface-1);
+  border-radius: 0 var(--radius-s) var(--radius-s) 0;
+  font-size: var(--step--1);
+  line-height: 1.65;
+  color: var(--text-1);
+  max-width: 80ch;
+}
+
+/* ---- Snapshot ----------------------------------------------------------- */
+.snapshot {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-4);
+  margin: 0 0 var(--space-5);
+}
+.snapshot dt {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-2);
+  margin-bottom: 3px;
+}
+.snapshot dd {
+  margin: 0;
+  color: var(--text-0);
+  line-height: 1.55;
+  font-size: var(--step--1);
+}
+
+.callout {
+  padding: var(--space-5);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-m);
+  background: var(--surface-1);
+}
+.calloutTitle {
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  color: var(--text-0);
+  margin: 0 0 var(--space-3);
+}
+.callout p { margin: 0; line-height: 1.7; color: var(--text-1); }
+
+/* ---- Cards -------------------------------------------------------------- */
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-4);
+}
+.card {
+  padding: var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  background: var(--surface-1);
+  transition: border-color var(--dur-2) var(--ease-out);
+}
+.card:hover { border-color: var(--line-2); }
+.card h3 {
+  font-size: var(--step-0);
+  color: var(--text-0);
+  margin: 0 0 var(--space-2);
+}
+.card p { margin: 0; font-size: var(--step--1); line-height: 1.65; color: var(--text-2); }
+
+.ediList {
+  margin: var(--space-3) 0 0;
+  padding: 0 0 0 var(--space-4);
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--text-2);
+}
+.ediList strong { color: var(--text-0); }
+
+.chainNote {
+  margin: 0;
+  padding: var(--space-4);
+  border: 1px dashed var(--line-2);
+  border-radius: var(--radius-s);
+  font-size: var(--step--1);
+  line-height: 1.7;
+  color: var(--text-1);
+  max-width: 84ch;
+}
+
+/* ---- Tables ------------------------------------------------------------- */
+.tableScroll {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+}
+.poTable,
+.riskTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.76rem;
+}
+/* The PO table is built to FIT: ten compact columns, quantities without unit
+   suffixes, statuses as short words, prices as "Pending" when unvalidated, and
+   the long detail moved into the order record dialog. Nothing in a cell may
+   grow the page sideways; .tableScroll stays as the safety net for narrow
+   phones only. */
+.poTable { min-width: 640px; }
+.riskTable { min-width: 860px; }
+
+.poTable thead th,
+.riskTable thead th {
+  text-align: left;
+  padding: var(--space-3);
+  background: var(--surface-1);
+  border-bottom: 1px solid var(--line);
+  font-size: 0.64rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+.poTable td,
+.poTable tbody th,
+.riskTable td,
+.riskTable tbody th {
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  vertical-align: top;
+  color: var(--text-1);
+  border-bottom: 1px solid var(--line);
+  line-height: 1.5;
+}
+.riskTable tbody th { color: var(--text-0); font-weight: 700; white-space: nowrap; }
+
+/* The whole row opens the order record. Cursor, hover lift, and the focused
+   PO button all say so; the button is the keyboard path. */
+.poRow { cursor: pointer; }
+.poRow:hover td,
+.poRow:hover th { background: var(--surface-1); }
+.poNum { color: var(--text-0); font-weight: 700; white-space: nowrap; }
+.poOpen {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: var(--gold);
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+}
+.poOpen::before { content: "PO "; color: var(--text-2); font-weight: 600; }
+.poRow:hover .poOpen { color: var(--text-0); }
+.poOpen:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.poStatus { white-space: nowrap; }
+.thUnit { font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--text-2); }
+.tableHint {
+  margin: var(--space-2) 0 0;
+  font-size: 0.72rem;
+  color: var(--text-2);
+}
+.poProduct { min-width: 150px; }
+.poSite { display: block; font-size: 0.68rem; color: var(--text-2); margin-top: 2px; }
+.num { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.pending { color: var(--text-2); font-style: italic; }
+
+/* A quantity gap gets a word and a glyph, never a red cell. */
+.shortBy {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: var(--space-2);
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-0);
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  padding: 1px 6px;
+  white-space: nowrap;
+}
+
+.poDetailText { margin: 0; color: var(--text-1); line-height: 1.65; max-width: 90ch; }
+
+/* The receipts block. Spacing comes from the dialog body's grid gap; the class
+   exists so the wrapper is not a silently dead selector in the TSX. */
+.receipts { display: block; }
+
+.receiptsHead {
+  margin: 0 0 var(--space-2);
+  font-size: 0.64rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-2);
+}
+.receiptList {
+  list-style: none;
+  margin: 0 0 var(--space-2);
+  padding: 0;
+  display: grid;
+  gap: 4px;
+  max-width: 460px;
+}
+.receiptList li {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: var(--space-3);
+  padding: var(--space-2);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-s);
+  background: var(--surface-0);
+  font-variant-numeric: tabular-nums;
+}
+.receiptDoc { color: var(--text-0); font-weight: 600; }
+.receiptDate { color: var(--text-2); }
+.receiptQty { color: var(--text-0); font-weight: 700; }
+.receiptsSum { margin: 0; font-size: 0.78rem; color: var(--text-2); line-height: 1.55; }
+
+.checklist ol,
+.sapBox ul {
+  margin: 0;
+  padding-left: var(--space-5);
+  display: grid;
+  gap: 4px;
+  font-size: 0.8rem;
+  line-height: 1.55;
+  color: var(--text-1);
+}
+.sapBox ul { list-style: none; padding-left: 0; }
+.sapBox li::before { content: "· "; color: var(--text-2); }
+
+.lesson {
+  margin: 0;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--line);
+  font-size: 0.82rem;
+  line-height: 1.7;
+  color: var(--text-1);
+  max-width: 90ch;
+}
+.lessonLabel { font-weight: 700; color: var(--text-0); margin-right: 4px; }
+
+/* ---- Risk chip ---------------------------------------------------------- */
+.risk {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-radius: 999px;
+  padding: 2px 8px;
+  border: 1px solid var(--line-2);
+  color: var(--text-2);
+  white-space: nowrap;
+}
+.risk[data-level="medium"] { color: var(--text-1); border-color: var(--text-2); }
+.risk[data-level="high"] { color: var(--text-0); border-color: var(--gold); border-width: 2px; }
+
+/* ---- Cases -------------------------------------------------------------- */
+.caseGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+.caseCard {
+  padding: var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  background: var(--surface-1);
+  border-left: 3px solid var(--line-2);
+}
+.caseCard[data-severity="high"] { border-left-color: var(--gold); border-left-width: 5px; }
+.caseTop { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); }
+.caseId { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; color: var(--text-2); }
+.caseTitle { font-family: var(--font-display); font-size: var(--step-2); color: var(--text-0); margin: var(--space-2) 0 var(--space-4); }
+
+.caseFacts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--space-3); margin: 0 0 var(--space-4); }
+.caseFacts dt { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-2); margin-bottom: 2px; }
+.caseFacts dd { margin: 0; font-size: 0.8rem; color: var(--text-0); line-height: 1.45; }
+
+.caseQuote {
+  margin: 0 0 var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-left: 3px solid var(--gold);
+  background: var(--surface-2);
+  border-radius: 0 var(--radius-s) var(--radius-s) 0;
+}
+.caseQuote p { margin: 0; color: var(--text-1); line-height: 1.6; font-size: 0.86rem; }
+
+.caseBlock { margin-bottom: var(--space-3); }
+.caseBlockLabel {
+  margin: 0 0 4px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-2);
+}
+.caseBlock p:last-child { margin: 0; font-size: 0.82rem; line-height: 1.6; color: var(--text-1); }
+
+.caseLink {
+  display: inline-block;
+  margin-top: var(--space-2);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--gold);
+  text-decoration: none;
+}
+.caseLink:hover { color: var(--text-0); }
+
+/* ---- Two views ---------------------------------------------------------- */
+.twoView {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+}
+.twoView > div {
+  padding: var(--space-4);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-m);
+  background: var(--surface-1);
+}
+.twoViewLabel {
+  margin: 0 0 var(--space-2);
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+}
+.twoViewQ { margin: 0; font-size: var(--step-0); color: var(--text-0); line-height: 1.5; }
+
+/* ---- KPIs --------------------------------------------------------------- */
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-4);
+}
+.kpi {
+  padding: var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  background: var(--surface-1);
+  display: grid;
+  gap: var(--space-2);
+  align-content: start;
+  justify-items: start;
+}
+.kpiLabel { margin: 0; font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-2); }
+.kpiValue { margin: 0; font-family: var(--font-display); font-size: var(--step-4); line-height: 1; color: var(--text-0); }
+.kpiNote { margin: 0; font-size: 0.74rem; line-height: 1.5; color: var(--text-2); }
+
+/* ---- SOPs --------------------------------------------------------------- */
+.sopGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+.sop {
+  padding: var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  background: var(--surface-1);
+}
+.sopCode { margin: 0 0 4px; font-size: 0.64rem; font-weight: 700; letter-spacing: 0.1em; color: var(--text-2); }
+.sopName { font-family: var(--font-display); font-size: var(--step-2); color: var(--text-0); margin: 0 0 var(--space-3); }
+.sopTrigger { margin: 0 0 var(--space-3); font-size: 0.82rem; line-height: 1.6; color: var(--text-2); }
+.sopTriggerLabel { font-weight: 700; color: var(--text-1); margin-right: 4px; }
+.sopSteps { margin: 0; padding-left: var(--space-5); display: grid; gap: 6px; font-size: 0.82rem; line-height: 1.55; color: var(--text-1); }
+
+/* ---- Note index --------------------------------------------------------- */
+.noteIndex { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
+.noteIndex li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  padding: var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-s);
+  background: var(--surface-1);
+}
+.noteIndex button {
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+  color: var(--text-0);
+  font-family: var(--font-operator, inherit);
+  font-size: var(--step-0);
+  font-weight: 600;
+  cursor: pointer;
+}
+.noteIndex button:hover { color: var(--gold); }
+.noteIndex button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.noteIndex span { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-2); }
+
+/* ---- Summary ------------------------------------------------------------ */
+.summaryActions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-5); }
+
+.footerDisclaimer {
+  margin: var(--space-6) 0 0;
+  padding: var(--space-4);
+  border: 1px solid var(--src-synthetic, var(--line-2));
+  border-radius: var(--radius-s);
+  font-size: 0.76rem;
+  line-height: 1.65;
+  color: var(--text-2);
+}
+
+.intelLinks { list-style: none; margin: var(--space-5) 0 0; padding: 0; display: grid; gap: var(--space-2); }
+.intelLinks a { color: var(--gold); text-decoration: none; font-size: 0.8rem; font-weight: 600; }
+.intelLinks a:hover { color: var(--text-0); }
+
+/* ---- Responsive --------------------------------------------------------- */
+
+@media (max-width: 1000px) {
+  .page { padding: var(--space-4) var(--space-4) var(--space-7); }
+  .body,
+  .body[data-rail="collapsed"] { grid-template-columns: minmax(0, 1fr); }
+
+  /* The rail becomes a sticky, tap-to-open section list. Collapsed it is one
+     row naming the section you are in, so it never covers the content it is
+     meant to navigate. */
+  .rail {
+    position: sticky;
+    top: var(--sticky-h);
+    z-index: var(--z-rail);
+    max-height: none;
+    overflow: visible;
+    background: var(--surface-0);
+    border-bottom: 1px solid var(--line);
+    padding: var(--space-2) 0;
+    margin-bottom: var(--space-4);
+  }
+  .railToggle { min-height: 44px; font-size: var(--step--1); text-transform: none; }
+  .body[data-rail="collapsed"] .railToggle { justify-content: flex-start; padding: 0 var(--space-3); }
+  .body[data-rail="collapsed"] .railToggleLabel { display: inline; }
+  .railWhere { display: none; }
+  .railLink { min-height: 44px; font-size: 0.86rem; }
+
+  .hero { flex-direction: column; }
+  .heroAside { flex-basis: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card { transition: none; }
+}
+
+/* Where the price came from. Rendered inside an expanded PO row. */
+.priceBasis {
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px dashed var(--line-2);
+  border-radius: var(--radius-s);
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: var(--text-2);
+  max-width: 90ch;
+}
+
+
+/* ---- Account trajectory ------------------------------------------------- */
+.h3 {
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  color: var(--text-0);
+  margin: var(--space-6) 0 var(--space-3);
+}
+
+/* A bar chart that always prints its own number. A length alone is a shape a
+   reader has to estimate, and an estimate is not a figure. */
+.years {
+  list-style: none;
+  margin: 0 0 var(--space-4);
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+.year {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) 150px;
+  align-items: center;
+  gap: var(--space-4);
+}
+.yearLabel {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  color: var(--text-0);
+}
+.yearTrack {
+  height: 18px;
+  border-radius: 4px;
+  background: var(--surface-0);
+  border: 1px solid var(--line-2);
+  overflow: hidden;
+}
+.yearFill {
+  display: block;
+  height: 100%;
+  background: var(--gold);
+  border-radius: 3px 0 0 3px;
+}
+.yearValue {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--text-0);
+  font-size: 0.86rem;
+}
+.yearOrders {
+  font-weight: 400;
+  font-size: 0.7rem;
+  color: var(--text-2);
+}
+
+.hypotheses {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+.hypotheses li {
+  padding: var(--space-4);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line-2);
+  border-radius: var(--radius-s);
+  background: var(--surface-1);
+}
+/* The first thing to check is marked by rule weight, not by color. */
+.hypotheses li:first-child { border-left-width: 6px; border-left-color: var(--gold); }
+.hypLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-2);
+  font-size: var(--step-0);
+  font-weight: 700;
+  color: var(--text-0);
+}
+.hypRank {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--line-2);
+  font-size: 0.72rem;
+  color: var(--text-2);
+}
+.hypTest { margin: 0; font-size: 0.84rem; line-height: 1.65; color: var(--text-2); max-width: 88ch; }
+
+@media (max-width: 720px) {
+  .year { grid-template-columns: 48px minmax(0, 1fr); }
+  .yearValue { grid-column: 1 / -1; align-items: flex-start; flex-direction: row; gap: var(--space-3); }
+}
+
+/* ==========================================================================
+   2026-07-09 rework: contacts, order record dialog, live order trace,
+   case board with assignees and timelines, profile notes.
+   ========================================================================== */
+
+/* ---- Account contacts ---------------------------------------------------- */
+.contacts {
+  display: grid;
+  gap: var(--space-2);
+  width: 100%;
+}
+.contact {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-3);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line-2);
+  border-radius: var(--radius-s);
+  background: var(--surface-1);
+}
+.contact[data-side="account"] { border-left-color: var(--gold); }
+.contactAvatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--line-2);
+  background: var(--surface-2);
+  color: var(--text-0);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+.contactBody { min-width: 0; }
+.contactName { margin: 0; font-size: 0.86rem; font-weight: 700; color: var(--text-0); }
+.contactRole { margin: 0; font-size: 0.72rem; color: var(--text-1); line-height: 1.45; }
+.contactOrg { margin: 0 0 2px; font-size: 0.68rem; color: var(--text-2); }
+.contactLinks { margin: 0; display: flex; flex-wrap: wrap; gap: var(--space-3); }
+.contactLinks a {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--gold);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.contactLinks a:hover { color: var(--text-0); }
+.contactLinks a:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.contactsNote { margin: 0; font-size: 0.66rem; line-height: 1.5; color: var(--text-2); }
+
+/* ---- Open order trace ---------------------------------------------------- */
+.trace {
+  list-style: none;
+  margin: 0 0 var(--space-5);
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-2) var(--space-4);
+}
+.traceStep {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-s);
+  background: var(--surface-1);
+}
+.traceStep[data-state="exception"] { border-color: var(--gold); }
+.traceStep[data-state="pending"] { border-style: dashed; }
+.traceGlyph {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  margin-top: 2px;
+  border-radius: 50%;
+  border: 1px solid var(--line-2);
+  font-size: 0.7rem;
+  color: var(--text-1);
+}
+.traceStep[data-state="exception"] .traceGlyph { border-color: var(--gold); color: var(--text-0); }
+.traceBody { min-width: 0; }
+.traceName {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0 0 2px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-0);
+}
+.traceNum {
+  font-family: var(--font-display);
+  font-size: 0.74rem;
+  color: var(--text-2);
+}
+.traceState {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-2);
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  padding: 1px 7px;
+  white-space: nowrap;
+}
+.traceState[data-state="exception"] { color: var(--text-0); border-color: var(--gold); }
+.traceHappened { margin: 0; font-size: 0.76rem; line-height: 1.55; color: var(--text-2); }
+
+/* ---- Case board additions ------------------------------------------------ */
+.caseTools {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+.resolvedChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 1px solid var(--ok);
+  border-radius: 999px;
+  padding: 2px 8px;
+  color: var(--text-0);
+  white-space: nowrap;
+}
+.caseCard[data-status="resolved"] { border-left-color: var(--ok); border-left-width: 3px; }
+.assignee {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-4);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-s);
+  background: var(--surface-2);
+}
+.assigneeAvatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--gold);
+  background: var(--surface-0);
+  color: var(--text-0);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+.assigneeName { display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-0); }
+.assigneeMeta { display: block; font-size: 0.66rem; color: var(--text-2); }
+
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+.timeline li {
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr);
+  gap: var(--space-3);
+  padding: var(--space-2) 0 var(--space-2) var(--space-3);
+  border-left: 2px solid var(--line-2);
+}
+.timeline li:first-child { border-left-color: var(--gold); }
+.timelineWho {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-1);
+  overflow-wrap: break-word;
+}
+.timelineWhat {
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: var(--text-1);
+}
+.timelineDate {
+  display: block;
+  margin-top: 1px;
+  font-size: 0.64rem;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Profile notes ------------------------------------------------------- */
+.profile {
+  display: grid;
+  gap: 1px;
+  margin: 0 0 var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+  background: var(--line);
+}
+.profileRow {
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr);
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-1);
+}
+.profileRow dt {
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-2);
+  padding-top: 2px;
+}
+.profileRow dd {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--text-0);
+}
+.profileUpdated {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.62rem;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 640px) {
+  .profileRow { grid-template-columns: minmax(0, 1fr); gap: var(--space-1); }
+}
+
+/* ---- Order record dialog ------------------------------------------------- */
+/* Fade plus a short rise. Feels like the record slides up out of the table.
+   Durations zero out under prefers-reduced-motion. */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+}
+.modalBackdrop {
+  position: absolute;
+  inset: 0;
+  background: #000000a8;
+  opacity: 0;
+  transition: opacity 220ms var(--ease-out);
+}
+.modalOverlay[data-open="true"] .modalBackdrop { opacity: 1; }
+.modal {
+  position: relative;
+  width: min(860px, 100%);
+  max-height: min(86vh, 900px);
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-1);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-2);
+  opacity: 0;
+  transform: translateY(14px) scale(0.985);
+  transition: opacity 220ms var(--ease-out), transform 220ms var(--ease-out);
+}
+.modalOverlay[data-open="true"] .modal { opacity: 1; transform: none; }
+
+.modalHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-5) var(--space-4);
+  border-bottom: 1px solid var(--line);
+}
+.modalKicker {
+  margin: 0 0 2px;
+  font-size: 0.64rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+}
+.modalTitle {
+  margin: 0 0 2px;
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  line-height: 1.05;
+  color: var(--text-0);
+}
+.modalSub { margin: 0; font-size: 0.78rem; color: var(--text-2); }
+.modalHeadRight {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: none;
+}
+.modalClose {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-s);
+  border: 1px solid var(--line-2);
+  background: var(--surface-2);
+  color: var(--text-1);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+.modalClose:hover { border-color: var(--gold); color: var(--text-0); }
+.modalClose:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+.modalBody {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  overflow-y: auto;
+}
+.modalFacts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-s);
+  background: var(--surface-0);
+}
+.modalFacts dt {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-2);
+  margin-bottom: 2px;
+}
+.modalFacts dd {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text-0);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.45;
+}
+.modalCases { margin: 0; display: grid; gap: var(--space-2); }
+.modalCases a {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--gold);
+  text-decoration: none;
+}
+.modalCases a:hover { color: var(--text-0); }
+.modalFoot {
+  margin: 0;
+  padding: var(--space-3) var(--space-5);
+  border-top: 1px solid var(--line);
+  font-size: 0.68rem;
+  color: var(--text-2);
+}
+
+/* ---- Fulfillment and freight block inside the dialog --------------------- */
+.shipBlock {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-s);
+  background: var(--surface-0);
+}
+.shipFacts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+}
+.shipFacts dt {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-2);
+  margin-bottom: 2px;
+}
+.shipFacts dd { margin: 0; font-size: 0.8rem; color: var(--text-0); line-height: 1.5; }
+.shipHole {
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px dashed var(--line-2);
+  border-radius: var(--radius-s);
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: var(--text-1);
+}
+.shipEvents {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+.shipEvents li {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: var(--space-3);
+  padding-left: var(--space-3);
+  border-left: 2px solid var(--line-2);
+}
+.shipEventDate {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+.shipEventLabel { font-size: 0.78rem; line-height: 1.5; color: var(--text-1); }
+.shipEventNote { display: block; font-size: 0.7rem; color: var(--text-2); margin-top: 1px; }
+.shipIssues {
+  margin: 0;
+  padding: var(--space-3);
+  border-left: 3px solid var(--gold);
+  background: var(--surface-1);
+  border-radius: 0 var(--radius-s) var(--radius-s) 0;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: var(--text-1);
+}
+
+@media (max-width: 640px) {
+  .modalOverlay { padding: var(--space-2); }
+  .modal { max-height: 94vh; }
+  .modalHead, .modalBody { padding-left: var(--space-4); padding-right: var(--space-4); }
+  .shipEvents li, .timeline li { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal, .modalBackdrop { transition: none; }
+}

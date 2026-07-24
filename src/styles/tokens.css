@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700;800&family=Spectral:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
 
 /* FireFlow design tokens — "Buldak Night" dark theme.
    See docs/homepage/12-VISUAL-SYSTEM.md.
@@ -35,6 +35,24 @@
   --src-retail: #b08aa5;
   --src-editorial: #f5b301;
   --src-synthetic: #a78bfa;
+
+  /* --- Fourth-wall "operator" system ---
+     Deliberately COOL and serif, the opposite temperature of the warm Buldak
+     Night product UI, so any surface where Nathan steps out of the product to
+     speak reads as commentary, not product chrome. Used by OperatorNote,
+     NoteTeaser, and OperatorNotePanel. Never signals state by color alone. */
+  --op-bg: #0e1520;
+  --op-surface: #14202f;
+  --op-surface-2: #1b2b3d;
+  --op-line: #6f9fd811;
+  --op-line-2: #6f9fd83a;
+  --op-accent: #7fa8ff;
+  --op-accent-2: #a9c2ea;
+  --op-text-0: #eaf1fb;
+  --op-text-1: #b9c6da;
+  --op-text-2: #8a99b0;
+  --font-operator: "Spectral", Georgia, "Times New Roman", serif;
+  --font-operator-tag: "Inter", ui-monospace, "SFMono-Regular", Menlo, monospace;
 
   /* --- Hairlines --- */
   --line: #ffffff16;
@@ -79,8 +97,33 @@
   --dur-2: 220ms;
   --dur-3: 360ms;
 
-  /* Z-index scale (carried forward) */
+  /* Operator-note motion ("awaken").
+     A note arrives as a pill, settles, then widens into a bar. The long expo-out
+     curve is what makes the growth read as unhurried rather than springy: most of
+     the distance is covered early, and the last few pixels take their time.
+     Product UI keeps --dur-1..3; only the fourth wall moves this slowly. */
+  --op-ease-awaken: cubic-bezier(0.16, 1, 0.3, 1);
+  --op-dur-slide: 560ms;   /* the pill fades and slides in */
+  --op-dur-grow: 900ms;    /* the pill widens into the bar */
+  --op-dur-settle: 620ms;  /* body lines rise */
+  --op-delay-grow: 340ms;  /* the pause before it widens: the luxury is here */
+  --op-stagger: 80ms;      /* between body lines */
+
+  /* Tooltips are portaled to <body> and must sit above every dialog, drawer, and
+     note panel. Nothing may be stacked above this. */
+  --z-tooltip: 70;
+
+  /* Z-index scale (carried forward).
+     Stacking order, bottom to top: the sticky rail (20) sits under the per-page
+     SubNav (25), which sits under the MegaNav bar and its dropdown (30). Putting
+     the SubNav at 25 keeps the MegaNav dropdown panel painting over it, while
+     the SubNav still covers the rail beneath it. Overlays stay above all nav. */
   --z-rail: 20;
+  --z-subnav: 25;
+  /* The floating table of contents. It must clear any in-page sticky control bar
+     (the catalog toolbar also sits at --z-rail, and being later in the DOM it won
+     the tie and painted over the floater), while staying under the site nav. */
+  --z-mininav: 28;
   --z-nav: 30;
   --z-modal: 50;
   --z-dialog: 60;
@@ -89,8 +132,42 @@
      selected-product rail. Used to offset the rail's sticky top and to set
      scroll-padding so in-page anchors never land hidden under the headers. */
   --nav-h: 64px;
-  --rail-h: 56px;
-  --sticky-h: calc(var(--nav-h) + var(--rail-h));
+  /* Default 0: SelectedProductRail publishes its real height via
+     useStickyHeightVar only when it mounts. On routes where the rail renders
+     nothing, a hardcoded height would create a phantom offset. */
+  --rail-h: 0px;
+  /* Default 0 for the same reason as --rail-h: the SubNav publishes its real
+     height via useStickyHeightVar only on routes that render it, so routes
+     without a SubNav get no phantom offset. */
+  --subnav-h: 0px;
+  --sticky-h: calc(var(--nav-h) + var(--rail-h) + var(--subnav-h));
+
+  /* =========================================================
+     PAGE SHELL — the single source of truth for the content column.
+     Every section wrapper reads --shell-max and --shell-pad, so the
+     column is sized here and nowhere else.
+
+     Why the column is narrower than the old hardcoded 1200px: two
+     fixed trays live in the gutters (CompareRail left, MiniNav right).
+     At a 1300px viewport a 1200px column leaves 50px of gutter, so the
+     MiniNav had no choice but to paint over the content. The column now
+     yields --gutter-reserve of clear space on both sides at any width
+     above the tray breakpoint, and the collapsed MiniNav spine fits
+     inside that reserve without ever touching content.
+
+     --gutter-reserve = spine width + its offset + a scrollbar buffer.
+     ========================================================= */
+  --shell-max: 1200px;
+  --shell-pad: var(--space-4);
+  /* Spine width is derived, not guessed: 2px border + 2 x 8px body padding
+     + 8px link padding + 24px marker column + 8px column gap = 60px. */
+  --spine-w: 60px;
+  /* spine + its 12px right offset + a 12px scrollbar buffer. */
+  --gutter-reserve: 84px;
+
+  /* The MegaNav is the one full-bleed band on the page: its bar and its
+     dropdown panel run edge to edge and inset by this instead. */
+  --nav-pad: clamp(16px, 2.4vw, 40px);
 
   /* =========================================================
      COMPATIBILITY ALIASES — legacy names → dark values.
@@ -141,10 +218,35 @@
   --offset-lg: 6px 6px 0 #000000;
 }
 
+/* The gutter trays appear at 900px (see MiniNav / CompareRail). From that width
+   up, the content column gives back the gutter before it gives back anything
+   else, and the side padding tightens because the margin now does that work. */
+@media (min-width: 900px) {
+  :root {
+    --shell-max: min(1120px, calc(100vw - 2 * var(--gutter-reserve)));
+    --shell-pad: var(--space-3);
+  }
+
+  /* A pinned MiniNav stops being a transient overlay and becomes layout.
+     MiniNav publishes its pin to this attribute; the reserve grows to the
+     expanded panel (188px) + its 12px offset + a 12px buffer, and --shell-max
+     follows, so the open panel never covers content. The unpinned spine and
+     hover expansion keep the base 84px reserve. */
+  :root[data-mininav-pinned="true"] {
+    --gutter-reserve: 212px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   :root {
     --dur-1: 0ms;
     --dur-2: 0ms;
     --dur-3: 0ms;
+
+    --op-dur-slide: 0ms;
+    --op-dur-grow: 0ms;
+    --op-dur-settle: 0ms;
+    --op-delay-grow: 0ms;
+    --op-stagger: 0ms;
   }
 }

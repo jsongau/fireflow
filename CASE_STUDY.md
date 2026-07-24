@@ -8,7 +8,7 @@ Every feature below maps to a responsibility in the job posting. Operational dat
 ## Responsibility → where FireFlow demonstrates it
 
 **Lead the CX function from order entry through fulfillment and issue resolution.**
-The Two Paths inquiry launchers and the Resolution Simulator carry a case end to end: reported → verified → routed → resolution proposed → customer updated → resolved → improvement review. The Command Center preview shows the same cases as a manager's queue.
+The account-case launcher (Open an account case) and the Resolution Simulator carry a retailer or distributor case end to end: reported → verified → routed → resolution proposed → customer updated → resolved → improvement review. The Command Center preview shows the same cases as a manager's queue.
 
 **Own the end-to-end order-to-cash process.**
 Vendor scenarios are structured along O2C stages — purchase order, partial fill / backorder, delivery, invoice, pricing discrepancy, deduction / chargeback, EDI. Each names the stage and the cross-functional owners.
@@ -32,10 +32,17 @@ The selected-product rail and the "next customer update" field make context and 
 Each case names its collaborating teams; the vendor path routes to the right function per issue type.
 
 **Lead, coach, and develop the CX team.**
-The Command Center includes a team workload / coaching view (synthetic, labeled).
+The `/leadership` page carries a **Team and coaching board** (`#team`): a synthetic roster of a
+team lead plus five reps with specialties, live case load, a workload-balance view that surfaces
+an overloaded rep, an escalation-authority and approval matrix (who may commit a reship, a
+credit, a delivery-date change, a chargeback disposition), a QA rubric for sampled cases, and a
+1:1 cadence per rep. It states plainly on the page that it is how Nathan **would** run the
+function, that it is synthetic, and that it is **not a claim of having managed this team**.
+Nathan's real people-leadership experience is a résumé and interview matter; the artifact shows
+the operating model, not a tenure claim.
 
 **Oversee SAP / ERP process compliance and data integrity.**
-This is framed honestly: FireFlow demonstrates *conceptual command* of order entry, pricing, delivery, billing, customer master, order status, and EDI, and rigorous source/confidence labeling as a data-integrity habit — it is **integration-ready / system-agnostic** and does **not** claim extensive hands-on SAP SD tenure. The **SAP SD Process Intelligence** chapter makes this concrete: one synthetic B2B order walked through the full order-to-cash document flow (PO → sales order → delivery → goods issue → invoice → deduction → credit memo → prevention), a 23-term SAP SD glossary in plain language, and 11 order exceptions worked end to end — with a stated disclosure that it is a process demonstration, not an SAP replica or a claim of system access.
+This is framed honestly: FireFlow demonstrates *conceptual command* of order entry, pricing, delivery, billing, customer master, order status, and EDI, and rigorous source/confidence labeling as a data-integrity habit — it is **integration-ready / system-agnostic** and does **not** claim extensive hands-on SAP SD tenure. The **SAP SD Process Intelligence** chapter makes this concrete: one synthetic B2B order walked through the full order-to-cash document flow (PO → sales order → delivery → goods issue → invoice → deduction → credit memo → prevention), a plain-language SAP SD glossary of roughly 60 terms, and 11 order exceptions worked end to end — with a stated disclosure that it is a process demonstration, not an SAP replica or a claim of system access.
 
 ## Product and measurement judgment
 

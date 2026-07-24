@@ -7,6 +7,7 @@ import { VERIFY_PACKAGE_REMINDER } from "@/data/sources";
 import { imageForVariant } from "@/data/images";
 import { Button, ButtonLink, Segmented, ProductStage, SourceBadge, ConfidenceBadge, PepperScale } from "@/components/primitives";
 import { spiceLevel } from "@/data/spiciness";
+import { SectionNote } from "@/components/employer/SectionNote/SectionNote";
 import type { HeatPositioning, ServingStyle } from "@/types/domain";
 import styles from "./ProductDossier.module.css";
 
@@ -153,17 +154,17 @@ export function ProductDossier() {
               <p className={styles.reminder}>{VERIFY_PACKAGE_REMINDER}</p>
             </div>
 
-            {(family.consumerQuestions?.length || family.vendorQuestions?.length) && (
+            {(family.buyerQuestions?.length || family.vendorQuestions?.length) && (
               <div className={styles.questions}>
-                {family.consumerQuestions?.length ? (
-                  <div className={state.userMode === "vendor" ? styles.qBlockMuted : styles.qBlock}>
-                    <h4>Common consumer questions</h4>
-                    <ul>{family.consumerQuestions.map((q, i) => <li key={i}>{q}</li>)}</ul>
+                {family.buyerQuestions?.length ? (
+                  <div className={styles.qBlock}>
+                    <h4>What shoppers ask at shelf</h4>
+                    <ul>{family.buyerQuestions.map((q, i) => <li key={i}>{q}</li>)}</ul>
                   </div>
                 ) : null}
                 {family.vendorQuestions?.length ? (
-                  <div className={state.userMode === "consumer" ? styles.qBlockMuted : styles.qBlock}>
-                    <h4>Common vendor questions</h4>
+                  <div className={styles.qBlock}>
+                    <h4>What trade accounts ask</h4>
                     <ul>{family.vendorQuestions.map((q, i) => <li key={i}>{q}</li>)}</ul>
                   </div>
                 ) : null}
@@ -199,23 +200,23 @@ export function ProductDossier() {
 
             <div className={styles.dossierActions}>
               <ButtonLink
-                href="#resolve"
+                to="/order"
                 variant="primary"
                 size="sm"
-                onClick={() => dispatch({ type: "SET_MODE", mode: "consumer" })}
+                onClick={() => dispatch({ type: "SET_MODE", mode: "retailer" })}
               >
-                Ask as a consumer
+                Add to a bulk order
               </ButtonLink>
               <ButtonLink
-                href="#resolve"
+                to="/support"
                 variant="secondary"
                 size="sm"
-                onClick={() => dispatch({ type: "SET_MODE", mode: "vendor" })}
+                onClick={() => dispatch({ type: "SET_MODE", mode: "retailer" })}
               >
-                Ask as a vendor
+                Open an account case
               </ButtonLink>
               <ButtonLink
-                href="#compare"
+                to="/#compare"
                 variant="ghost"
                 size="sm"
                 onClick={() => dispatch({ type: "ADD_COMPARE", familyId: family.id })}
@@ -231,6 +232,8 @@ export function ProductDossier() {
             )}
           </div>
         </div>
+
+        <SectionNote sectionId="product" />
       </div>
     </section>
   );

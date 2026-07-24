@@ -1,0 +1,227 @@
+/* Right-gutter progress rail.
+
+   It used to be a 220px panel parked over the content column: at a 1300px
+   viewport there was no gutter to sit in, so it covered the Order summary card.
+   It is now a --spine-w spine by default, narrow enough to live entirely inside
+   the --gutter-reserve the page shell now yields on both sides. Hover, focus, or
+   the pin button widens it into the full labeled panel, which overlays only
+   while it is being used.
+
+   State never rides on color alone: shape and glyph carry it, and a text readout
+   backs it up. The spine keeps every label in the DOM (clipped, not removed) so
+   assistive technology reads the same list a sighted user sees expanded. */
+
+.rail {
+  position: fixed;
+  right: var(--space-3);
+  top: calc(var(--sticky-h) + var(--space-4));
+  /* Above any in-page sticky control bar. The catalog toolbar also sits at
+     --z-rail and, being later in the DOM, won the tie and covered this. */
+  z-index: var(--z-mininav);
+  width: var(--spine-w);
+  max-height: calc(100vh - var(--sticky-h) - var(--space-8));
+  background: var(--surface-1);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width var(--dur-2) var(--ease-out);
+}
+
+/* Expanded: pointer over it, keyboard focus inside it, or explicitly pinned.
+   188px is derived from the widest section label ("What this shows",
+   "Customer Master") at --step--1, plus the marker column and paddings. The
+   old 232px panel reached far enough into the content column to cover the
+   catalog toolbar's Filters button; this width plus the pinned gutter
+   reserve in tokens.css keeps the toolbar clear. */
+.rail:hover,
+.rail:focus-within,
+.railPinned {
+  width: 188px;
+}
+
+/* ---- Pin toggle -------------------------------------------------------- */
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  text-align: left;
+  background: var(--surface-2);
+  border: none;
+  border-bottom: 1px solid var(--line);
+  color: var(--text-0);
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: var(--step--1);
+  padding: var(--space-2) 10px;
+  min-height: 38px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.toggle:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
+
+/* The step readout doubles as the spine's collapsed glyph: "3/5" is legible at
+   52px and tells you where you are without expanding anything. */
+.toggleCount {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-0);
+  flex: none;
+}
+.toggleLabel {
+  color: var(--text-2);
+  font-weight: 600;
+  opacity: 0;
+  max-width: 0;
+  overflow: hidden;
+  transition: opacity var(--dur-1) var(--ease-out), max-width var(--dur-2) var(--ease-out);
+}
+.rail:hover .toggleLabel,
+.rail:focus-within .toggleLabel,
+.railPinned .toggleLabel { opacity: 1; max-width: 110px; }
+
+/* ---- Body -------------------------------------------------------------- */
+/* Horizontal padding is 8px on both sides: it is one of the five terms in the
+   --spine-w derivation, so changing it here means changing it in tokens.css. */
+.body { padding: var(--space-2); overflow-y: auto; }
+
+/* The progress readout is spoken, not shown: the spine header already prints
+   "3/5", and repeating it in the panel is clutter at every width. */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.item {
+  display: block;
+}
+
+.link {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  column-gap: var(--space-2);
+  align-items: stretch;
+  text-decoration: none;
+  border-radius: var(--radius-s);
+  padding: 2px var(--space-1);
+}
+.link:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+
+/* Marker column: the dot plus the connector segments above and below it. */
+.markerCol {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 34px;
+  align-self: stretch;
+}
+/* Upper connector: from top of the row to the marker center. */
+.markerCol::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 50%;
+  width: 2px;
+  background: var(--line-2);
+}
+/* Lower connector: from the marker center to the bottom of the row. */
+.markerCol::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  bottom: 0;
+  width: 2px;
+  background: var(--line-2);
+}
+/* No line above the first marker or below the last. */
+.item:first-child .markerCol::before,
+.item:last-child .markerCol::after { display: none; }
+
+/* Fill the connector up to the current step. The segment leading into a
+   done-or-current marker is filled; the segment leaving the current marker is
+   not. Color is the secondary cue; the marker glyphs carry the state. */
+.item[data-state="done"] .markerCol::before,
+.item[data-state="current"] .markerCol::before { background: var(--accent); }
+.item[data-state="done"] .markerCol::after { background: var(--accent); }
+
+/* The marker sits above the connectors, opaque, so the line reads as passing
+   behind it. */
+.marker {
+  position: relative;
+  z-index: 1;
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1.5px solid var(--line-2);
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-size: var(--step--1);
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Collapsed, the label is clipped rather than removed: display:none would take
+   it away from screen readers too, and the spine would become a column of
+   unnamed dots. */
+.label {
+  align-self: center;
+  font-size: var(--step--1);
+  color: var(--text-2);
+  line-height: 1.25;
+  white-space: nowrap;
+  opacity: 0;
+  max-width: 0;
+  overflow: hidden;
+  transition: opacity var(--dur-1) var(--ease-out), max-width var(--dur-2) var(--ease-out);
+}
+.rail:hover .label,
+.rail:focus-within .label,
+.railPinned .label { opacity: 1; max-width: 128px; }
+
+/* ---- State treatments (shape + glyph, then color) ---------------------- */
+/* upcoming: hollow ring, muted label. Nothing inside the ring. */
+
+/* current: diamond glyph inside, accent ring, bold brighter label. */
+.item[data-state="current"] .marker {
+  border-color: var(--accent);
+  background: var(--surface-3);
+  color: var(--text-0);
+}
+.item[data-state="current"] .label {
+  color: var(--text-0);
+  font-weight: 700;
+}
+
+/* done: filled marker with a check glyph. The check is the primary cue. */
+.item[data-state="done"] .marker {
+  border-color: var(--ok);
+  background: var(--ok);
+  color: var(--surface-0);
+}
+.item[data-state="done"] .label { color: var(--text-1); }
+
+.link:hover .label { color: var(--text-0); }
+
+/* Match CompareRail: hide the right tray on tablet and mobile. */
+@media (max-width: 900px) { .rail { display: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .rail, .label, .toggleLabel { transition: none; }
+}

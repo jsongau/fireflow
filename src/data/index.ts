@@ -8,11 +8,16 @@ export * from "@/data/rankings";
 export * from "@/data/issues";
 export * from "@/data/scenarios";
 export * from "@/data/sources";
+export * from "@/data/skus";
+export * from "@/data/quotes";
+export * from "@/data/standingOrders";
 
 import { FAMILIES } from "@/data/families";
-import { VARIANTS } from "@/data/variants";
+import { VARIANTS, VARIANT_BY_ID } from "@/data/variants";
 import { BRANDS } from "@/data/brands";
 import { CATEGORY_BY_ID, FORMAT_BY_ID } from "@/data/categories";
+import { ORDERABLE_SKUS, ORDER_VOLUME_TIERS } from "@/data/skus";
+import { SAMPLE_STANDING_ORDERS } from "@/data/standingOrders";
 
 export interface IntegrityIssue {
   level: "error" | "warn";
@@ -59,11 +64,45 @@ export function checkDataIntegrity(): IntegrityIssue[] {
   // one variant carrying official, format-bound facts.
   for (const f of FAMILIES.filter((x) => x.isAnchor)) {
     if (!f.rankingInputs) push("error", `Anchor ${f.id} is missing rankingInputs.`);
-    if (!f.consumerQuestions?.length) push("error", `Anchor ${f.id} is missing consumerQuestions.`);
+    if (!f.buyerQuestions?.length) push("error", `Anchor ${f.id} is missing buyerQuestions.`);
     if (!f.vendorQuestions?.length) push("error", `Anchor ${f.id} is missing vendorQuestions.`);
     const anchorVariants = VARIANTS.filter((v) => v.familyId === f.id);
     const hasOfficial = anchorVariants.some((v) => v.allergens?.length || v.preparation);
     if (!hasOfficial) push("error", `Anchor ${f.id} has no variant with official allergen/prep facts.`);
+  }
+
+  // Commerce layer (synthetic): every SKU must resolve to a real variant, carry
+  // a valid MOQ, and have ascending, non-empty price tiers. Standing orders must
+  // reference orderable SKUs.
+  const orderableIds = new Set(ORDERABLE_SKUS.map((s) => s.variantId));
+  for (const s of ORDERABLE_SKUS) {
+    if (!VARIANT_BY_ID[s.variantId]) push("error", `SKU ${s.sku} references unknown variant ${s.variantId}.`);
+    if (s.moq < 1) push("error", `SKU ${s.sku} has MOQ below 1.`);
+    if (s.retailRefCents < 1) push("error", `SKU ${s.sku} has no retail reference price.`);
+    // A distributor must never pay more than a retailer for the same case.
+    if (s.distributorCaseCents >= s.listCaseCents) {
+      push("error", `SKU ${s.sku} distributor base price is not below the retailer base.`);
+    }
+    // A layer must fit inside a pallet, and a per-line minimum must be orderable.
+    if (s.layerCases && s.palletCases && s.layerCases > s.palletCases) {
+      push("error", `SKU ${s.sku} layer is larger than its pallet.`);
+    }
+    if (s.layerCases && s.layerCases < 1) push("error", `SKU ${s.sku} has a layer below 1 case.`);
+    if (s.synthetic !== true) push("error", `SKU ${s.sku} is not labeled synthetic.`);
+  }
+  // Order-level volume ladder: ascending case floors, deepening discounts.
+  for (let i = 1; i < ORDER_VOLUME_TIERS.length; i++) {
+    const prev = ORDER_VOLUME_TIERS[i - 1];
+    const cur = ORDER_VOLUME_TIERS[i];
+    if (!prev || !cur) continue;
+    if (cur.minTotalCases <= prev.minTotalCases) push("error", "Order volume tiers are not ascending.");
+    if (cur.discountPct <= prev.discountPct) push("error", "Order volume discounts do not deepen.");
+  }
+
+  for (const so of SAMPLE_STANDING_ORDERS) {
+    for (const l of so.lines) {
+      if (!orderableIds.has(l.variantId)) push("warn", `Standing order ${so.id} references non-orderable ${l.variantId}.`);
+    }
   }
 
   // Honesty guard: allergens only ever live on variants (the type enforces
@@ -75,6 +114,8 @@ export const DATA_SUMMARY = {
   families: FAMILIES.length,
   variants: VARIANTS.length,
   brands: BRANDS.length,
+  skus: ORDERABLE_SKUS.length,
+  standingOrders: SAMPLE_STANDING_ORDERS.length,
   anchors: FAMILIES.filter((f) => f.isAnchor).length,
   byBrand: BRANDS.map((b) => ({
     brand: b.id,

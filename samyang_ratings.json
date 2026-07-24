@@ -1,0 +1,269 @@
+{
+  "scraped": "2026-07-10",
+  "note": "Ratings pulled from public retailer pages. Amazon and Kroger block automated fetching (robots.txt). Target pages block fetch but some product pages returned data. Sam's Club accessible. eBay Australia accessible via product group pages (/p/ URLs). Costco, Albertsons, Meijer, World Market, H-E-B, Instacart, Woolworths AU, Coles AU blocked or use JS-rendering.",
+  "products": [
+    {
+      "id": "buldak-original",
+      "name": "Buldak Original Hot Chicken Flavor Ramen",
+      "sku_example": "5-pack / 4.94 oz each",
+      "brand": "Buldak",
+      "family": "Buldak Original",
+      "retailer_ratings": [
+        {
+          "retailer": "Walmart",
+          "product_url": "https://www.walmart.com/ip/Samyang-Spicy-Hot-Chicken-Flavor-Instant-Ramen-4-94-oz-5-pack/234865077",
+          "rating": 4.6,
+          "review_count": 3385,
+          "rating_count": 3385,
+          "star_breakdown": {
+            "5_star_pct": 81,
+            "4_star_pct": 9,
+            "3_star_pct": 4,
+            "2_star_pct": 2,
+            "1_star_pct": 5
+          },
+          "sample_sentiment": "Praised for authentic Korean spice and noodle texture. Some note premium pricing for an instant noodle."
+        },
+        {
+          "retailer": "eBay Australia",
+          "product_url": "https://www.ebay.com.au/p/710132761",
+          "rating": 4.8,
+          "review_count": 85,
+          "rating_count": 85,
+          "star_breakdown": {
+            "5_star_pct": 89.4,
+            "4_star_pct": 5.9,
+            "3_star_pct": 2.4,
+            "2_star_pct": 0,
+            "1_star_pct": 2.4
+          },
+          "sample_sentiment": "Strong AU market reception. Very high 5-star concentration. Data via eBay AU product group page aggregating across sellers."
+        }
+      ],
+      "aggregate": {
+        "weighted_avg_rating": 4.61,
+        "total_reviews_across_retailers": 3470,
+        "retailers_with_data": ["Walmart", "eBay Australia"],
+        "retailers_blocked": ["Amazon", "Kroger", "Target"]
+      }
+    },
+    {
+      "id": "buldak-carbonara",
+      "name": "Buldak Carbonara Hot Chicken Flavor Ramen",
+      "sku_example": "5-pack / 4.58 oz each",
+      "brand": "Buldak",
+      "family": "Buldak Carbonara",
+      "retailer_ratings": [
+        {
+          "retailer": "Walmart",
+          "product_url": "https://www.walmart.com/ip/Samyang-Spicy-Chicken-Noodle-Carbonara-Flavor-Ramen-4-58-oz-5-Pack/893267125",
+          "rating": 4.6,
+          "review_count": 9123,
+          "rating_count": 9123,
+          "star_breakdown": null,
+          "sample_sentiment": "Best-selling flavor at Walmart. High volume of reviews reflects strong national retail penetration."
+        },
+        {
+          "retailer": "Target",
+          "product_url": "https://www.target.com/p/samyang-carbonara-ramen-5ct-22-95oz/-/A-91114007",
+          "rating": 4.5,
+          "review_count": 827,
+          "rating_count": 827,
+          "star_breakdown": {
+            "5_star_pct": 79,
+            "4_star_pct": 7,
+            "3_star_pct": 5,
+            "2_star_pct": 1,
+            "1_star_pct": 7
+          },
+          "category_scores": {
+            "quality": 4.3,
+            "taste": 4.2,
+            "value": 4.1
+          },
+          "recommend_pct": 76,
+          "sample_sentiment": "Loved for creamy-spicy balance. 76% of reviewers would recommend."
+        },
+        {
+          "retailer": "Sam's Club",
+          "product_url": "https://www.samsclub.com/reviews/product/16408466050",
+          "rating": 4.3,
+          "review_count": 73,
+          "rating_count": 359,
+          "star_breakdown": {
+            "5_star_pct": 70,
+            "4_star_pct": 9,
+            "3_star_pct": 7,
+            "2_star_pct": 7,
+            "1_star_pct": 7
+          },
+          "sample_sentiment": "Big-bowl format at Sam's Club. Slightly lower rating — may reflect format/texture difference vs. dry pack."
+        },
+        {
+          "retailer": "BJ's Wholesale Club",
+          "product_url": "https://www.bjs.com/product/samyang-buldak-carbonara-spicy-chicken-ramen-bowl-6-pk37-oz/3000000000005238747/",
+          "rating": 4.8,
+          "review_count": 121,
+          "rating_count": 121,
+          "star_breakdown": null,
+          "sample_sentiment": "Big-bowl format (3.7 oz). Strong rating on limited-but-meaningful sample. East Coast wholesale club audience."
+        },
+        {
+          "retailer": "eBay Australia",
+          "product_url": "https://www.ebay.com.au/p/",
+          "rating": null,
+          "review_count": null,
+          "rating_count": null,
+          "star_breakdown": null,
+          "sample_sentiment": null,
+          "fetch_status": "INSUFFICIENT — Carbonara listings fragmented across individual eBay AU seller pages with no consolidated product group. Data not usable."
+        }
+      ],
+      "aggregate": {
+        "weighted_avg_rating": 4.58,
+        "total_reviews_across_retailers": 10430,
+        "retailers_with_data": ["Walmart", "Target", "Sam's Club", "BJ's Wholesale Club"],
+        "retailers_blocked": ["Amazon", "Kroger"],
+        "retailers_insufficient": ["eBay Australia"]
+      }
+    },
+    {
+      "id": "buldak-2x-spicy",
+      "name": "Buldak 2X Spicy Hot Chicken Flavor Ramen",
+      "sku_example": "5-pack / 4.93 oz each",
+      "brand": "Buldak",
+      "family": "Buldak 2x Spicy",
+      "retailer_ratings": [
+        {
+          "retailer": "Walmart (Business)",
+          "product_url": "https://business.walmart.com/reviews/product/120823388",
+          "rating": 4.2,
+          "review_count": 99,
+          "rating_count": 99,
+          "star_breakdown": {
+            "5_star_pct": 74.7,
+            "4_star_pct": 3.0,
+            "3_star_pct": 4.0,
+            "2_star_pct": 5.1,
+            "1_star_pct": 13.1
+          },
+          "sample_sentiment": "Polarizing: intense heat wins fans but alienates heat-averse shoppers. High 5-star% offset by elevated 1-star% (13%)."
+        },
+        {
+          "retailer": "Target",
+          "product_url": "https://www.target.com/p/samyang-2x-spicy-ramen-5ct-24-7oz/-/A-91113900",
+          "rating": 4.1,
+          "review_count": 47,
+          "rating_count": 47,
+          "star_breakdown": {
+            "5_star_pct": 66,
+            "4_star_pct": 9,
+            "3_star_pct": 6,
+            "2_star_pct": 9,
+            "1_star_pct": 11
+          },
+          "sample_sentiment": "Divided on heat vs. flavor balance. Listed as out of stock at time of scrape."
+        },
+        {
+          "retailer": "eBay Australia",
+          "product_url": "https://www.ebay.com.au/p/",
+          "rating": null,
+          "review_count": null,
+          "rating_count": null,
+          "star_breakdown": null,
+          "sample_sentiment": null,
+          "fetch_status": "INSUFFICIENT — eBay AU listings for 2x Spicy show seller feedback (transaction ratings) rather than product ratings. Not comparable to product reviews."
+        },
+        {
+          "retailer": "Kroger",
+          "product_url": "https://www.kroger.com/p/samyang-buldak-2x-spicy-chicken-flavor-ramen-noodles/0880107314189",
+          "rating": null,
+          "review_count": null,
+          "rating_count": null,
+          "star_breakdown": null,
+          "sample_sentiment": null,
+          "fetch_status": "BLOCKED — Kroger robots.txt disallows automated access"
+        }
+      ],
+      "aggregate": {
+        "weighted_avg_rating": 4.17,
+        "total_reviews_across_retailers": 146,
+        "retailers_with_data": ["Walmart (Business)", "Target"],
+        "retailers_blocked": ["Amazon", "Kroger"],
+        "retailers_insufficient": ["eBay Australia"]
+      }
+    },
+    {
+      "id": "buldak-cheese",
+      "name": "Buldak Quattro Cheese Hot Chicken Flavor Ramen",
+      "sku_example": "5-pack / 5.11 oz each",
+      "brand": "Buldak",
+      "family": "Buldak Cheese",
+      "retailer_ratings": [
+        {
+          "retailer": "Walmart",
+          "product_url": "https://www.walmart.com/ip/5300292527",
+          "rating": 4.5,
+          "review_count": 850,
+          "rating_count": 850,
+          "star_breakdown": null,
+          "sample_sentiment": "Strong performer — 850 reviews with 4.5 avg. Cheese flavor softens heat perception, likely broadening appeal."
+        },
+        {
+          "retailer": "eBay Australia",
+          "product_url": "https://www.ebay.com.au/p/",
+          "rating": null,
+          "review_count": null,
+          "rating_count": null,
+          "star_breakdown": null,
+          "sample_sentiment": null,
+          "fetch_status": "INSUFFICIENT — Only 2 ratings found on eBay AU product group for Cheese. Not statistically meaningful."
+        }
+      ],
+      "aggregate": {
+        "weighted_avg_rating": 4.5,
+        "total_reviews_across_retailers": 850,
+        "retailers_with_data": ["Walmart"],
+        "retailers_blocked": ["Amazon", "Kroger", "Target"],
+        "retailers_insufficient": ["eBay Australia"]
+      }
+    },
+    {
+      "id": "buldak-corn",
+      "name": "Buldak Corn Hot Chicken Flavor Ramen",
+      "sku_example": "3-pack / 4.94 oz each",
+      "brand": "Buldak",
+      "family": "Buldak Corn",
+      "data_quality_warning": "Only 9 ratings found across all accessible retailers. Results not statistically meaningful.",
+      "retailer_ratings": [
+        {
+          "retailer": "Walmart",
+          "product_url": "https://www.walmart.com/ip/SamYang-Buldak-Hot-Chicken-Flavor-Ramen-Corn-Flavor-3-Packs/104132268",
+          "rating": 2.6,
+          "review_count": 4,
+          "rating_count": 9,
+          "star_breakdown": {
+            "5_star_pct": 22,
+            "4_star_pct": 11,
+            "3_star_pct": 0,
+            "2_star_pct": 33,
+            "1_star_pct": 33
+          },
+          "sample_sentiment": "Very limited sample. Mixed: some enjoy the sweeter corn-spice profile, others find it weak compared to other Buldak flavors."
+        }
+      ],
+      "aggregate": {
+        "weighted_avg_rating": 2.6,
+        "total_reviews_across_retailers": 9,
+        "retailers_with_data": ["Walmart"],
+        "retailers_blocked": ["Amazon", "Kroger", "Target"],
+        "confidence": "LOW — insufficient sample size"
+      }
+    }
+  ],
+  "scraping_notes": {
+    "accessible": ["Walmart", "Walmart Business", "Target (some product pages)", "Sam's Club", "eBay Australia (product group pages only)"],
+    "blocked": ["Amazon (robots.txt)", "Kroger (robots.txt)", "Instacart (robots.txt)", "Costco (403)", "Albertsons (Incapsula)", "Meijer (JS SPA)", "World Market (JS rendering)", "H-E-B (no ratings shown)", "H-Mart (no ratings shown)", "Woolworths AU (Bazaarvoice dynamic load)", "Coles AU (Incapsula)", "Catch.com.au (403)", "Amazon AU (robots.txt)"],
+    "recommendation": "For production data, use retailer API partnerships, Syndigo/Bazaarvoice feed, or manual spot-checks on Kroger and Amazon product pages."
+  }
+}

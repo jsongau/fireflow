@@ -1,0 +1,74 @@
+/* Location trail. Keeps the muted visual weight of the old inline trail: small,
+   --text-2, same max width and padding. The chili separator is monochrome and
+   opacity-based, so nothing here signals meaning by color. */
+
+.trail {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  max-width: var(--shell-max);
+  margin: 0 auto;
+  padding: var(--space-3) var(--shell-pad);
+  font-size: var(--step--1);
+  color: var(--text-2);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+}
+
+/* Inherits the crumb text color via currentColor; opacity keeps it a whisper.
+   flex:none so it never collapses when the trail wraps. */
+.pepper {
+  flex: none;
+  opacity: 0.55;
+  margin: 0 0.5em;
+}
+
+/* Links carry color and weight, never an underline. */
+.link {
+  color: var(--text-2);
+  text-decoration: none;
+  font-weight: 600;
+}
+.link:hover {
+  color: var(--text-0);
+}
+.link:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  border-radius: var(--radius-s);
+}
+
+/* Last crumb: plain text, a touch brighter and heavier than the links. */
+.current {
+  color: var(--text-1);
+  font-weight: 700;
+}
+
+/* Decorative brand tick. Subtle, fixed, always all five colors. */
+.tick {
+  display: inline-flex;
+  gap: 2px;
+  flex: none;
+  margin-right: 0.2em;
+}
+.tickSq {
+  width: 6px;
+  height: 6px;
+  border-radius: 1px;
+  border: 1px solid var(--line);
+  opacity: 0.85;
+}
